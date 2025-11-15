@@ -10,14 +10,16 @@ public class PostPresenter implements PostOutputDataBoundary{
         this.postViewModel = postViewModel;
     }
     public void prepareSuccessView(PostOutputData outputData){
-        postViewModel.setComment(outputData.getComment());
-        postViewModel.setRating(outputData.getRating());
-        postViewModel.setUsername(outputData.getUsername());
-        postViewModel.setSongname(outputData.getSongname());
+        PostState postState = postViewModel.getState();
+        postState.setComment(outputData.getComment());
+        postState.setRating(outputData.getRating());
+        postState.setUsername(outputData.getUsername());
+        postState.setSongname(outputData.getSongname());
 
     }
     public void prepareFailureView(String errorMessage){
-        postViewModel.setErrorMessage(errorMessage);
+        PostState postState = postViewModel.getState();
+        postState.setErrorMessage(errorMessage);
 
     }
 
