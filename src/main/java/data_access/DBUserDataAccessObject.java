@@ -15,6 +15,7 @@ import use_case.signup.SignupUserDataAccessInterface;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The DAO for user data.
@@ -32,6 +33,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     private static final String PASSWORD = "password";
     private static final String MESSAGE = "message";
     private static final String INFO = "info";
+    private static final String WRITTENREVIEWS = "writtenReviews";
+    private static final String UPVOTEDREVIEWS = "upvotedReviews";
     private final UserFactory userFactory;
 
     private String currentUsername;
@@ -64,14 +67,14 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                 for (int i = 0; i < writtenReviewsJSONArray.length(); i++) {
                     JSONObject writtenReviewJSONObject = writtenReviewsJSONArray.getJSONObject(i);
                     ReviewMapper reviewMapper = new ReviewMapper(writtenReviewJSONObject);
-                    Review writtenReview = reviewMapper.mapReview();
+                    Review writtenReview = reviewMapper.mapJSONtoReview();
                     user.addWrittenReview(writtenReview);
                 }
 
                 for (int i = 0; i < upvotedReviewsJSONArray.length(); i++) {
                     JSONObject upvotedReviewJSONObject = upvotedReviewsJSONArray.getJSONObject(i);
                     ReviewMapper reviewMapper = new ReviewMapper(upvotedReviewJSONObject);
-                    Review upvotedReview = reviewMapper.mapReview();
+                    Review upvotedReview = reviewMapper.mapJSONtoReview();
                     user.upvoteReview(upvotedReview);
                 }
 
@@ -127,6 +130,28 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         final JSONObject requestBody = new JSONObject();
         requestBody.put(USERNAME, user.getUsername());
         requestBody.put(PASSWORD, user.getPassword());
+        requestBody.put(INFO, new JSONObject());
+
+        // Make writtenReviews and upvotedReviews a JSONArray and put it in requestBody
+        List<Review> writtenReviews = user.getWrittenReviews();
+        JSONArray writtenReviewsJSONArray = new JSONArray();
+        for (Review review : writtenReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject writtenReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            writtenReviewsJSONArray.put(writtenReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(WRITTENREVIEWS, new JSONArray(writtenReviewsJSONArray));
+
+        Set<Review> upvotedReviews  = user.getUpvotedReviews();
+        JSONArray upvotedReviewsJSONArray = new JSONArray();
+        for (Review review : upvotedReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject upvotedReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            upvotedReviewsJSONArray.put(upvotedReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(UPVOTEDREVIEWS, new JSONArray(upvotedReviewsJSONArray));
+
+
         final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
         final Request request = new Request.Builder()
                 .url("http://vm003.teach.cs.toronto.edu:20112/user")

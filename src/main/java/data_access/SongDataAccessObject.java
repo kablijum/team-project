@@ -54,3 +54,5 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface {
     }
 }
 
+public class SongDataAccessObject {
+}

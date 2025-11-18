@@ -18,7 +18,7 @@ public class Song {
     private final String name;
     private final String artist;
     private int rating;
-    private final List<Review> reviews;
+    private List<Review> reviews;
 
     public Song(int id, String name, String artist) {
         this.id = id;
