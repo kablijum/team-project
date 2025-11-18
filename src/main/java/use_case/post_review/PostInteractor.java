@@ -3,15 +3,7 @@ package use_case.post_review;
 import entity.Review;
 
 public class PostInteractor implements PostInputDataBoundary{
-    /**
-     * Taking information - username and songID
-     * Accessing UserDB and songDB
-     * Check: If songID exists in userDB already -> create error message
-     * else: Create review obj, add review and store user and songs
-     *  then update avg rating of song
-     * Create and output OutputData Object ->
-     *
-     */
+
     private final PostReviewUserDataAccessInterface userDataAccess;
     private final PostReviewSongDataAccessInterface songDataAccess;
     private final PostOutputDataBoundary postPresenter;
