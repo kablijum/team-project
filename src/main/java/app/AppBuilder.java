@@ -1,6 +1,7 @@
 package app;
 
 import data_access.FileUserDataAccessObject;
+import data_access.SongDataAccessObject;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
@@ -11,6 +12,9 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.search.SearchController;
+import interface_adapter.search.SearchPresenter;
+import interface_adapter.search.SearchViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -23,6 +27,10 @@ import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
+import use_case.search.SearchInputDataBoundary;
+import use_case.search.SearchInteractor;
+import use_case.search.SearchOutputDataBoundary;
+import use_case.search.SearchUserDataAccessInterface;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
@@ -56,6 +64,8 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
+    private SearchViewModel searchViewModel;
+    private SearchController searchController;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -143,6 +153,25 @@ public class AppBuilder {
 
         return application;
     }
+    public AppBuilder addSearchUseCase() {
 
+        searchViewModel = new SearchViewModel();
+
+        SearchUserDataAccessInterface dataAccess =
+                new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
+
+        SearchOutputDataBoundary presenter =
+                new SearchPresenter(searchViewModel);
+
+        SearchInputDataBoundary interactor =
+                new SearchInteractor(dataAccess, presenter);
+
+        searchController = new SearchController(interactor);
+
+        loggedInView.setSearchController(searchController);
+        loggedInView.setSearchViewModel(searchViewModel);
+
+        return this;
+    }
 
 }
