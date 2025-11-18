@@ -42,19 +42,8 @@ public class PostInteractor implements PostInputDataBoundary{
             String songname = songDataAccess.getSongName(songid);
 
             PostOutputData data = new PostOutputData(comment, newAverage, username, songname, songid);
-
             postPresenter.prepareSuccessView(data);
-
         }
 
-
-
-
-
-
-
-
     }
-
-
 }
