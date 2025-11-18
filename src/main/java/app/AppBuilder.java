@@ -64,8 +64,6 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
-    private SearchViewModel searchViewModel;
-    private SearchController searchController;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -155,7 +153,7 @@ public class AppBuilder {
     }
     public AppBuilder addSearchUseCase() {
 
-        searchViewModel = new SearchViewModel();
+        SearchViewModel searchViewModel = new SearchViewModel();
 
         SearchUserDataAccessInterface dataAccess =
                 new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
@@ -166,7 +164,7 @@ public class AppBuilder {
         SearchInputDataBoundary interactor =
                 new SearchInteractor(dataAccess, presenter);
 
-        searchController = new SearchController(interactor);
+        SearchController searchController = new SearchController(interactor);
 
         loggedInView.setSearchController(searchController);
         loggedInView.setSearchViewModel(searchViewModel);
