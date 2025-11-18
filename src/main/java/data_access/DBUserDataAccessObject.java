@@ -1,8 +1,10 @@
 package data_access;
 
+import entity.Review;
 import entity.User;
 import entity.UserFactory;
 import okhttp3.*;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
@@ -11,9 +13,12 @@ import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The DAO for user data.
+ * User data structure: {"username": "", "password": "", "info": {"writtenReviews": "[]", upvotedReviews: "[]"}}
  */
 public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                                                LoginUserDataAccessInterface,
@@ -26,6 +31,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String MESSAGE = "message";
+    private static final String INFO = "info";
     private final UserFactory userFactory;
 
     private String currentUsername;
@@ -51,8 +57,25 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                 final JSONObject userJSONObject = responseBody.getJSONObject("user");
                 final String name = userJSONObject.getString(USERNAME);
                 final String password = userJSONObject.getString(PASSWORD);
+                // Get 'info' to retrieve written reviews and upvoted reviews
+                final JSONArray writtenReviewsJSONArray = userJSONObject.getJSONObject(INFO).getJSONArray("writtenReviews");
+                final JSONArray upvotedReviewsJSONArray = userJSONObject.getJSONObject(INFO).getJSONArray("upvotedReviews");
+                User user = userFactory.create(name, password);
+                for (int i = 0; i < writtenReviewsJSONArray.length(); i++) {
+                    JSONObject writtenReviewJSONObject = writtenReviewsJSONArray.getJSONObject(i);
+                    ReviewMapper reviewMapper = new ReviewMapper(writtenReviewJSONObject);
+                    Review writtenReview = reviewMapper.mapReview();
+                    user.addWrittenReview(writtenReview);
+                }
 
-                return userFactory.create(name, password);
+                for (int i = 0; i < upvotedReviewsJSONArray.length(); i++) {
+                    JSONObject upvotedReviewJSONObject = upvotedReviewsJSONArray.getJSONObject(i);
+                    ReviewMapper reviewMapper = new ReviewMapper(upvotedReviewJSONObject);
+                    Review upvotedReview = reviewMapper.mapReview();
+                    user.upvoteReview(upvotedReview);
+                }
+
+                return user;
             }
             else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
