@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.login.LoginViewModel;
 import interface_adapter.post_review.PostController;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongViewModel;
@@ -12,6 +13,7 @@ public class SongProfileView extends JPanel {
     private final ViewSongController viewSongController;
     private final PostController postController;
     private final ViewSongViewModel viewModel;
+    private final LoginViewModel loginViewModel;
 
     private final JLabel songNameLabel = new JLabel();
     private final JLabel artistLabel = new JLabel();
@@ -34,9 +36,11 @@ public class SongProfileView extends JPanel {
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BorderLayout());
         songNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        songNameLabel.setText(viewModel.getState().getSongName());
         labelPanel.add(songNameLabel, BorderLayout.WEST);
 
         artistLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        artistLabel.setText(viewModel.getState().getArtist());
         labelPanel.add(artistLabel, BorderLayout.CENTER);
 
         labelPanel.add(backButton, BorderLayout.EAST);
@@ -51,6 +55,14 @@ public class SongProfileView extends JPanel {
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+
+        if(viewModel.getState().getAverageRating() != 0){
+            averageRatingLabel.setText("Average Rating:" + viewModel.getState().getAverageRating());
+        }
+        else{
+            averageRatingLabel.setText(viewModel.getState().getMessage()));
+        }
+
         rightPanel.add(averageRatingLabel);
         rightPanel.add(addReview);
         reviewsPanel.add(rightPanel, BorderLayout.EAST);
@@ -59,8 +71,7 @@ public class SongProfileView extends JPanel {
 
         //LISTENERS//
         addReview.addActionListener(e -> openWriteReviewDialog());
-        backButton.addActionListener(e -> viewSongController.goBackToHome);
-
+        // TODO: add action listener for "back button"
     }
 
 
@@ -92,8 +103,6 @@ public class SongProfileView extends JPanel {
 
         postReviewDialog.setVisible(true);
 
-
-
         postButton.addActionListener(e -> {
             String content = comment.getText();
             Object selected = selected_ratings.getSelectedItem();
@@ -102,9 +111,9 @@ public class SongProfileView extends JPanel {
             }
             else {
                 int rating = Integer.parseInt((String) selected);
-                int songID = viewSongController.getSongId;
-                String username = viewSongController.getUsername;
-                postController.post(content, rating, username, songID);
+                int songID = viewModel.getState().getSongId();
+                String username = loginViewModel.getState().getUsername();
+                postController.execute(content, rating, username, songID);
                 postReviewDialog.dispose();
             }
         });
