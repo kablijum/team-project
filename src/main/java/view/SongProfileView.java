@@ -23,10 +23,11 @@ public class SongProfileView extends JPanel {
     private final JButton backButton = new JButton("Back");
     private final JButton refreshButton = new JButton("Refresh");
 
-    public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel,  PostController postController) {
+    public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel,  PostController postController,  LoginViewModel loginViewModel) {
         this.viewSongController = viewSongController;
         this.viewModel = viewModel;
         this.postController = postController;
+        this.loginViewModel = loginViewModel;
 
 
         setLayout(new BorderLayout());
@@ -60,7 +61,7 @@ public class SongProfileView extends JPanel {
             averageRatingLabel.setText("Average Rating:" + viewModel.getState().getAverageRating());
         }
         else{
-            averageRatingLabel.setText(viewModel.getState().getMessage()));
+            averageRatingLabel.setText(viewModel.getState().getMessage());
         }
 
         rightPanel.add(averageRatingLabel);
