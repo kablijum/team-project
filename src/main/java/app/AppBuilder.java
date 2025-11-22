@@ -35,7 +35,7 @@ import use_case.search.SearchUserDataAccessInterface;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import view.LoggedInView;
+import view.HomeView;
 import view.LoginView;
 import view.SignupView;
 import view.ViewManager;
@@ -60,7 +60,7 @@ public class AppBuilder {
     private SignupViewModel signupViewModel;
     private LoginViewModel loginViewModel;
     private LoggedInViewModel loggedInViewModel;
-    private LoggedInView loggedInView;
+    private HomeView homeView;
     private LoginView loginView;
 
     public AppBuilder() {
@@ -81,10 +81,10 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addLoggedInView() {
+    public AppBuilder addHomeView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel);
-        cardPanel.add(loggedInView, loggedInView.getViewName());
+        homeView = new HomeView(loggedInViewModel);
+        cardPanel.add(homeView, HomeView.VIEW_NAME);
         return this;
     }
 
@@ -109,34 +109,33 @@ public class AppBuilder {
         loginView.setLoginController(loginController);
         return this;
     }
+    // public AppBuilder addChangePasswordUseCase() {
+    //    final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
+    //            loggedInViewModel);
+    //
+    //    final ChangePasswordInputBoundary changePasswordInteractor =
+    //           new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
 
-    public AppBuilder addChangePasswordUseCase() {
-        final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
-                loggedInViewModel);
-
-        final ChangePasswordInputBoundary changePasswordInteractor =
-                new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
-
-        ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
-        loggedInView.setChangePasswordController(changePasswordController);
-        return this;
-    }
+    //    ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
+    //    homeView.setChangePasswordController(changePasswordController);
+    //    return this;
+    //}
 
     /**
      * Adds the Logout Use Case to the application.
      * @return this builder
      */
-    public AppBuilder addLogoutUseCase() {
-        final LogoutOutputBoundary logoutOutputBoundary = new LogoutPresenter(viewManagerModel,
-                loggedInViewModel, loginViewModel);
+     //public AppBuilder addLogoutUseCase() {
+     //final LogoutOutputBoundary logoutOutputBoundary = new LogoutPresenter(viewManagerModel,
+     //           loggedInViewModel, loginViewModel);
 
-        final LogoutInputBoundary logoutInteractor =
-                new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
+     //   final LogoutInputBoundary logoutInteractor =
+     //           new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
 
-        final LogoutController logoutController = new LogoutController(logoutInteractor);
-        loggedInView.setLogoutController(logoutController);
-        return this;
-    }
+     //   final LogoutController logoutController = new LogoutController(logoutInteractor);
+     //   homeView.setLogoutController(logoutController);
+     //   return this;
+    //}
 
     public JFrame build() {
         final JFrame application = new JFrame("User Login Example");
@@ -144,6 +143,10 @@ public class AppBuilder {
 
         application.add(cardPanel);
 
+        application.setSize(800, 600);
+        application.setLocationRelativeTo(null);
+
+        application.setMinimumSize(new Dimension(800, 600));
         viewManagerModel.setState(signupView.getViewName());
         viewManagerModel.firePropertyChange();
 
