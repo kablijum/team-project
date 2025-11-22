@@ -41,7 +41,7 @@ public class ReviewMapper {
         JSONObject reviewJSON = new JSONObject();
         reviewJSONObject.put(USERNAME, review.getUsername());
         reviewJSONObject.put(COMMENT, review.getComment());
-        reviewJSONObject.put(SONGID, review.getSong());
+        reviewJSONObject.put(SONGID, review.getSongID());
         reviewJSONObject.put(RATING, review.getRating());
         reviewJSONObject.put(UPVOTES, review.getUpvotes());
         return reviewJSON;
