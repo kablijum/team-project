@@ -23,6 +23,8 @@ public class UserProfileView extends JPanel {
     private final DefaultListModel<String> reviewListModel = new DefaultListModel<>();
     private final JList<String> reviewList = new JList<>(reviewListModel);
 
+    public static final String VIEW_NAME = "profile";
+
     public UserProfileView(ProfileReviewsViewModel viewModel,
                            ProfileReviewsController controller) {
         this.viewModel = viewModel;
@@ -78,11 +80,11 @@ public class UserProfileView extends JPanel {
         usernameLabel.setText(viewModel.getUsername());
 
         reviewListModel.clear();
-        List<Review> reviews = viewModel.getReviews();
-        for (Review r : reviews) {
+        List<ProfileReviewsViewModel.ReviewRow> reviews = viewModel.getReviews();
+        for (ProfileReviewsViewModel.ReviewRow r : reviews) {
             String line = String.format(
                     "%s  |  Your rating: %d  |  %s",
-                    r.getSong().getName(),
+                    r.getSongTitle(),
                     r.getRating(),
                     r.getComment()
             );
@@ -96,12 +98,11 @@ public class UserProfileView extends JPanel {
         ProfileReviewsViewModel vm = new ProfileReviewsViewModel();
         vm.setUsername("Connie");
 
-        java.util.List<entity.Review> fakeReviews = new java.util.ArrayList<>();
+        java.util.List<ProfileReviewsViewModel.ReviewRow> fake = new java.util.ArrayList<>();
+        fake.add(new ProfileReviewsViewModel.ReviewRow("Song A", 5, "Loved it!"));
+        fake.add(new ProfileReviewsViewModel.ReviewRow("Song B", 4, "Nice rhythm"));
 
-        fakeReviews.add(new entity.Review(null, "Loved it!", 1, 5, 10));
-        fakeReviews.add(new entity.Review(null, "Nice rhythm", 2, 4, 3));
-
-        vm.setReviews(fakeReviews);
+        vm.setReviews(fake);
 
         // call controller
         ProfileReviewsController controller = new ProfileReviewsController();
