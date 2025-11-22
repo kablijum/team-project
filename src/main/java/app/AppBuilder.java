@@ -73,6 +73,14 @@ public class AppBuilder {
         return this;
     }
 
+
+    public AppBuilder addHomeView() {
+        loggedInViewModel = new LoggedInViewModel();
+        homeView = new HomeView(loggedInViewModel, searchViewModel, searchController);
+        cardPanel.add(homeView, HomeView.VIEW_NAME);
+        return this;
+    }
+
     public AppBuilder addLoginView() {
         loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
