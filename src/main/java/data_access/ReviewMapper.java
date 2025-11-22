@@ -29,7 +29,7 @@ public class ReviewMapper {
         assert reviewJSONObject != null;
         String author = reviewJSONObject.getString(USERNAME);
         String comment = reviewJSONObject.getString(COMMENT);
-        String songid = reviewJSONObject.getString(SONGID);
+        int songid = reviewJSONObject.getInt(SONGID);
         int rating = reviewJSONObject.getInt(RATING);
         int upvotes = reviewJSONObject.getInt(UPVOTES);
         return new Review(author, comment, songid, rating, upvotes);
@@ -37,8 +37,9 @@ public class ReviewMapper {
 
     public JSONObject mapJReviewtoJSON() {
         assert review != null;
+        assert reviewJSONObject != null;
         JSONObject reviewJSON = new JSONObject();
-        reviewJSONObject.put(USERNAME, review.getAuthor());
+        reviewJSONObject.put(USERNAME, review.getUsername());
         reviewJSONObject.put(COMMENT, review.getComment());
         reviewJSONObject.put(SONGID, review.getSong());
         reviewJSONObject.put(RATING, review.getRating());
