@@ -8,8 +8,6 @@ public interface PostReviewSongDataAccessInterface {
 
     void addReview(Review review, int songid);
 
-    int getAverageRating(int songid);
-
     String getSongName(int songid);
 
 }

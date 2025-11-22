@@ -17,17 +17,16 @@ public class Song {
     private int id;
     private final String name;
     private final String artist;
-    private int rating;
+    private double averageRating;
     private List<Review> reviews;
 
     public Song(int id, String name, String artist) {
         this.id = id;
         this.name = name;
         this.artist = artist;
-        this.rating = 0;
         this.reviews = new ArrayList<>();
-    }
 
+    }
     public int getId() {
         return id;
     }
@@ -37,20 +36,25 @@ public class Song {
     public String getArtist() {
         return artist;
     }
-    public double getRating() {
-        return rating;
+    public double getAverageRating() {
+        return averageRating;
     }
     public List<Review> getReviews() {
         return reviews;
     }
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
     public void addReview(Review review) {
         reviews.add(review);
+        updateAverageRating();
     }
     public void deleteReview(Review review) {
         reviews.remove(review);
     }
-
+    public void updateAverageRating() {
+        int sum = 0;
+        for (Review review : reviews) {
+            sum += review.getRating();
+        }
+        double avg = (double) sum / reviews.size();
+        this.averageRating = avg;
+    }
 }
