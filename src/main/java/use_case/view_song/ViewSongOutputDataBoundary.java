@@ -6,5 +6,5 @@ public interface ViewSongOutputDataBoundary {
 
     void prepareSuccessView(ViewSongOutputData postOutputData);
 
-    void prepareNewSongView(PostOutputData postOutputData);
+    void prepareNewSongView(ViewSongOutputData postOutputData);
 }
