@@ -29,16 +29,11 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
     private static final String ADMIN_PASSWORD = "1234";
     private static final String INFO = "info";
 
-    private final Song song;
 
-    public DBSongDataAccessObject(Song song) {
-        this.song = song;
-    }
-
-    public boolean songExists(String songId) {
+    public boolean songExists(int songId) {
         List<Song> songDB = getSongDatabase();
         for (Song songDBItem : songDB) {
-            if (songId.equals(songDBItem.getId())) {
+            if (songId == songDBItem.getId()) {
                 return true;
             }
         }
@@ -59,6 +54,10 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
         requestBody.put(PASSWORD, ADMIN_PASSWORD);
 
         List<Song> songDB = getSongDatabase();
+
+        if (songExists(song.getId())) {
+            songDB.removeIf(s -> s.getId() == song.getId());
+        }
         songDB.add(song);
 
         JSONArray songDBJSON = new JSONArray();
@@ -90,7 +89,6 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
             throw new RuntimeException(ex);
         }
     }
-
 
     public List<Song> getSongDatabase() {
         if (!adminExists()) {
@@ -185,7 +183,7 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
 
     }
     public Song getSong(int songID) {
-        List<Song> songs = getSongDatabase();
+        List<Song> songs = this.getSongDatabase();
         for (Song song : songs) {
             if (song.getId() == songID)
                 return song;
@@ -211,9 +209,10 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
     }
 
     @Override
-    public void addReview (Review review,int songid){
+    public void addReview (Review review,int songid) {
         Song s = getSong(songid);
         s.addReview(review);
+        saveSong(s);
     }
 
     @Override
