@@ -12,6 +12,7 @@ import java.util.Map;
 public class ViewSongInteractor implements ViewSongInputDataBoundary {
     private ViewSongOutputDataBoundary presenter;
     private ViewSongDataAccessInterface dataAccess;
+    private ViewSongNewDataAccessInterface newSongDataAccess;
 
     public ViewSongInteractor(ViewSongOutputDataBoundary presenter,  ViewSongDataAccessInterface dataAccess) {
         this.presenter = presenter;
@@ -19,7 +20,7 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
     }
 
     @Override
-    public void execute(ViewSongInputData inputData) {
+    public void execute(ViewSongInputData inputData){
         int songID = inputData.getSongid();
 
         if(dataAccess.songExists(songID)) {
@@ -44,12 +45,25 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
             outputData.setAverageRating(rating);
             presenter.prepareSuccessView(outputData);
         }
-
         else {
+            List<String> songInfo = null;
+            try {
+                songInfo = newSongDataAccess.getInfo(songID);
+            } catch (Exception e) {
+                throw new RuntimeException("API request failed.");
+            }
 
+            String title = songInfo.get(0);
+            String artist = songInfo.get(1);
+            Song newSong = new Song(songID, title, artist);
+            dataAccess.saveSong(newSong);
+
+            ViewSongOutputData outputData = new ViewSongOutputData(title, artist, songID);
+            outputData.setMessage("Be the first to leave a review!");
+
+            presenter.prepareNewSongView(outputData);
 
         }
-
     }
 
 
