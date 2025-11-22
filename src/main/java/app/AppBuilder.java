@@ -148,7 +148,7 @@ public class AppBuilder {
         searchViewModel = new SearchViewModel();
 
         SearchUserDataAccessInterface dataAccess =
-                new SongDataAccessObject("your_api_token");
+                new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
 
         SearchOutputDataBoundary presenter =
                 new SearchPresenter(searchViewModel);
