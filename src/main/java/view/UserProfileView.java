@@ -97,11 +97,9 @@ public class UserProfileView extends JPanel {
         vm.setUsername("Connie");
 
         java.util.List<entity.Review> fakeReviews = new java.util.ArrayList<>();
-        entity.Song song1 = new entity.Song(1, "Song A", "Artist A");
-        entity.Song song2 = new entity.Song(2, "Song B", "Artist B");
 
-        fakeReviews.add(new entity.Review(null, "Loved it!", song1, 5, 10));
-        fakeReviews.add(new entity.Review(null, "Nice rhythm", song2, 4, 3));
+        fakeReviews.add(new entity.Review(null, "Loved it!", 1, 5, 10));
+        fakeReviews.add(new entity.Review(null, "Nice rhythm", 2, 4, 3));
 
         vm.setReviews(fakeReviews);
 
