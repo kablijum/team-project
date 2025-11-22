@@ -6,17 +6,18 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import use_case.post_review.PostReviewSongDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 /**
  * The DAO for song data.
  * Song data structure: {"username": "songdata", "password": "1234", "info": [{"id": , "name": "", "artist": "", "rating": , "reviews": []}]}
  */
-public class DBSongDataAccessObject {
+public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -28,16 +29,10 @@ public class DBSongDataAccessObject {
     private static final String ADMIN_PASSWORD = "1234";
     private static final String INFO = "info";
 
-    private final Song song;
-
-    public DBSongDataAccessObject(Song song) {
-        this.song = song;
-    }
-
-    public boolean songExists(String songId) {
+    public boolean songExists(int songId) {
         List<Song> songDB = getSongDatabase();
         for (Song songDBItem : songDB) {
-            if (songId.equals(songDBItem.getId())) {
+            if (songId == songDBItem.getId()) {
                 return true;
             }
         }
@@ -58,6 +53,10 @@ public class DBSongDataAccessObject {
         requestBody.put(PASSWORD, ADMIN_PASSWORD);
 
         List<Song> songDB = getSongDatabase();
+
+        if (songExists(song.getId())) {
+            songDB.removeIf(s -> s.getId() == song.getId());
+        }
         songDB.add(song);
 
         JSONArray songDBJSON = new JSONArray();
@@ -182,4 +181,34 @@ public class DBSongDataAccessObject {
             throw new RuntimeException(ex);
         }
     }
+
+    @Override
+    public boolean existsByUsername (String username, int songid){
+        Song song = getSongByID(songid);
+        for (Review review : song.getReviews()) {
+            if (review.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void addReview (Review review,int songid) {
+        Song s = getSongByID(songid);
+        s.addReview(review);
+        saveSong(s);
+    }
+
+    @Override
+    public Song getSongByID(int songID) {
+        List<Song> songs = this.getSongDatabase();
+        for (Song song : songs) {
+            if (song.getId() == songID)
+                return song;
+        }
+        throw new RuntimeException("Song with ID " + songID + " not found.");
+    }
+
+
 }
