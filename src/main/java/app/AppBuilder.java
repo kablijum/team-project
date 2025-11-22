@@ -1,12 +1,9 @@
 package app;
 
-import data_access.FileUserDataAccessObject;
 import data_access.SongDataAccessObject;
 import data_access.DBUserDataAccessObject;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
-import interface_adapter.logged_in.ChangePasswordController;
-import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -62,6 +59,8 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private HomeView homeView;
     private LoginView loginView;
+    private SearchViewModel searchViewModel;
+    private SearchController searchController;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -153,11 +152,10 @@ public class AppBuilder {
         return application;
     }
     public AppBuilder addSearchUseCase() {
-
-        SearchViewModel searchViewModel = new SearchViewModel();
+        searchViewModel = new SearchViewModel();
 
         SearchUserDataAccessInterface dataAccess =
-                new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
+                new SongDataAccessObject("your_api_token");
 
         SearchOutputDataBoundary presenter =
                 new SearchPresenter(searchViewModel);
@@ -165,10 +163,10 @@ public class AppBuilder {
         SearchInputDataBoundary interactor =
                 new SearchInteractor(dataAccess, presenter);
 
-        SearchController searchController = new SearchController(interactor);
+        searchController = new SearchController(interactor);
 
-        loggedInView.setSearchController(searchController);
-        loggedInView.setSearchViewModel(searchViewModel);
+        homeView.setSearchController(searchController);
+        homeView.setSearchViewModel(searchViewModel);
 
         return this;
     }
