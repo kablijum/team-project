@@ -1,14 +1,36 @@
 package interface_adapter.view_profile_reviews;
 
-import entity.Review;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileReviewsViewModel {
 
+    public static class ReviewRow {
+        private final String songTitle;
+        private final int rating;
+        private final String comment;
+
+        public ReviewRow(String songTitle, int rating, String comment) {
+            this.songTitle = songTitle;
+            this.rating = rating;
+            this.comment = comment;
+        }
+
+        public String getSongTitle() {
+            return songTitle;
+        }
+
+        public int getRating() {
+            return rating;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+    }
+
     private String username;
-    private final List<Review> reviews = new ArrayList<>();
+    private final List<ReviewRow> reviews = new ArrayList<>();
 
     public String getUsername() {
         return username;
@@ -18,11 +40,11 @@ public class ProfileReviewsViewModel {
         this.username = username;
     }
 
-    public List<Review> getReviews() {
+    public List<ReviewRow> getReviews() {
         return new ArrayList<>(reviews);
     }
 
-    public void setReviews(List<Review> reviews) {
+    public void setReviews(List<ReviewRow> reviews) {
         this.reviews.clear();
         if (reviews != null) {
             this.reviews.addAll(reviews);
