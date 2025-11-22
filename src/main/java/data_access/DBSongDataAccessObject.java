@@ -6,6 +6,7 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import use_case.post_review.PostReviewSongDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Set;
  * The DAO for song data.
  * Song data structure: {"username": "songdata", "password": "1234", "info": [{"id": , "name": "", "artist": "", "rating": , "reviews": []}]}
  */
-public class DBSongDataAccessObject {
+public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -181,5 +182,52 @@ public class DBSongDataAccessObject {
         catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
+
     }
+    public Song getSong(int songID) {
+        List<Song> songs = getSongDatabase();
+        for (Song song : songs) {
+            if (song.getId() == songID)
+                return song;
+        }
+        return null;
+    }
+
+    /**
+     * Check to see if user has already left a review for this song
+     * @param username
+     * @param songid
+     * @return
+     */
+    @Override
+    public boolean existsByUsername (String username, int songid){
+        Song song = getSong(songid);
+        for (Review review : song.getReviews()) {
+            if (review.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        throw new RuntimeException("Song with ID " + songid + " not found.");
+    }
+
+    @Override
+    public void addReview (Review review,int songid){
+        Song s = getSong(songid);
+        s.addReview(review);
+    }
+
+    @Override
+    public String getSongName (int songid){
+        Song song  = getSong(songid);
+        return song.getName();
+
+
+    }
+
+
+
+
+
+
 }
+
