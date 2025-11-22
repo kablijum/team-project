@@ -80,13 +80,6 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addHomeView() {
-        loggedInViewModel = new LoggedInViewModel();
-        homeView = new HomeView(loggedInViewModel);
-        cardPanel.add(homeView, HomeView.VIEW_NAME);
-        return this;
-    }
-
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
                 signupViewModel, loginViewModel);
@@ -165,9 +158,13 @@ public class AppBuilder {
 
         searchController = new SearchController(interactor);
 
-        homeView.setSearchController(searchController);
-        homeView.setSearchViewModel(searchViewModel);
+        homeView = new HomeView(
+                loggedInViewModel,
+                searchViewModel,
+                searchController
+        );
 
+        cardPanel.add(homeView, HomeView.VIEW_NAME);
         return this;
     }
 
