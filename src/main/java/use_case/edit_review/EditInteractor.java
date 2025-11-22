@@ -8,7 +8,8 @@ public class EditInteractor implements EditInputDataBoundry{
     private final EditReviewSongDataAccessInterface songData;
     private final EditOutputDataBoundry editPresenter;
 
-    public EditInteractor(EditReviewUserDataAccesssInterface userData, EditReviewSongDataAccessInterface songData, EditOutputDataBoundry editPresenter){
+    public EditInteractor(EditReviewUserDataAccesssInterface userData, EditReviewSongDataAccessInterface songData,
+                          EditOutputDataBoundry editPresenter){
         this.userData = userData;
         this.songData = songData;
         this.editPresenter = editPresenter;
@@ -33,7 +34,7 @@ public class EditInteractor implements EditInputDataBoundry{
             userData.updateReview(updatedReview, username);
             songData.updateReview(updatedReview, songId);
 
-            int newAverage = songData.getAverageRating(songId);
+            double newAverage = songData.getAverageRating(songId);
             String songName = songData.getSongName(songId);
 
             EditOutputData data = new EditOutputData(comment, newAverage, username, songId, songName);
