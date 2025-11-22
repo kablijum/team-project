@@ -180,34 +180,35 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
             throw new RuntimeException(ex);
         }
 
+
     }
 
     @Override
     public boolean existsByUsername (String username, int songid){
-        Song song = getSongbyID(songid);
+        Song song = getSongByID(songid);
         for (Review review : song.getReviews()) {
             if (review.getUsername().equals(username)) {
                 return true;
             }
         }
-        throw new RuntimeException("Song with ID " + songid + " not found.");
+        return false;
     }
 
     @Override
     public void addReview (Review review,int songid) {
-        Song s = getSongbyID(songid);
+        Song s = getSongByID(songid);
         s.addReview(review);
         saveSong(s);
     }
 
     @Override
-    public Song getSongByID(int songid) {
+    public Song getSongByID(int songID) {
         List<Song> songs = this.getSongDatabase();
         for (Song song : songs) {
-            if (song.getId() == songid)
+            if (song.getId() == songID)
                 return song;
         }
-        return null;
+        throw new RuntimeException("Song with ID " + songID + " not found.");
     }
 
 

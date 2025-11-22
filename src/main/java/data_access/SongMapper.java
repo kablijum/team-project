@@ -41,7 +41,7 @@ public class SongMapper {
         for (int i = 0; i < reviews.length(); i++) {
             mappedSong.addReview(new ReviewMapper(reviews.getJSONObject(i)).mapJSONtoReview());
         }
-        mappedSong.setRating(rating);
+
         return mappedSong;
     }
 
