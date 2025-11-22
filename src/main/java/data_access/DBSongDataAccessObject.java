@@ -11,7 +11,6 @@ import use_case.post_review.PostReviewSongDataAccessInterface;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The DAO for song data.
@@ -182,24 +181,10 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
         }
 
     }
-    public Song getSong(int songID) {
-        List<Song> songs = this.getSongDatabase();
-        for (Song song : songs) {
-            if (song.getId() == songID)
-                return song;
-        }
-        return null;
-    }
 
-    /**
-     * Check to see if user has already left a review for this song
-     * @param username
-     * @param songid
-     * @return
-     */
     @Override
     public boolean existsByUsername (String username, int songid){
-        Song song = getSong(songid);
+        Song song = getSongbyID(songid);
         for (Review review : song.getReviews()) {
             if (review.getUsername().equals(username)) {
                 return true;
@@ -210,22 +195,20 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
 
     @Override
     public void addReview (Review review,int songid) {
-        Song s = getSong(songid);
+        Song s = getSongbyID(songid);
         s.addReview(review);
         saveSong(s);
     }
 
     @Override
-    public String getSongName (int songid){
-        Song song  = getSong(songid);
-        return song.getName();
-
-
+    public Song getSongByID(int songid) {
+        List<Song> songs = this.getSongDatabase();
+        for (Song song : songs) {
+            if (song.getId() == songid)
+                return song;
+        }
+        return null;
     }
-
-
-
-
 
 
 }

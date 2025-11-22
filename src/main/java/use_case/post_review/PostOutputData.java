@@ -3,12 +3,12 @@ package use_case.post_review;
 public class PostOutputData {
 
     private final String comment;
-    private final int rating;
+    private final double rating;
     private final String username;
     private final int songid;
     private final String songname;
 
-    public PostOutputData(String comment, int rating, String username, String song, int songid) {
+    public PostOutputData(String comment, double rating, String username, String song, int songid) {
         this.comment = comment;
         this.rating = rating;
         this.username = username;
@@ -20,7 +20,7 @@ public class PostOutputData {
     public String getComment() {
         return comment;
     }
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
     public String getUsername() {
