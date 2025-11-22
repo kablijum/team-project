@@ -12,7 +12,6 @@ public class Song {
      * @param artist song artist
      * @param rating song rating (1-5)
      * @param reviews list of the song's reviews
-     * @throws IllegalArgumentException if the password or name are empty
      */
     private int id;
     private final String name;
