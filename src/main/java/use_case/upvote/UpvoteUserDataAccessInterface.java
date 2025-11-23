@@ -3,7 +3,7 @@ package use_case.upvote;
 import entity.Review;
 import entity.User;
 
-public interface UpvoteDataAccessInterface {
+public interface UpvoteUserDataAccessInterface {
     /**
      * Checks if the given username exists.
      * @param user the username of the user upvoting a review.
