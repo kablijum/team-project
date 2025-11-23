@@ -211,10 +211,14 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     @Override
-    public void upvoteReview(String username, Review upvotedReview) {
-        User upvotedUser = this.get(username);
-        upvotedReview.addUpvote();
-        upvotedUser.upvoteReview(upvotedReview);
+    public void upvoteReview(User upvotedUser, Review upvotedReview) {
+        if (upvotedUser.hasUpvoted(upvotedReview)) {
+            upvotedUser.removeUpvote(upvotedReview);
+        }
+        else {
+            upvotedReview.addUpvote();
+            upvotedUser.upvoteReview(upvotedReview);
+        }
 
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();

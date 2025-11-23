@@ -2,6 +2,7 @@ package data_access;
 
 import entity.Review;
 import entity.Song;
+import entity.User;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -192,11 +193,15 @@ public class DBSongDataAccessObject implements UpvoteDataAccessInterface {
     }
 
     @Override
-    public void upvoteReview(String username, Review upvotedreview) {
+    public void upvoteReview(User user, Review upvotedreview) {
         upvotedreview.addUpvote();
         Song reviewedSong = this.getSongByID(upvotedreview.getSongID());
-        reviewedSong.upvote(upvotedreview);
+        if (user.hasUpvoted(upvotedreview)) {
+            reviewedSong.removeUpvote(upvotedreview);
+        }
+        else {
+            reviewedSong.upvote(upvotedreview);
+        }
         this.saveSong(reviewedSong);
         }
     }
-}

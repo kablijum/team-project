@@ -10,6 +10,6 @@ public class UpvoteInteractor implements UpvoteInputBoundary {
     }
     @Override
     public void execute(UpvoteInputData upvoteInputData) {
-        upvoteDataAccessObject.upvoteReview(upvoteInputData.getUserName(), upvoteInputData.getReview());
+        upvoteDataAccessObject.upvoteReview(upvoteInputData.getUser(), upvoteInputData.getReview());
     }
 }
