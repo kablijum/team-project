@@ -51,5 +51,15 @@ public class Song {
     public void deleteReview(Review review) {
         reviews.remove(review);
     }
+    public void upvote(Review review) {
+        List<Review> reviews = this.getReviews();
+        this.reviews = new ArrayList<>();
+        for (Review songreview : reviews) {
+            if (songreview.getUsername().equals(review.getUsername())) {
+                songreview.addUpvote();
+            }
+            this.addReview(songreview);
+        }
+    }
 
 }

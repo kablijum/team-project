@@ -11,6 +11,7 @@ import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.upvote.UpvoteDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ import java.util.Set;
 public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                                                LoginUserDataAccessInterface,
                                                ChangePasswordUserDataAccessInterface,
-                                               LogoutUserDataAccessInterface {
+                                               LogoutUserDataAccessInterface,
+                                                UpvoteDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -191,6 +193,65 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                                     .method("PUT", body)
                                     .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
                                     .build();
+        try {
+            final Response response = client.newCall(request).execute();
+
+            final JSONObject responseBody = new JSONObject(response.body().string());
+
+            if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
+                // success!
+            }
+            else {
+                throw new RuntimeException(responseBody.getString(MESSAGE));
+            }
+        }
+        catch (IOException | JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void upvoteReview(String username, Review upvotedReview) {
+        User upvotedUser = this.get(username);
+        upvotedReview.addUpvote();
+        upvotedUser.upvoteReview(upvotedReview);
+
+        final OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+
+        // PUT METHOD
+        final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
+        final JSONObject requestBody = new JSONObject();
+        requestBody.put(USERNAME, upvotedUser.getUsername());
+        requestBody.put(PASSWORD, upvotedUser.getPassword());
+        requestBody.put(INFO, new JSONObject());
+
+        // Make writtenReviews and upvotedReviews a JSONArray and put it in requestBody
+        List<Review> writtenReviews = upvotedUser.getWrittenReviews();
+        JSONArray writtenReviewsJSONArray = new JSONArray();
+        for (Review review : writtenReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject writtenReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            writtenReviewsJSONArray.put(writtenReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(WRITTENREVIEWS, new JSONArray(writtenReviewsJSONArray));
+
+        Set<Review> upvotedReviews  = upvotedUser.getUpvotedReviews();
+        JSONArray upvotedReviewsJSONArray = new JSONArray();
+        for (Review review : upvotedReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject upvotedReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            upvotedReviewsJSONArray.put(upvotedReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(UPVOTEDREVIEWS, new JSONArray(upvotedReviewsJSONArray));
+
+
+        final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
+        final Request request = new Request.Builder()
+                .url("http://vm003.teach.cs.toronto.edu:20112/user")
+                .method("PUT", body)
+                .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
+                .build();
         try {
             final Response response = client.newCall(request).execute();
 

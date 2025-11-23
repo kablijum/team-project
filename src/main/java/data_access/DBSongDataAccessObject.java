@@ -6,6 +6,7 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import use_case.upvote.UpvoteDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Set;
  * The DAO for song data.
  * Song data structure: {"username": "songdata", "password": "1234", "info": [{"id": , "name": "", "artist": "", "rating": , "reviews": []}]}
  */
-public class DBSongDataAccessObject {
+public class DBSongDataAccessObject implements UpvoteDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -58,6 +59,13 @@ public class DBSongDataAccessObject {
         requestBody.put(PASSWORD, ADMIN_PASSWORD);
 
         List<Song> songDB = getSongDatabase();
+        int songIndex = 0;
+        for (Song songDBItem : songDB) {
+            if (songDBItem.getId() == song.getId()) {
+                songDB.set(songIndex, song);
+            }
+            songIndex++;
+        }
         songDB.add(song);
 
         JSONArray songDBJSON = new JSONArray();
@@ -180,6 +188,15 @@ public class DBSongDataAccessObject {
         }
         catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void upvoteReview(String username, Review upvotedreview) {
+        upvotedreview.addUpvote();
+        Song reviewedSong = this.getSongByID(upvotedreview.getSongID());
+        reviewedSong.upvote(upvotedreview);
+        this.saveSong(reviewedSong);
         }
     }
 }
