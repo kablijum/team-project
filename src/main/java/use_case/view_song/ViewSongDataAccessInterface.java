@@ -9,5 +9,7 @@ public interface ViewSongDataAccessInterface {
 
     Song getSongById(int songID);
 
+    void saveSong(Song song);
+
 }
 
