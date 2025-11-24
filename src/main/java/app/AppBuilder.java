@@ -17,8 +17,10 @@ import interface_adapter.search.SearchViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
+import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -32,10 +34,7 @@ import use_case.search.SearchInputDataBoundary;
 import use_case.search.SearchInteractor;
 import use_case.search.SearchOutputDataBoundary;
 import use_case.search.SearchUserDataAccessInterface;
-import use_case.view_song.ViewSongInputDataBoundary;
-import use_case.view_song.ViewSongInteractor;
-import use_case.view_song.ViewSongOutputDataBoundary;
-import use_case.view_song.ViewSongDataAccessInterface;
+import use_case.view_song.*;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
@@ -43,6 +42,7 @@ import view.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -136,30 +136,6 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addViewSongUseCase() {
-
-        viewSongViewModel = new ViewSongViewModel();
-
-        ViewSongDataAccessInterface viewSongDataAccess =
-                  new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
-
-        ViewSongOutputDataBoundary viewSongPresenter =
-                new ViewSongPresenter(viewSongViewModel, viewManagerModel);
-
-        ViewSongInputDataBoundary interactor =
-                new ViewSongInteractor(viewSongPresenter, viewSongDataAccess);
-
-        songProfileView = new SongProfileView(
-                new interface_adapter.view_song.ViewSongController(interactor),
-                viewSongViewModel,
-                postController,
-                loginViewModel
-        );
-
-        cardPanel.add(songProfileView, "song profile");
-
-        return this;
-    }
 
     public AppBuilder addSearchUseCase() {
         searchViewModel = new SearchViewModel();
