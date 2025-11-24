@@ -4,13 +4,13 @@ public class PostState {
     private String comment = "";
     private String username = "";
     private String songname = "";
-    private int rating;
+    private double rating;
     private String errorMessage;
 
     public void setComment(String comment){
         this.comment = comment;
     }
-    public void setRating(int rating){
+    public void setRating(double rating){
         this.rating = rating;
     }
     public void setUsername(String username){
@@ -25,7 +25,7 @@ public class PostState {
     public String getComment(){
         return comment;
     }
-    public int getRating(){
+    public double getRating(){
         return rating;
     }
     public String getUsername(){
