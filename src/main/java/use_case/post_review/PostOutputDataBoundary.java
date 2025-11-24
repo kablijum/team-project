@@ -5,5 +5,5 @@ public interface PostOutputDataBoundary {
 
     void prepareSuccessView(PostOutputData postOutputData);
 
-    void prepareFailView( String errorMessage);
+    void prepareFailView(String errorMessage);
 }
