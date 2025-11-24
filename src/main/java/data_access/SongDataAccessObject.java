@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import entity.Song;
 import use_case.search.SearchUserDataAccessInterface;
+import use_case.view_song.ViewSongNewDataAccessInterface;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -14,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongDataAccessObject implements SearchUserDataAccessInterface {
+public class SongDataAccessObject implements SearchUserDataAccessInterface, ViewSongNewDataAccessInterface {
 
     private static final int SUCCESS_CODE = 200;
     private static final String AUTH_HEADER = "Authorization";
@@ -26,6 +27,7 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface {
     private static final String TITLE = "title";
     private static final String PRIMARY_ARTIST = "primary_artist";
     private static final String NAME = "name";
+    private static final String SONG = "song";
 
     private final String token;
 
@@ -71,5 +73,31 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface {
         }
 
         return results;
+    }
+
+    @Override
+    public List<String> getInfo(int songID) throws Exception {
+        URL url = new URL("https://api.genius.com/songs/" + songID);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty(AUTH_HEADER, BEARER + token);
+
+        int status = conn.getResponseCode();
+        if (status != SUCCESS_CODE) {
+            throw new RuntimeException("API request failed. Status code: " + status);
+        }
+
+        InputStreamReader reader = new InputStreamReader(conn.getInputStream());
+        JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+
+        JsonObject song =  json.getAsJsonObject(RESPONSE).getAsJsonObject(SONG);
+
+        List<String> info = new ArrayList<>(2);
+        String title =  song.get(TITLE).getAsString();
+        String artist = song.get(PRIMARY_ARTIST).getAsJsonObject().get(NAME).getAsString();
+        info.add(title);
+        info.add(artist);
+
+        return info;
     }
 }
