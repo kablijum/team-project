@@ -2,10 +2,13 @@ package data_access;
 
 import entity.Review;
 import entity.Song;
+import entity.User;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import use_case.upvote.UpvoteSongDataAccessInterface;
+import use_case.upvote.UpvoteUserDataAccessInterface;
 import use_case.post_review.PostReviewSongDataAccessInterface;
 import use_case.view_song.ViewSongDataAccessInterface;
 
@@ -18,7 +21,9 @@ import java.util.List;
  * The DAO for song data.
  * Song data structure: {"username": "songdata", "password": "1234", "info": [{"id": , "name": "", "artist": "", "rating": , "reviews": []}]}
  */
-public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface, ViewSongDataAccessInterface {
+public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface, 
+                                               PostReviewSongDataAccessInterface, 
+                                               ViewSongDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -192,6 +197,19 @@ public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface
     }
 
     @Override
+    public void upvoteReview(User user, Review upvotedreview) {
+        upvotedreview.addUpvote();
+        Song reviewedSong = this.getSongByID(upvotedreview.getSongID());
+        if (user.hasUpvoted(upvotedreview)) {
+            reviewedSong.removeUpvote(upvotedreview);
+        }
+        else {
+            reviewedSong.upvote(upvotedreview);
+        }
+        this.saveSong(reviewedSong);
+        }
+    }
+
     public boolean existsByUsername (String username, int songid){
         Song song = getSongByID(songid);
         for (Review review : song.getReviews()) {
