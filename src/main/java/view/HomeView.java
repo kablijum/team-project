@@ -3,6 +3,9 @@ package view;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.search.SearchController;
 import interface_adapter.search.SearchViewModel;
+import interface_adapter.view_song.ViewSongState;
+import interface_adapter.view_song.ViewSongViewModel;
+import interface_adapter.ViewManagerModel;
 import use_case.search.SearchOutputData;
 
 import javax.swing.*;
@@ -21,6 +24,8 @@ public class HomeView extends JPanel implements PropertyChangeListener {
     private final LoggedInViewModel loggedInViewModel;
     private final SearchViewModel searchViewModel;
     private final SearchController searchController;
+    private final ViewSongViewModel viewSongViewModel;
+    private final ViewManagerModel viewManagerModel;
 
     private final JTextField searchField;
     private final JButton searchButton;
@@ -28,11 +33,15 @@ public class HomeView extends JPanel implements PropertyChangeListener {
 
     public HomeView(LoggedInViewModel loggedInViewModel,
                     SearchViewModel searchViewModel,
-                    SearchController searchController) {
+                    SearchController searchController,
+                    ViewSongViewModel viewSongViewModel,
+                    ViewManagerModel viewManagerModel) {
 
         this.loggedInViewModel = loggedInViewModel;
         this.searchViewModel = searchViewModel;
         this.searchController = searchController;
+        this.viewSongViewModel = viewSongViewModel;
+        this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
         this.searchViewModel.addPropertyChangeListener(this);
 
@@ -120,11 +129,25 @@ public class HomeView extends JPanel implements PropertyChangeListener {
         dropdownMenu.removeAll();
 
         for (SearchOutputData.SongResult r : results) {
-            JMenuItem item = new JMenuItem(r.getName() + " - " + r.getArtist());
+            JMenuItem item = new JMenuItem(r.getName() + " — " + r.getArtist());
+
             item.addActionListener(e -> {
-                searchField.setText(r.getName());
                 dropdownMenu.setVisible(false);
+
+                // Prepare view song state
+                ViewSongState newState = new ViewSongState();
+                newState.setSongId(r.getId());
+                newState.setSongName(r.getName());
+                newState.setArtistName(r.getArtist());
+
+                viewSongViewModel.setState(newState);
+                viewSongViewModel.firePropertyChanged();
+
+                // Navigate to SongProfileView
+                viewManagerModel.setState("song profile");
+                viewManagerModel.firePropertyChange();
             });
+
             dropdownMenu.add(item);
         }
 
@@ -151,5 +174,4 @@ public class HomeView extends JPanel implements PropertyChangeListener {
             showDropdown(results);
         }
     }
-
 }

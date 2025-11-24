@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import entity.Song;
 import use_case.search.SearchUserDataAccessInterface;
-import use_case.view_song.ViewSongNewDataAccessInterface;
+import use_case.view_song.ViewSongDataAccessInterface;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongDataAccessObject implements SearchUserDataAccessInterface, ViewSongNewDataAccessInterface {
+public class SongDataAccessObject implements SearchUserDataAccessInterface, ViewSongDataAccessInterface {
 
     private static final int SUCCESS_CODE = 200;
     private static final String AUTH_HEADER = "Authorization";
@@ -37,7 +37,6 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface, View
 
     @Override
     public List<Song> search(String query) throws Exception {
-
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         String endpoint = "https://api.genius.com/search?q=" + encodedQuery;
 
@@ -45,23 +44,17 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface, View
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestProperty(AUTH_HEADER, BEARER + token);
 
-        // ====== Check status code FIRST ======
         int status = conn.getResponseCode();
         if (status != SUCCESS_CODE) {
             throw new RuntimeException("API request failed. Status code: " + status);
         }
 
-        // ====== Safe to read InputStream ONLY IF success ======
         InputStreamReader reader = new InputStreamReader(conn.getInputStream());
         JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
-
-        JsonArray hits = json
-                .getAsJsonObject(RESPONSE)
-                .getAsJsonArray(HITS);
+        JsonArray hits = json.getAsJsonObject(RESPONSE).getAsJsonArray(HITS);
 
         List<Song> results = new ArrayList<>();
 
-        // Parse all songs
         for (var hit : hits) {
             JsonObject result = hit.getAsJsonObject().getAsJsonObject(RESULT);
 
@@ -90,14 +83,26 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface, View
         InputStreamReader reader = new InputStreamReader(conn.getInputStream());
         JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
 
-        JsonObject song =  json.getAsJsonObject(RESPONSE).getAsJsonObject(SONG);
+        JsonObject song = json.getAsJsonObject(RESPONSE).getAsJsonObject(SONG);
 
         List<String> info = new ArrayList<>(2);
-        String title =  song.get(TITLE).getAsString();
-        String artist = song.get(PRIMARY_ARTIST).getAsJsonObject().get(NAME).getAsString();
-        info.add(title);
-        info.add(artist);
+        info.add(song.get(TITLE).getAsString());
+        info.add(song.get(PRIMARY_ARTIST).getAsJsonObject().get(NAME).getAsString());
 
         return info;
+    }
+
+    @Override
+    public boolean songExists(int songID) {
+        return false;
+    }
+
+    @Override
+    public Song getSongById(int songID) {
+        return null;
+    }
+
+    @Override
+    public void saveSong(Song song) {
     }
 }
