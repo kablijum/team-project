@@ -48,6 +48,30 @@ public class Song {
     public void deleteReview(Review review) {
         reviews.remove(review);
     }
+    public void upvote(Review review) {
+        // Update the upvoted review under this song
+        assert this.getId() == review.getSongID();
+        List<Review> reviews = this.getReviews();
+        this.reviews = new ArrayList<>();
+        for (Review songreview : reviews) {
+            if (songreview.getUsername().equals(review.getUsername())) {
+                songreview.addUpvote();
+            }
+            this.addReview(songreview);
+        }
+    }
+    public void removeUpvote(Review review) {
+        // Remove the upvote of the review written about this song
+        assert this.getId() == review.getSongID();
+        List<Review> reviews = this.getReviews();
+        this.reviews = new ArrayList<>();
+        for (Review songreview : reviews) {
+            if (songreview.getUsername().equals(review.getUsername())) {
+                songreview.removeUpvote();
+            }
+            this.addReview(songreview);
+        }
+    }
 
     public void updateAverageRating() {
         int sum = 0;

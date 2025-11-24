@@ -1,4 +1,11 @@
 package interface_adapter.upvote_review;
 
-public class UpvotePresenter {
+import use_case.upvote.UpvoteOutputData;
+import use_case.upvote.UpvoteOutputDataBoundary;
+
+public class UpvotePresenter implements UpvoteOutputDataBoundary {
+
+    @Override
+    public void prepareSuccessView(UpvoteOutputData outputData) {
+    }
 }
