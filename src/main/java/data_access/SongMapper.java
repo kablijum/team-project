@@ -41,7 +41,6 @@ public class SongMapper {
         for (int i = 0; i < reviews.length(); i++) {
             mappedSong.addReview(new ReviewMapper(reviews.getJSONObject(i)).mapJSONtoReview());
         }
-        mappedSong.setRating(rating);
         return mappedSong;
     }
 
@@ -51,7 +50,7 @@ public class SongMapper {
         mappedJSON.put(SONGID, song.getId());
         mappedJSON.put(NAME, song.getName());
         mappedJSON.put(ARTIST, song.getArtist());
-        mappedJSON.put(RATING, song.getRating());
+        mappedJSON.put(RATING, song.getAverageRating());
         mappedJSON.put(REVIEWS, new JSONArray());
 
         for (Review review : song.getReviews()) {
