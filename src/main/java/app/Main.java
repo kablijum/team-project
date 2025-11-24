@@ -12,7 +12,6 @@ public class Main {
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addSearchUseCase()
-                .addViewSongUseCase()
                 //.addChangePasswordUseCase()
                 .build();
 
