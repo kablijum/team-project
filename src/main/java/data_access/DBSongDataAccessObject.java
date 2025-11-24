@@ -54,7 +54,7 @@ public class DBSongDataAccessObject implements ViewSongDataAccessInterface {
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
 
-        // POST METHOD
+        // Put METHOD
         final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
         final JSONObject requestBody = new JSONObject();
         requestBody.put(USERNAME, ADMIN);
@@ -73,7 +73,7 @@ public class DBSongDataAccessObject implements ViewSongDataAccessInterface {
         final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
         final Request request = new Request.Builder()
                 .url("http://vm003.teach.cs.toronto.edu:20112/user")
-                .method("POST", body)
+                .method("PUT", body)
                 .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
                 .build();
         try {
