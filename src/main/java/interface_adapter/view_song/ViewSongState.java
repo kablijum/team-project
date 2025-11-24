@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class ViewSongState {
     private Map<String, Object> reviews;
-    private int averageRating;
+    private double averageRating;
     private String songName;
     private String artist;
     private String message; // "Be the first to leave a review!"
@@ -16,10 +16,10 @@ public class ViewSongState {
     public void setReviews(Map<String, Object> reviews) {
         this.reviews = reviews;
     }
-    public int getAverageRating() {
+    public double getAverageRating() {
         return averageRating;
     }
-    public void setAverageRating(int averageRating) {
+    public void setAverageRating(double averageRating) {
         this.averageRating = averageRating;
     }
     public String getSongName() {

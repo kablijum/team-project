@@ -1,6 +1,5 @@
 package view;
 
-import entity.Review;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 
@@ -18,7 +17,7 @@ public class UserProfileView extends JPanel {
     private final JLabel usernameLabel = new JLabel();
 
     private final JLabel myReviewsLabel = new JLabel("My Reviews:");
-    private final JButton deleteButton = new JButton("Delete");
+    private final JButton editButton = new JButton("Edit");
 
     private final DefaultListModel<String> reviewListModel = new DefaultListModel<>();
     private final JList<String> reviewList = new JList<>(reviewListModel);
@@ -42,10 +41,10 @@ public class UserProfileView extends JPanel {
         topBar.add(logoutButton, BorderLayout.EAST);
         add(topBar, BorderLayout.NORTH);
 
-        // Middle：My Reviews:      [Delete]
+        // Middle：My Reviews:      [Edit]
         JPanel middleBar = new JPanel(new BorderLayout());
         middleBar.add(myReviewsLabel, BorderLayout.WEST);
-        middleBar.add(deleteButton, BorderLayout.EAST);
+        middleBar.add(editButton, BorderLayout.EAST);
 
         // Reviews List
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -60,13 +59,13 @@ public class UserProfileView extends JPanel {
         // call controller
         backButton.addActionListener(e -> controller.goBackToHome());
         logoutButton.addActionListener(e -> controller.logout());
-        deleteButton.addActionListener(e -> {
+        editButton.addActionListener(e -> {
             int index = reviewList.getSelectedIndex();
             if (index >= 0) {
-                controller.deleteReviewAt(index);
+                controller.editReviewAt(index);
             } else {
                 JOptionPane.showMessageDialog(this,
-                        "Please select a review to delete.",
+                        "Please select a review to edit.",
                         "No review selected",
                         JOptionPane.WARNING_MESSAGE);
             }

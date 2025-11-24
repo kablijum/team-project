@@ -1,6 +1,7 @@
 package use_case.post_review;
 
 import entity.Review;
+import entity.Song;
 
 public interface PostReviewSongDataAccessInterface {
 
@@ -8,8 +9,5 @@ public interface PostReviewSongDataAccessInterface {
 
     void addReview(Review review, int songid);
 
-    int getAverageRating(int songid);
-
-    String getSongName(int songid);
-
+    Song getSongByID(int songid);
 }

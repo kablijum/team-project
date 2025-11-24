@@ -6,17 +6,19 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import use_case.post_review.PostReviewSongDataAccessInterface;
+import use_case.view_song.ViewSongDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 /**
  * The DAO for song data.
  * Song data structure: {"username": "songdata", "password": "1234", "info": [{"id": , "name": "", "artist": "", "rating": , "reviews": []}]}
  */
-public class DBSongDataAccessObject {
+public class DBSongDataAccessObject implements PostReviewSongDataAccessInterface, ViewSongDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -34,16 +36,18 @@ public class DBSongDataAccessObject {
         this.song = song;
     }
 
-    public boolean songExists(String songId) {
+    @Override
+    public boolean songExists(int songId) {
         List<Song> songDB = getSongDatabase();
         for (Song songDBItem : songDB) {
-            if (songId.equals(songDBItem.getId())) {
+            if (songId == songDBItem.getId()) {
                 return true;
             }
         }
         return false;
     }
 
+    @Override
     public void saveSong(Song song) {
         if (!adminExists()) {
             createAdmin();
@@ -51,13 +55,17 @@ public class DBSongDataAccessObject {
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
 
-        // POST METHOD
+        // Put METHOD
         final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
         final JSONObject requestBody = new JSONObject();
         requestBody.put(USERNAME, ADMIN);
         requestBody.put(PASSWORD, ADMIN_PASSWORD);
 
         List<Song> songDB = getSongDatabase();
+
+        if (songExists(song.getId())) {
+            songDB.removeIf(s -> s.getId() == song.getId());
+        }
         songDB.add(song);
 
         JSONArray songDBJSON = new JSONArray();
@@ -70,7 +78,7 @@ public class DBSongDataAccessObject {
         final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
         final Request request = new Request.Builder()
                 .url("http://vm003.teach.cs.toronto.edu:20112/user")
-                .method("POST", body)
+                .method("PUT", body)
                 .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
                 .build();
         try {
@@ -182,4 +190,34 @@ public class DBSongDataAccessObject {
             throw new RuntimeException(ex);
         }
     }
+
+    @Override
+    public boolean existsByUsername (String username, int songid){
+        Song song = getSongByID(songid);
+        for (Review review : song.getReviews()) {
+            if (review.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void addReview (Review review,int songid) {
+        Song s = getSongByID(songid);
+        s.addReview(review);
+        saveSong(s);
+    }
+
+    @Override
+    public Song getSongByID(int songID) {
+        List<Song> songs = this.getSongDatabase();
+        for (Song song : songs) {
+            if (song.getId() == songID)
+                return song;
+        }
+        throw new RuntimeException("Song with ID " + songID + " not found.");
+    }
+
+
 }
