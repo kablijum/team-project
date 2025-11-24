@@ -138,7 +138,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
                 ViewSongState newState = new ViewSongState();
                 newState.setSongId(r.getId());
                 newState.setSongName(r.getName());
-                newState.setArtistName(r.getArtist());
+                newState.setArtist(r.getArtist());
 
                 viewSongViewModel.setState(newState);
                 viewSongViewModel.firePropertyChanged();
