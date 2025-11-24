@@ -93,12 +93,10 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
-            }
-            else {
+            } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -133,12 +131,10 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
                     songs.add(mappedSong);
                 }
                 return songs;
-            }
-            else {
+            } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -156,8 +152,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
             final JSONObject responseBody = new JSONObject(response.body().string());
 
             return responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE;
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -186,12 +181,10 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
-            }
-            else {
+            } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -199,18 +192,16 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     @Override
     public void upvoteReview(User user, Review upvotedreview) {
         upvotedreview.addUpvote();
-        Song reviewedSong = this.getSongByID(upvotedreview.getSongID());
+        Song reviewedSong = this.getSongById(upvotedreview.getSongID());
         if (user.hasUpvoted(upvotedreview)) {
             reviewedSong.removeUpvote(upvotedreview);
-        }
-        else {
+        } else {
             reviewedSong.upvote(upvotedreview);
         }
         this.saveSong(reviewedSong);
-        }
     }
 
-    public boolean existsByUsername (String username, int songid){
+    public boolean existsByUsername(String username, int songid) {
         Song song = this.getSongById(songid);
         for (Review review : song.getReviews()) {
             if (review.getUsername().equals(username)) {
@@ -221,7 +212,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public void addReview (Review review,int songid) {
+    public void addReview(Review review, int songid) {
         Song s = this.getSongById(songid);
         s.addReview(review);
         saveSong(s);
@@ -236,6 +227,4 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         }
         throw new RuntimeException("Song with ID " + songID + " not found.");
     }
-
-
 }

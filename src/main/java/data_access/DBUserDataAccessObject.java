@@ -82,12 +82,10 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                 }
 
                 return user;
-            }
-            else {
+            } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -117,8 +115,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
             //                throw new RuntimeException(responseBody.getString("message"));
             return responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE;
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -145,7 +142,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         }
         requestBody.getJSONObject(INFO).put(WRITTENREVIEWS, new JSONArray(writtenReviewsJSONArray));
 
-        Set<Review> upvotedReviews  = user.getUpvotedReviews();
+        Set<Review> upvotedReviews = user.getUpvotedReviews();
         JSONArray upvotedReviewsJSONArray = new JSONArray();
         for (Review review : upvotedReviews) {
             ReviewMapper reviewMapper = new ReviewMapper(review);
@@ -168,12 +165,10 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
-            }
-            else {
+            } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -181,7 +176,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void changePassword(User user) {
         final OkHttpClient client = new OkHttpClient().newBuilder()
-                                        .build();
+                .build();
 
         // POST METHOD
         final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
@@ -190,10 +185,10 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         requestBody.put(PASSWORD, user.getPassword());
         final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
         final Request request = new Request.Builder()
-                                    .url("http://vm003.teach.cs.toronto.edu:20112/user")
-                                    .method("PUT", body)
-                                    .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
-                                    .build();
+                .url("http://vm003.teach.cs.toronto.edu:20112/user")
+                .method("PUT", body)
+                .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
+                .build();
         try {
             final Response response = client.newCall(request).execute();
 
@@ -201,12 +196,10 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
-            }
-            else {
+            } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -215,8 +208,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     public void upvoteReview(User upvotedUser, Review upvotedReview) {
         if (upvotedUser.hasUpvoted(upvotedReview)) {
             upvotedUser.removeUpvote(upvotedReview);
-        }
-        else {
+        } else {
             upvotedReview.addUpvote();
             upvotedUser.upvoteReview(upvotedReview);
         }
@@ -241,7 +233,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         }
         requestBody.getJSONObject(INFO).put(WRITTENREVIEWS, new JSONArray(writtenReviewsJSONArray));
 
-        Set<Review> upvotedReviews  = upvotedUser.getUpvotedReviews();
+        Set<Review> upvotedReviews = upvotedUser.getUpvotedReviews();
         JSONArray upvotedReviewsJSONArray = new JSONArray();
         for (Review review : upvotedReviews) {
             ReviewMapper reviewMapper = new ReviewMapper(review);
@@ -264,16 +256,16 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
-            }
-            else {
+            } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
     @Override
-    public void addReview(Review review, String username){
+    public void addReview(Review review, String username) {
         User user = this.get(username);
         user.addWrittenReview(review);
         this.save(user);
