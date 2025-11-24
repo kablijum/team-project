@@ -9,5 +9,5 @@ public interface PostReviewSongDataAccessInterface {
 
     void addReview(Review review, int songid);
 
-    Song getSongByID(int songid);
+    Song getSongById(int songid);
 }

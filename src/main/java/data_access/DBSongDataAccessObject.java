@@ -211,7 +211,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     public boolean existsByUsername (String username, int songid){
-        Song song = getSongByID(songid);
+        Song song = this.getSongById(songid);
         for (Review review : song.getReviews()) {
             if (review.getUsername().equals(username)) {
                 return true;
@@ -222,13 +222,13 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
 
     @Override
     public void addReview (Review review,int songid) {
-        Song s = getSongByID(songid);
+        Song s = this.getSongById(songid);
         s.addReview(review);
         saveSong(s);
     }
 
     @Override
-    public Song getSongByID(int songID) {
+    public Song getSongById(int songID) {
         List<Song> songs = this.getSongDatabase();
         for (Song song : songs) {
             if (song.getId() == songID)

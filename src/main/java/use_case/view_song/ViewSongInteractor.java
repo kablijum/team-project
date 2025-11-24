@@ -14,9 +14,11 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
     private ViewSongDataAccessInterface dataAccess;
     private ViewSongNewDataAccessInterface newSongDataAccess;
 
-    public ViewSongInteractor(ViewSongOutputDataBoundary presenter,  ViewSongDataAccessInterface dataAccess) {
+    public ViewSongInteractor(ViewSongOutputDataBoundary presenter,  ViewSongDataAccessInterface dataAccess,
+                              ViewSongNewDataAccessInterface newSongDataAccess) {
         this.presenter = presenter;
         this.dataAccess = dataAccess;
+        this.newSongDataAccess = newSongDataAccess;
     }
 
     @Override
@@ -68,4 +70,4 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
 
 
     }
-}
+
