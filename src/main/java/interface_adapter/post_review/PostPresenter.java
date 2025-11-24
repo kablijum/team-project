@@ -1,4 +1,28 @@
 package interface_adapter.post_review;
 
-public class PostPresenter {
+import use_case.post_review.PostOutputData;
+import use_case.post_review.PostOutputDataBoundary;
+
+public class PostPresenter implements PostOutputDataBoundary{
+    private final PostViewModel postViewModel;
+
+    public  PostPresenter(PostViewModel postViewModel) {
+        this.postViewModel = postViewModel;
+    }
+    public void prepareSuccessView(PostOutputData outputData){
+        PostState postState = postViewModel.getState();
+        postState.setComment(outputData.getComment());
+        postState.setRating(outputData.getRating());
+        postState.setUsername(outputData.getUsername());
+        postState.setSongname(outputData.getSongname());
+
+    }
+    public void prepareFailureView(String errorMessage){
+        PostState postState = postViewModel.getState();
+        postState.setErrorMessage(errorMessage);
+
+    }
+
+
+
 }

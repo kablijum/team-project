@@ -1,4 +1,14 @@
 package interface_adapter.post_review;
 
-public class PostViewModel {
+import interface_adapter.ViewModel;
+
+public class PostViewModel extends ViewModel<PostState> {
+
+    public PostViewModel() {
+        super("post");
+        setState(new PostState());
+    }
+
 }
+
+
