@@ -6,6 +6,7 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import use_case.view_song.ViewSongDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Set;
  * The DAO for song data.
  * Song data structure: {"username": "songdata", "password": "1234", "info": [{"id": , "name": "", "artist": "", "rating": , "reviews": []}]}
  */
-public class DBSongDataAccessObject {
+public class DBSongDataAccessObject implements ViewSongDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -34,16 +35,18 @@ public class DBSongDataAccessObject {
         this.song = song;
     }
 
-    public boolean songExists(String songId) {
+    @Override
+    public boolean songExists(int songId) {
         List<Song> songDB = getSongDatabase();
         for (Song songDBItem : songDB) {
-            if (songId.equals(songDBItem.getId())) {
+            if (songId == songDBItem.getId()) {
                 return true;
             }
         }
         return false;
     }
 
+    @Override
     public void saveSong(Song song) {
         if (!adminExists()) {
             createAdmin();
