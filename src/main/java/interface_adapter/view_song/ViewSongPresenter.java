@@ -16,11 +16,11 @@ public class ViewSongPresenter implements ViewSongOutputDataBoundary {
     @Override
     public void prepareSuccessView(ViewSongOutputData viewSongOutputData){
         final ViewSongState songState = viewSongViewModel.getState();
-        songState.setReviews(viewSongOutputData.getReviews);
+        songState.setReviews(viewSongOutputData.getReviews());
         songState.setAverageRating(viewSongOutputData.getAverageRating());
         songState.setSongName(viewSongOutputData.getSongName());
         songState.setArtist(viewSongOutputData.getArtist());
-        songState.setArtist(viewSongOutputData.getSongId());
+        songState.setSongId(viewSongOutputData.getSongId());
 
         // Notify ViewModel listener
         this.viewSongViewModel.firePropertyChange();
@@ -35,8 +35,8 @@ public class ViewSongPresenter implements ViewSongOutputDataBoundary {
         final ViewSongState songState = viewSongViewModel.getState();
         songState.setMessage(viewSongOutputData.getMessage());
         songState.setSongName(viewSongOutputData.getSongName());
-        songState.setArtist(viewSongOutputData.getSongId());
         songState.setArtist(viewSongOutputData.getArtist());
+        songState.setSongId(viewSongOutputData.getSongId());
 
         this.viewSongViewModel.firePropertyChange();
 

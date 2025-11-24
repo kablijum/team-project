@@ -1,6 +1,7 @@
 package use_case.post_review;
 
 import entity.Review;
+import entity.Song;
 
 public class PostInteractor implements PostInputDataBoundary{
 
@@ -14,7 +15,7 @@ public class PostInteractor implements PostInputDataBoundary{
         this.songDataAccess = songDataAccess;
         this.postPresenter = postPresenter;
     }
-
+    @Override
     public void execute(PostInputData inputData) {
         final String username = inputData.getUsername();
         final int songid = inputData.getSongid();
@@ -30,8 +31,10 @@ public class PostInteractor implements PostInputDataBoundary{
             userDataAccess.addReview(review,username);
             songDataAccess.addReview(review,songid);
 
-            int newAverage = songDataAccess.getAverageRating(songid);
-            String songname = songDataAccess.getSongName(songid);
+            Song song = songDataAccess.getSongByID(songid);
+
+            double newAverage = song.getAverageRating();
+            String songname = song.getName();
 
             PostOutputData data = new PostOutputData(comment, newAverage, username, songname, songid);
             postPresenter.prepareSuccessView(data);

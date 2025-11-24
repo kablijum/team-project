@@ -10,7 +10,7 @@ public class ProfileReviewsController {
         // TODO: implement logout use case
     }
 
-    public void deleteReviewAt(int index) {
+    public void editReviewAt(int index) {
         // TODO: implement delete review use case
     }
 }

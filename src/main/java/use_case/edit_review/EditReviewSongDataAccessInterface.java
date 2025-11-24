@@ -10,7 +10,7 @@ public interface EditReviewSongDataAccessInterface {
 
     void updateReview(Review review, int songId);
 
-    int getAverageRating(int songId);
+    double getAverageRating(int songId);
 
     String getSongName(int songId);
 }

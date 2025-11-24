@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
+import use_case.post_review.PostReviewUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.upvote.UpvoteUserDataAccessInterface;
 
@@ -25,7 +26,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                                                LoginUserDataAccessInterface,
                                                ChangePasswordUserDataAccessInterface,
                                                LogoutUserDataAccessInterface,
-                                                UpvoteUserDataAccessInterface {
+                                                UpvoteUserDataAccessInterface,
+                                               PostReviewUserDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -270,5 +272,10 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
+    @Override
+    public void addReview(Review review, String username){
+        User user = this.get(username);
+        user.addWrittenReview(review);
+        this.save(user);
     }
 }
