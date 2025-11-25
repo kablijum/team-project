@@ -2,6 +2,8 @@ package view;
 
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.post_review.PostController;
+import interface_adapter.upvote_review.UpvoteController;
+import interface_adapter.view_song.ReviewViewModelItem;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongViewModel;
 
@@ -16,6 +18,7 @@ import java.util.List;
 public class SongProfileView extends JPanel {
     private final ViewSongController viewSongController;
     private final PostController postController;
+    private final UpvoteController upvoteController;
     private final ViewSongViewModel viewModel;
     private final LoginViewModel loginViewModel;
 
@@ -25,12 +28,15 @@ public class SongProfileView extends JPanel {
 
     private final JButton addReview = new JButton("Write a Review");
     private final JButton backButton = new JButton("Back");
-    private final JButton refreshButton = new JButton("Refresh");
+    private final JButton upvoteButton = new JButton("Upvote this review");
 
-    public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel,  PostController postController,  LoginViewModel loginViewModel) {
+    private JList<ReviewViewModelItem> reviewList;
+
+    public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel, PostController postController, UpvoteController upvoteController, LoginViewModel loginViewModel) {
         this.viewSongController = viewSongController;
         this.viewModel = viewModel;
         this.postController = postController;
+        this.upvoteController = upvoteController;
         this.loginViewModel = loginViewModel;
 
 
@@ -54,23 +60,19 @@ public class SongProfileView extends JPanel {
 
         // Reviews, Average Rating and Add Review //
         JPanel reviewsPanel = new JPanel();
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-
-        Map<String, List<Object>> reviews = viewModel.getState().getReviews();
-        for (Map.Entry<String, List<Object>> entry : reviews.entrySet()) {
-            String username = entry.getKey();
-            List<Object> review = entry.getValue();
-            String comment = review.get(0).toString();
-            int rating = Integer.parseInt(review.get(1).toString());
-            listModel.addElement(username + ": " + comment + " (" + rating + ")");
+        DefaultListModel<ReviewViewModelItem> listModel = new DefaultListModel<>();
+        List<ReviewViewModelItem> reviews = viewModel.getState().getReviews();
+        for (ReviewViewModelItem item : reviews) {
+            listModel.addElement(item);
         }
 
-        JList reviewList = new JList(listModel);
+        this.reviewList = new JList<>(listModel);
         reviewList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         reviewList.addListSelectionListener( e -> {
-             // TODO: potential upvote button popup once you select review of choice
-
-
+            ReviewViewModelItem item = reviewList.getSelectedValue();
+            if (item != null) {
+                this.showReviewPopup(item);
+            }
         });
 
         reviewsPanel.add(reviewList, BorderLayout.CENTER);
@@ -137,12 +139,51 @@ public class SongProfileView extends JPanel {
                 String username = loginViewModel.getState().getUsername();
                 postController.execute(content, rating, username, songID);
                 postReviewDialog.dispose();
+
+                refresh();
             }
         });
 
     }
-    public String reviewToString(String username, String comment, int rating){
-        return username + ": " + comment + " (" + rating + ")";
+    public void showReviewPopup(ReviewViewModelItem review){
+        JDialog dialog = new JDialog((Frame) null, "Review", true);
+        dialog.setLocationRelativeTo(this);
+        dialog.setSize(300, 250);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        JTextArea info = new JTextArea( "Review by" + review.getUsername()
+                + "\n" + review.getComment()
+                + "\n" +  "Rating:" + review.getRating());
+        JScrollPane reviewScrollPane = new JScrollPane(info);
+        dialog.add(reviewScrollPane, BorderLayout.CENTER);
+        dialog.add(upvoteButton, BorderLayout.EAST);
+
+        dialog.setVisible(true);
+
+        upvoteButton.addActionListener(e -> {
+            upvoteController.execute(loginViewModel.getState().getUsername(), review.getUsername(), viewModel.getState().getSongId());
+            dialog.dispose();
+
+            refresh();
+        });
+    }
+
+    public void refresh(){
+        songNameLabel.setText(viewModel.getState().getSongName());
+        artistLabel.setText(viewModel.getState().getArtist());
+
+        if (viewModel.getState().getAverageRating() != 0){
+            averageRatingLabel.setText("Average Rating:" + viewModel.getState().getAverageRating());
+        }
+        else{
+            averageRatingLabel.setText(viewModel.getState().getMessage());
+        }
+
+        DefaultListModel<ReviewViewModelItem> listModel = new DefaultListModel<>();
+        for (ReviewViewModelItem item : viewModel.getState().getReviews()) {
+            listModel.addElement(item);
+        }
+        this.reviewList.setModel(listModel);
+
     }
 
 }
