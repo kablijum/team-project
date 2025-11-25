@@ -4,7 +4,7 @@ import use_case.post_review.PostOutputData;
 
 public interface ViewSongOutputDataBoundary {
 
-    void prepareSuccessView(ViewSongOutputData postOutputData);
+    void prepareSuccessView(ViewSongOutputData viewSongOutputData);
 
-    void prepareNewSongView(ViewSongOutputData postOutputData);
+    void prepareNewSongView(ViewSongOutputData viewSongOutputData);
 }

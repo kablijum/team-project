@@ -1,5 +1,8 @@
 package use_case.upvote;
 
+import entity.Review;
+import entity.User;
+
 public class UpvoteInteractor implements UpvoteInputBoundary {
     private final UpvoteSongDataAccessInterface songDataAccessObject;
     private final UpvoteUserDataAccessInterface userDataAccessObject;
@@ -13,10 +16,21 @@ public class UpvoteInteractor implements UpvoteInputBoundary {
     }
     @Override
     public void execute(UpvoteInputData upvoteInputData) {
+        // DAOs do not modify the InputData so we need to update it here.
         songDataAccessObject.upvoteReview(upvoteInputData.getUser(), upvoteInputData.getReview());
         userDataAccessObject.upvoteReview(upvoteInputData.getUser(), upvoteInputData.getReview());
+        User upvotedUser = upvoteInputData.getUser();
+        Review upvotedReview = upvoteInputData.getReview();
+        if (upvotedUser.hasUpvoted(upvotedReview)) {
+            upvotedUser.removeUpvote(upvotedReview);
+            upvotedReview.removeUpvote();
+        }
+        else {
+            upvotedUser.upvoteReview(upvotedReview);
+            upvotedReview.addUpvote();
+        }
 
-        UpvoteOutputData upvoteOutputData = new UpvoteOutputData(upvoteInputData.getUser(), upvoteInputData.getReview());
+        UpvoteOutputData upvoteOutputData = new UpvoteOutputData(upvotedUser, upvotedReview);
         upvotePresenter.prepareSuccessView(upvoteOutputData);
     }
 }
