@@ -5,6 +5,12 @@ import use_case.upvote.UpvoteOutputDataBoundary;
 
 public class UpvotePresenter implements UpvoteOutputDataBoundary {
 
+    private UpvoteViewModel upvoteViewModel;
+
+    public UpvotePresenter(UpvoteViewModel upvoteViewModel) {
+        this.upvoteViewModel = upvoteViewModel;
+    }
+
     @Override
     public void prepareSuccessView(UpvoteOutputData outputData) {
     }
