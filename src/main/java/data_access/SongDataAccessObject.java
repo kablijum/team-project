@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import entity.Song;
 import use_case.search.SearchUserDataAccessInterface;
-import use_case.view_song.ViewSongDataAccessInterface;
+import use_case.view_song.ViewSongNewDataAccessInterface;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongDataAccessObject implements SearchUserDataAccessInterface, ViewSongDataAccessInterface {
+public class SongDataAccessObject implements SearchUserDataAccessInterface, ViewSongNewDataAccessInterface {
 
     private static final int SUCCESS_CODE = 200;
     private static final String AUTH_HEADER = "Authorization";
@@ -90,19 +90,5 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface, View
         info.add(song.get(PRIMARY_ARTIST).getAsJsonObject().get(NAME).getAsString());
 
         return info;
-    }
-
-    @Override
-    public boolean songExists(int songID) {
-        return false;
-    }
-
-    @Override
-    public Song getSongById(int songID) {
-        return null;
-    }
-
-    @Override
-    public void saveSong(Song song) {
     }
 }
