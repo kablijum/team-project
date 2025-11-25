@@ -6,7 +6,11 @@ import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongViewModel;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.util.Map;
+import java.util.List;
 
 
 public class SongProfileView extends JPanel {
@@ -49,10 +53,27 @@ public class SongProfileView extends JPanel {
         add(labelPanel, BorderLayout.NORTH);
 
         // Reviews, Average Rating and Add Review //
-        JPanel reviewsPanel = new JPanel(new BorderLayout());
-        JScrollPane reviewsScrollPane = new JScrollPane();
-        reviewsPanel.add(reviewsScrollPane, BorderLayout.CENTER);
-        // TODO: Add reviews from view model in in scrollpane()
+        JPanel reviewsPanel = new JPanel();
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+
+        Map<String, List<Object>> reviews = viewModel.getState().getReviews();
+        for (Map.Entry<String, List<Object>> entry : reviews.entrySet()) {
+            String username = entry.getKey();
+            List<Object> review = entry.getValue();
+            String comment = review.get(0).toString();
+            int rating = Integer.parseInt(review.get(1).toString());
+            listModel.addElement(username + ": " + comment + " (" + rating + ")");
+        }
+
+        JList reviewList = new JList(listModel);
+        reviewList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        reviewList.addListSelectionListener( e -> {
+             // TODO: potential upvote button popup once you select review of choice
+
+
+        });
+
+        reviewsPanel.add(reviewList, BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
@@ -120,4 +141,8 @@ public class SongProfileView extends JPanel {
         });
 
     }
+    public String reviewToString(String username, String comment, int rating){
+        return username + ": " + comment + " (" + rating + ")";
+    }
+
 }
