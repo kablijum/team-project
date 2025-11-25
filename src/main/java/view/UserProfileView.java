@@ -14,6 +14,7 @@ public class UserProfileView extends JPanel {
 
     private final JButton backButton = new JButton("Back to Home");
     private final JButton logoutButton = new JButton("Logout");
+    private final JButton changePasswordButton = new JButton("Change Password");
     private final JLabel usernameLabel = new JLabel();
 
     private final JLabel myReviewsLabel = new JLabel("My Reviews:");
@@ -38,7 +39,14 @@ public class UserProfileView extends JPanel {
         usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topBar.add(usernameLabel, BorderLayout.CENTER);
 
-        topBar.add(logoutButton, BorderLayout.EAST);
+//        topBar.add(logoutButton, BorderLayout.EAST);
+//        add(topBar, BorderLayout.NORTH);
+
+        JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightButtons.add(changePasswordButton);
+        rightButtons.add(logoutButton);
+
+        topBar.add(rightButtons, BorderLayout.EAST);
         add(topBar, BorderLayout.NORTH);
 
         // Middle：My Reviews:      [Edit]
@@ -58,6 +66,7 @@ public class UserProfileView extends JPanel {
 
         // call controller
         backButton.addActionListener(e -> controller.goBackToHome());
+        changePasswordButton.addActionListener(e -> controller.changePassword());
         logoutButton.addActionListener(e -> controller.logout());
         editButton.addActionListener(e -> {
             int index = reviewList.getSelectedIndex();
