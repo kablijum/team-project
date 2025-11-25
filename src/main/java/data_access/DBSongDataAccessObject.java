@@ -54,6 +54,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
 
     @Override
     public void saveSong(Song song) {
+        // saves new song data or updates the existing song data
         if (!adminExists()) {
             createAdmin();
         }
@@ -190,10 +191,19 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public void upvoteReview(User user, Review upvotedreview) {
-        upvotedreview.addUpvote();
+    public void upvoteReview(User user, Review review) {
+        // Make a hard copy of the parameter objects to not modify them
+        User upvotedUser = new User(user.getUsername(), user.getPassword());
+        for (Review writtenReview : user.getWrittenReviews()) {
+            upvotedUser.addWrittenReview(writtenReview);
+        }
+        for (Review upvotedReview : user.getUpvotedReviews()) {
+            upvotedUser.upvoteReview(upvotedReview);
+        }
+        Review upvotedreview = new Review(review.getUsername(), review.getComment(), review.getSongID(), review.getRating(), review.getUpvotes());
         Song reviewedSong = this.getSongById(upvotedreview.getSongID());
-        if (user.hasUpvoted(upvotedreview)) {
+
+        if (upvotedUser.hasUpvoted(upvotedreview)) {
             reviewedSong.removeUpvote(upvotedreview);
         } else {
             reviewedSong.upvote(upvotedreview);

@@ -205,9 +205,20 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     @Override
-    public void upvoteReview(User upvotedUser, Review upvotedReview) {
+    public void upvoteReview(User user, Review review) {
+        // Make a hard copy of the parameter objects to not modify them
+        User upvotedUser = new User(user.getUsername(), user.getPassword());
+        for (Review writtenReview : user.getWrittenReviews()) {
+            upvotedUser.addWrittenReview(writtenReview);
+        }
+        for (Review upvotedReview : user.getUpvotedReviews()) {
+            upvotedUser.upvoteReview(upvotedReview);
+        }
+        Review upvotedReview = new Review(review.getUsername(), review.getComment(), review.getSongID(), review.getRating(), review.getUpvotes());
+
         if (upvotedUser.hasUpvoted(upvotedReview)) {
             upvotedUser.removeUpvote(upvotedReview);
+            upvotedReview.removeUpvote();
         } else {
             upvotedReview.addUpvote();
             upvotedUser.upvoteReview(upvotedReview);
@@ -226,8 +237,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         // Make writtenReviews and upvotedReviews a JSONArray and put it in requestBody
         List<Review> writtenReviews = upvotedUser.getWrittenReviews();
         JSONArray writtenReviewsJSONArray = new JSONArray();
-        for (Review review : writtenReviews) {
-            ReviewMapper reviewMapper = new ReviewMapper(review);
+        for (Review reviewUser : writtenReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(reviewUser);
             JSONObject writtenReviewJSONObject = reviewMapper.mapJReviewtoJSON();
             writtenReviewsJSONArray.put(writtenReviewJSONObject);
         }
@@ -235,8 +246,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
         Set<Review> upvotedReviews = upvotedUser.getUpvotedReviews();
         JSONArray upvotedReviewsJSONArray = new JSONArray();
-        for (Review review : upvotedReviews) {
-            ReviewMapper reviewMapper = new ReviewMapper(review);
+        for (Review reviewuser : upvotedReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(reviewuser);
             JSONObject upvotedReviewJSONObject = reviewMapper.mapJReviewtoJSON();
             upvotedReviewsJSONArray.put(upvotedReviewJSONObject);
         }
