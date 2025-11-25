@@ -10,12 +10,17 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.post_review.PostController;
 import interface_adapter.search.SearchController;
 import interface_adapter.search.SearchPresenter;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.view_song.ViewSongController;
+import interface_adapter.view_song.ViewSongPresenter;
+import interface_adapter.view_song.ViewSongViewModel;
+import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -29,16 +34,15 @@ import use_case.search.SearchInputDataBoundary;
 import use_case.search.SearchInteractor;
 import use_case.search.SearchOutputDataBoundary;
 import use_case.search.SearchUserDataAccessInterface;
+import use_case.view_song.*;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import view.HomeView;
-import view.LoginView;
-import view.SignupView;
-import view.ViewManager;
+import view.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -61,6 +65,9 @@ public class AppBuilder {
     private LoginView loginView;
     private SearchViewModel searchViewModel;
     private SearchController searchController;
+    private ViewSongViewModel viewSongViewModel;
+    private PostController postController;
+    private SongProfileView songProfileView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -76,7 +83,26 @@ public class AppBuilder {
 
     public AppBuilder addHomeView() {
         loggedInViewModel = new LoggedInViewModel();
-        homeView = new HomeView(loggedInViewModel, searchViewModel, searchController);
+
+        if (searchViewModel == null) {
+            searchViewModel = new SearchViewModel();
+        }
+        if (searchController == null) {
+            SearchUserDataAccessInterface dataAccess =
+                    new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
+            SearchOutputDataBoundary presenter = new SearchPresenter(searchViewModel);
+            SearchInputDataBoundary interactor = new SearchInteractor(dataAccess, presenter);
+            searchController = new SearchController(interactor);
+        }
+
+        homeView = new HomeView(
+                loggedInViewModel,
+                searchViewModel,
+                searchController,
+                viewSongViewModel,
+                viewManagerModel
+        );
+
         cardPanel.add(homeView, HomeView.VIEW_NAME);
         return this;
     }
@@ -107,6 +133,24 @@ public class AppBuilder {
 
         LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+        return this;
+    }
+
+
+    public AppBuilder addSearchUseCase() {
+        searchViewModel = new SearchViewModel();
+
+        SearchUserDataAccessInterface dataAccess =
+                new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
+        SearchOutputDataBoundary presenter = new SearchPresenter(searchViewModel);
+        SearchInputDataBoundary interactor = new SearchInteractor(dataAccess, presenter);
+
+        searchController = new SearchController(interactor);
+        return this;
+    }
+
+    public AppBuilder addViewSongProfile() {
+        viewSongViewModel = new ViewSongViewModel();
         return this;
     }
     // public AppBuilder addChangePasswordUseCase() {
@@ -151,29 +195,6 @@ public class AppBuilder {
         viewManagerModel.firePropertyChange();
 
         return application;
-    }
-    public AppBuilder addSearchUseCase() {
-        searchViewModel = new SearchViewModel();
-
-        SearchUserDataAccessInterface dataAccess =
-                new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
-
-        SearchOutputDataBoundary presenter =
-                new SearchPresenter(searchViewModel);
-
-        SearchInputDataBoundary interactor =
-                new SearchInteractor(dataAccess, presenter);
-
-        searchController = new SearchController(interactor);
-
-        homeView = new HomeView(
-                loggedInViewModel,
-                searchViewModel,
-                searchController
-        );
-
-        cardPanel.add(homeView, HomeView.VIEW_NAME);
-        return this;
     }
 
 }
