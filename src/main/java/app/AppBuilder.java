@@ -20,6 +20,9 @@ import interface_adapter.signup.SignupViewModel;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
+import interface_adapter.view_profile_reviews.ProfileReviewsController;
+import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import view.UserProfileView;
 import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
@@ -68,6 +71,10 @@ public class AppBuilder {
     private ViewSongViewModel viewSongViewModel;
     private PostController postController;
     private SongProfileView songProfileView;
+    private ProfileReviewsViewModel profileReviewsViewModel;
+    private UserProfileView userProfileView;
+    private ProfileReviewsController profileReviewsController;
+
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -153,6 +160,22 @@ public class AppBuilder {
         viewSongViewModel = new ViewSongViewModel();
         return this;
     }
+
+    public AppBuilder addUserProfileView() {
+        profileReviewsViewModel = new ProfileReviewsViewModel();
+
+        profileReviewsController = new ProfileReviewsController(viewManagerModel);
+
+        userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController);
+        cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
+
+        if (homeView != null) {
+            homeView.setProfileController(profileReviewsController);
+        }
+
+        return this;
+    }
+
     // public AppBuilder addChangePasswordUseCase() {
     //    final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
     //            loggedInViewModel);
