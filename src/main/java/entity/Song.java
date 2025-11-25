@@ -49,7 +49,7 @@ public class Song {
         reviews.remove(review);
     }
     public void upvote(Review review) {
-        // Update the upvoted review under this song
+        // Upvote the review written about this song
         assert this.getId() == review.getSongID();
         List<Review> reviews = this.getReviews();
         this.reviews = new ArrayList<>();

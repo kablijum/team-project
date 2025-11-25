@@ -14,7 +14,7 @@ public class UpvoteController {
 
     /**
      * Executes the Upvote Use Case.
-     * @param user the username of the user logging in
+     * @param user the username of the user upvoting a review
      * @param review the review that is being upvoted
      */
     public void execute(User user, Review review) {
