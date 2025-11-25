@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import use_case.upvote.UpvoteSongDataAccessInterface;
-import use_case.upvote.UpvoteUserDataAccessInterface;
 import use_case.post_review.PostReviewSongDataAccessInterface;
 import use_case.view_song.ViewSongDataAccessInterface;
 
@@ -31,7 +30,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String MESSAGE = "message";
-    private static final String ADMIN = "songdata";
+    private static final String ADMIN = "testbody4";
     private static final String ADMIN_PASSWORD = "1234";
     private static final String INFO = "info";
 
@@ -56,6 +55,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     public void saveSong(Song song) {
         if (!adminExists()) {
             createAdmin();
+            createSongDB();
         }
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -82,7 +82,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
 
         final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
         final Request request = new Request.Builder()
-                .url("http://vm003.teach.cs.toronto.edu:20112/user")
+                .url("http://vm003.teach.cs.toronto.edu:20112/modifyUserInfo")
                 .method("PUT", body)
                 .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
                 .build();
@@ -105,6 +105,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     public List<Song> getSongDatabase() {
         if (!adminExists()) {
             createAdmin();
+            createSongDB();
             return new ArrayList<>();
         }
 
@@ -166,12 +167,42 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         final JSONObject requestBody = new JSONObject();
         requestBody.put(USERNAME, ADMIN);
         requestBody.put(PASSWORD, ADMIN_PASSWORD);
-        requestBody.put(INFO, new JSONArray());
 
         final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
         final Request request = new Request.Builder()
                 .url("http://vm003.teach.cs.toronto.edu:20112/user")
                 .method("POST", body)
+                .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
+                .build();
+        try {
+            final Response response = client.newCall(request).execute();
+
+            final JSONObject responseBody = new JSONObject(response.body().string());
+
+            if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
+                // success!
+            } else {
+                throw new RuntimeException(responseBody.getString(MESSAGE));
+            }
+        } catch (IOException | JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void createSongDB() {
+        final OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+
+        final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
+        final JSONObject requestBody = new JSONObject();
+        requestBody.put(USERNAME, ADMIN);
+        requestBody.put(PASSWORD, ADMIN_PASSWORD);
+        requestBody.put(INFO, new JSONArray());
+
+        final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
+        final Request request = new Request.Builder()
+                .url("http://vm003.teach.cs.toronto.edu:20112/modifyUserInfo")
+                .method("PUT", body)
                 .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
                 .build();
         try {

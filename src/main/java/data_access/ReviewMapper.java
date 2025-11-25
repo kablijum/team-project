@@ -37,13 +37,12 @@ public class ReviewMapper {
 
     public JSONObject mapJReviewtoJSON() {
         assert review != null;
-        assert reviewJSONObject != null;
         JSONObject reviewJSON = new JSONObject();
-        reviewJSONObject.put(USERNAME, review.getUsername());
-        reviewJSONObject.put(COMMENT, review.getComment());
-        reviewJSONObject.put(SONGID, review.getSongID());
-        reviewJSONObject.put(RATING, review.getRating());
-        reviewJSONObject.put(UPVOTES, review.getUpvotes());
+        reviewJSON.put(USERNAME, review.getUsername());
+        reviewJSON.put(COMMENT, review.getComment());
+        reviewJSON.put(SONGID, review.getSongID());
+        reviewJSON.put(RATING, review.getRating());
+        reviewJSON.put(UPVOTES, review.getUpvotes());
         return reviewJSON;
     }
 }
