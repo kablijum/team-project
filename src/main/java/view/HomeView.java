@@ -6,6 +6,7 @@ import interface_adapter.search.SearchViewModel;
 import interface_adapter.view_song.ViewSongState;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import use_case.search.SearchOutputData;
 
 import javax.swing.*;
@@ -26,6 +27,11 @@ public class HomeView extends JPanel implements PropertyChangeListener {
     private final SearchController searchController;
     private final ViewSongViewModel viewSongViewModel;
     private final ViewManagerModel viewManagerModel;
+    private ProfileReviewsController profileController;
+
+    public void setProfileController(ProfileReviewsController profileController) {
+        this.profileController = profileController;
+    }
 
     private final JTextField searchField;
     private final JButton searchButton;
@@ -55,6 +61,12 @@ public class HomeView extends JPanel implements PropertyChangeListener {
         header.add(title, BorderLayout.WEST);
         header.add(profileButton, BorderLayout.EAST);
         add(header, BorderLayout.NORTH);
+
+        profileButton.addActionListener(e -> {
+            if (profileController != null) {
+                profileController.openProfile();
+            }
+        });
 
         // ===== Search bar =====
         JPanel center = new JPanel();

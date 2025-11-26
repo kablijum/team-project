@@ -2,6 +2,7 @@ package view;
 
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
+import interface_adapter.ViewManagerModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -113,7 +114,8 @@ public class UserProfileView extends JPanel {
         vm.setReviews(fake);
 
         // call controller
-        ProfileReviewsController controller = new ProfileReviewsController();
+        ProfileReviewsController controller =
+                new ProfileReviewsController(new ViewManagerModel());
 
         // panel
         JFrame frame = new JFrame("User Profile Test");
