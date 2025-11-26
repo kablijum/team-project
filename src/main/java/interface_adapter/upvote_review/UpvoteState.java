@@ -22,4 +22,20 @@ public class UpvoteState {
     public void setSongId(int songId) {
         this.songId = songId;
     }
+
+    public String getUsername() {
+        return username;
+    }
+    public int getUpvoteCount() {
+        return upvoteCount;
+    }
+    public boolean isUserUpvoted() {
+        return userUpvoted;
+    }
+    public String getReviewUsername() {
+        return reviewUsername;
+    }
+    public int getSongId() {
+        return songId;
+    }
 }

@@ -15,6 +15,8 @@ import use_case.signup.SignupUserDataAccessInterface;
 import use_case.upvote.UpvoteUserDataAccessInterface;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -236,23 +238,19 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     @Override
-    public void upvoteReview(User user, Review review) {
-        // Make a hard copy of the parameter objects to not modify them
-        User upvotedUser = new User(user.getUsername(), user.getPassword());
-        for (Review writtenReview : user.getWrittenReviews()) {
-            upvotedUser.addWrittenReview(writtenReview);
-        }
-        for (Review upvotedReview : user.getUpvotedReviews()) {
-            upvotedUser.upvoteReview(upvotedReview);
-        }
-        Review upvotedReview = new Review(review.getUsername(), review.getComment(), review.getSongID(), review.getRating(), review.getUpvotes());
+    public void upvoteReview(String username, String reviewUsername, int songid) {
+        User upvotedUser = this.get(username);
 
-        if (upvotedUser.hasUpvoted(upvotedReview)) {
-            upvotedUser.removeUpvote(upvotedReview);
-            upvotedReview.removeUpvote();
-        } else {
-            upvotedReview.addUpvote();
-            upvotedUser.upvoteReview(upvotedReview);
+        HashMap<String, Review> upvotedUsernames = new HashMap();
+        for (Review upvotedReview : upvotedUser.getUpvotedReviews()) {
+            upvotedUsernames.put(upvotedReview.getUsername(), upvotedReview);
+        }
+        // Check if upvotedUser has previously upvoted this review under the song.
+        if (upvotedUsernames.containsKey(reviewUsername)) {
+            upvotedUser.removeUpvote(upvotedUsernames.get(reviewUsername));
+        }
+        else {
+            upvotedUser.upvoteReview(this.getReview(reviewUsername, songid));
         }
 
         final OkHttpClient client = new OkHttpClient().newBuilder()
@@ -304,6 +302,16 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public Review getReview(String reviewUsername, int songid) {
+        User reviewUser = this.get(reviewUsername);
+        for (Review writtenReview : reviewUser.getWrittenReviews()) {
+            if (songid == writtenReview.getSongID()) {
+                return writtenReview;
+            }
+        }
+        throw new RuntimeException("No review found for song id " + songid);
     }
 
     @Override
