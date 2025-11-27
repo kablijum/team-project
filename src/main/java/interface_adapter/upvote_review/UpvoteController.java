@@ -14,11 +14,12 @@ public class UpvoteController {
 
     /**
      * Executes the Upvote Use Case.
-     * @param user the username of the user upvoting a review
-     * @param review the review that is being upvoted
+     * @param username is the username of the user who upvoted the review.
+     * @param reviewUsername is the user who wrote the review.
+     * @param songId is the id of the song which the review is written about.
      */
-    public void execute(User user, Review review) {
-        final UpvoteInputData upvoteInputData = new UpvoteInputData(user, review);
+    public void execute(String username, String reviewUsername, int songId) {
+        final UpvoteInputData upvoteInputData = new UpvoteInputData(username, reviewUsername, songId);
 
         upvoteUseCaseInteractor.execute(upvoteInputData);
     }
