@@ -1,7 +1,9 @@
 package app;
 
+import data_access.DBSongDataAccessObject;
 import data_access.SongDataAccessObject;
 import data_access.DBUserDataAccessObject;
+import entity.Song;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -17,6 +19,7 @@ import interface_adapter.search.SearchViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.upvote_review.UpvoteController;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
@@ -74,6 +77,8 @@ public class AppBuilder {
     private ProfileReviewsViewModel profileReviewsViewModel;
     private UserProfileView userProfileView;
     private ProfileReviewsController profileReviewsController;
+    private ViewSongController viewSongController;
+    private UpvoteController upvoteController;
 
 
     public AppBuilder() {
@@ -106,6 +111,7 @@ public class AppBuilder {
                 loggedInViewModel,
                 searchViewModel,
                 searchController,
+                viewSongController,
                 viewSongViewModel,
                 viewManagerModel
         );
@@ -158,6 +164,31 @@ public class AppBuilder {
 
     public AppBuilder addViewSongProfile() {
         viewSongViewModel = new ViewSongViewModel();
+        ViewSongOutputDataBoundary presenter =
+                new ViewSongPresenter(viewSongViewModel, viewManagerModel);
+
+        Song dummy = new Song(0, "dummy", "dummy");
+        ViewSongDataAccessInterface databaseDAO =
+                new DBSongDataAccessObject(dummy);
+
+        String token = "JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK";
+        ViewSongNewDataAccessInterface externalAPI =
+                new SongDataAccessObject(token);
+
+        ViewSongInputDataBoundary interactor =
+                new ViewSongInteractor(presenter, databaseDAO, externalAPI);
+
+        viewSongController = new ViewSongController(interactor);
+
+        songProfileView = new SongProfileView(
+                viewSongController,
+                viewSongViewModel,
+                postController,
+                upvoteController,
+                loginViewModel
+        );
+        cardPanel.add(songProfileView, viewSongViewModel.getViewName());
+
         return this;
     }
 
