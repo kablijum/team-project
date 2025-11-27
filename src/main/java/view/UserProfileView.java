@@ -27,9 +27,8 @@ public class UserProfileView extends JPanel {
 
     public static final String VIEW_NAME = "profile";
 
-    public UserProfileView(LogoutController logoutController, ProfileReviewsViewModel viewModel,
+    public UserProfileView(ProfileReviewsViewModel viewModel,
                            ProfileReviewsController controller) {
-        this.logoutController = logoutController;
         this.viewModel = viewModel;
         this.controller = controller;
 
@@ -104,27 +103,27 @@ public class UserProfileView extends JPanel {
     }
 
     //test
-    public static void main(String[] args) {
+    //public static void main(String[] args) {
         // 1. fake viewModel
-        ProfileReviewsViewModel vm = new ProfileReviewsViewModel();
-        vm.setUsername("Connie");
-
-        java.util.List<ProfileReviewsViewModel.ReviewRow> fake = new java.util.ArrayList<>();
-        fake.add(new ProfileReviewsViewModel.ReviewRow("Song A", 5, "Loved it!"));
-        fake.add(new ProfileReviewsViewModel.ReviewRow("Song B", 4, "Nice rhythm"));
-
-        vm.setReviews(fake);
-
+    //    ProfileReviewsViewModel vm = new ProfileReviewsViewModel();
+    //   vm.setUsername("Connie");
+    //
+    //    java.util.List<ProfileReviewsViewModel.ReviewRow> fake = new java.util.ArrayList<>();
+    //    fake.add(new ProfileReviewsViewModel.ReviewRow("Song A", 5, "Loved it!"));
+    //    fake.add(new ProfileReviewsViewModel.ReviewRow("Song B", 4, "Nice rhythm"));
+    //
+    //    vm.setReviews(fake);
+    //
         // call controller
-        ProfileReviewsController controller =
-                new ProfileReviewsController(new ViewManagerModel());
+    //    ProfileReviewsController controller =
+    //            new ProfileReviewsController(new ViewManagerModel());
 
         // panel
-        JFrame frame = new JFrame("User Profile Test");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setContentPane(new UserProfileView(vm, controller));
-        frame.setSize(800, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
+    //    JFrame frame = new JFrame("User Profile Test");
+    //  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    //    frame.setContentPane(new UserProfileView(vm, controller));
+    //    frame.setSize(800, 600);
+    //    frame.setLocationRelativeTo(null);
+    //    frame.setVisible(true);
+    //}
 }
