@@ -84,6 +84,7 @@ public class AppBuilder {
     private ProfileReviewsController profileReviewsController;
     private ViewSongController viewSongController;
     private UpvoteController upvoteController;
+    private LogoutController logoutController;
 
 
     public AppBuilder() {
@@ -218,7 +219,16 @@ public class AppBuilder {
     public AppBuilder addUserProfileView() {
         profileReviewsViewModel = new ProfileReviewsViewModel();
 
-        profileReviewsController = new ProfileReviewsController(viewManagerModel);
+        LogoutOutputBoundary logoutOutputBoundary =
+                new LogoutPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
+
+        LogoutInputBoundary logoutInteractor =
+                new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
+
+        LogoutController logoutController =
+                new LogoutController(logoutInteractor);
+
+        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController);
 
         userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController);
         cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
@@ -246,17 +256,17 @@ public class AppBuilder {
      * Adds the Logout Use Case to the application.
      * @return this builder
      */
-     //public AppBuilder addLogoutUseCase() {
-     //final LogoutOutputBoundary logoutOutputBoundary = new LogoutPresenter(viewManagerModel,
-     //           loggedInViewModel, loginViewModel);
+    public AppBuilder addLogoutUseCase() {
+        LogoutOutputBoundary logoutOutputBoundary =
+                new LogoutPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
 
-     //   final LogoutInputBoundary logoutInteractor =
-     //           new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
+        LogoutInputBoundary logoutInteractor =
+                new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
 
-     //   final LogoutController logoutController = new LogoutController(logoutInteractor);
-     //   homeView.setLogoutController(logoutController);
-     //   return this;
-    //}
+        logoutController = new LogoutController(logoutInteractor);
+
+        return this;
+    }
 
     public JFrame build() {
         final JFrame application = new JFrame("User Login Example");

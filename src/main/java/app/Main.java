@@ -9,10 +9,11 @@ public class Main {
                 .addLoginView()
                 .addSignupView()
                 .addHomeView()
-                .addUserProfileView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addSearchUseCase()
+                .addLogoutUseCase()
+                .addUserProfileView()
                 //.addChangePasswordUseCase()
                 .build();
 
