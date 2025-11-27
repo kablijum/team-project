@@ -3,6 +3,7 @@ package data_access;
 import entity.Review;
 import entity.Song;
 import entity.User;
+import entity.UserFactory;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +14,7 @@ import use_case.view_song.ViewSongDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -101,7 +103,6 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
             throw new RuntimeException(ex);
         }
     }
-
 
     public List<Song> getSongDatabase() {
         if (!adminExists()) {
@@ -222,22 +223,27 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public void upvoteReview(User user, Review review) {
-        // Make a hard copy of the parameter objects to not modify them
-        User upvotedUser = new User(user.getUsername(), user.getPassword());
-        for (Review writtenReview : user.getWrittenReviews()) {
-            upvotedUser.addWrittenReview(writtenReview);
+    public void upvoteReview(String reviewUsername, int songId) {
+        // Add 1 upvote of the review written about this song.
+        Song reviewedSong = this.getSongById(songId);
+        List<Review> songReviews = reviewedSong.getReviews();
+        for (Review songReview : songReviews) {
+            if (songReview.getUsername().equals(reviewUsername)) {
+                songReview.addUpvote();
+            }
         }
-        for (Review upvotedReview : user.getUpvotedReviews()) {
-            upvotedUser.upvoteReview(upvotedReview);
-        }
-        Review upvotedreview = new Review(review.getUsername(), review.getComment(), review.getSongID(), review.getRating(), review.getUpvotes());
-        Song reviewedSong = this.getSongById(upvotedreview.getSongID());
+        this.saveSong(reviewedSong);
+    }
 
-        if (upvotedUser.hasUpvoted(upvotedreview)) {
-            reviewedSong.removeUpvote(upvotedreview);
-        } else {
-            reviewedSong.upvote(upvotedreview);
+    @Override
+    public void downvoteReview(String reviewUsername, int songId) {
+        // Remove 1 upvote of the review written about this song.
+        Song reviewedSong = this.getSongById(songId);
+        List<Review> songReviews = reviewedSong.getReviews();
+        for (Review songReview : songReviews) {
+            if (songReview.getUsername().equals(reviewUsername)) {
+                songReview.removeUpvote();
+            }
         }
         this.saveSong(reviewedSong);
     }
