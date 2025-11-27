@@ -6,7 +6,9 @@ import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongViewModel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+
 
 
 public class SongProfileView extends JPanel {
@@ -20,8 +22,7 @@ public class SongProfileView extends JPanel {
     private final JLabel averageRatingLabel = new JLabel();
 
     private final JButton addReview = new JButton("Write a Review");
-    private final JButton backButton = new JButton("Back");
-    private final JButton refreshButton = new JButton("Refresh");
+    private final JButton backButton = new JButton("← Back");
 
     public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel,  PostController postController,  LoginViewModel loginViewModel) {
         this.viewSongController = viewSongController;
@@ -34,7 +35,7 @@ public class SongProfileView extends JPanel {
 
 
         //  Song Information  //
-        JPanel labelPanel = new JPanel();
+        JPanel headerPanel = createHeaderPanel();        JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BorderLayout());
         songNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
         songNameLabel.setText(viewModel.getState().getSongName());
@@ -75,6 +76,18 @@ public class SongProfileView extends JPanel {
         // TODO: add action listener for "back button"
     }
 
+    public JPanel createHeaderPanel(){
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBorder (new EmptyBorder(20,20,20,20));
+        headerPanel.setLayout(new BorderLayout());
+
+        songNameLabel.setText(viewModel.getState().getSongName());
+        songNameLabel.setFont(new Font("Serif",Font.BOLD,20));
+
+        artistLabel.setText(viewModel.getState().getArtist());
+        artistLabel.setFont(new Font("Serif",Font.BOLD,20));
+
+    }
 
     private void openWriteReviewDialog() {
         JDialog postReviewDialog = new JDialog((Frame) null, "Write a Review", true);
