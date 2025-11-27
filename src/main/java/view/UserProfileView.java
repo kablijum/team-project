@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.logout.LogoutController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.ViewManagerModel;
@@ -26,8 +27,9 @@ public class UserProfileView extends JPanel {
 
     public static final String VIEW_NAME = "profile";
 
-    public UserProfileView(ProfileReviewsViewModel viewModel,
+    public UserProfileView(LogoutController logoutController, ProfileReviewsViewModel viewModel,
                            ProfileReviewsController controller) {
+        this.logoutController = logoutController;
         this.viewModel = viewModel;
         this.controller = controller;
 
