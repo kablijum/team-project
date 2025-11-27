@@ -62,6 +62,9 @@ public class SongProfileView extends JPanel {
         JPanel reviewsPanel = new JPanel();
         DefaultListModel<ReviewViewModelItem> listModel = new DefaultListModel<>();
         List<ReviewViewModelItem> reviews = viewModel.getState().getReviews();
+        if (reviews == null) {
+            reviews = List.of();
+        }
         for (ReviewViewModelItem item : reviews) {
             listModel.addElement(item);
         }
