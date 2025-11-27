@@ -1,21 +1,34 @@
 package interface_adapter.view_song;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ViewSongState {
-    private Map<String, Object> reviews;
+    private List<ReviewViewModelItem> reviews;
     private double averageRating;
     private String songName;
     private String artist;
     private String message; // "Be the first to leave a review!"
     private int songid;
 
-    public Map<String, Object> getReviews() {
+    public List<ReviewViewModelItem> getReviews() {
         return reviews;
     }
-    public void setReviews(Map<String, Object> reviews) {
-        this.reviews = reviews;
+    public void setReviews(Map<String, List<Object>> reviews) {
+       List<ReviewViewModelItem> items = new ArrayList<>();
+        for (Map.Entry<String, List<Object>> entry : reviews.entrySet()) {
+            ReviewViewModelItem newReview = new ReviewViewModelItem();
+            newReview.setUsername(entry.getKey());
+            List<Object> review = entry.getValue();
+            newReview.setComment(review.get(0).toString());
+            newReview.setRating(Integer.parseInt(review.get(1).toString()));
+
+            items.add(newReview);
+        }
+        this.reviews = items;
     }
+
     public double getAverageRating() {
         return averageRating;
     }
