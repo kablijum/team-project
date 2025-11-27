@@ -1,21 +1,20 @@
 package use_case.upvote;
 
-import entity.Review;
-import entity.User;
-
 public class UpvoteOutputData {
-    final User user;
-    final Review review;
+    final String username;
+    final String reviewUsername;
+    final int songId;
+    final boolean isUpvoted;
 
-    public UpvoteOutputData(User user, Review review) {
-        this.user = user;
-        this.review = review;
+    public UpvoteOutputData(String username, String reviewUsername, int songId,  boolean isUpvoted) {
+        this.username = username;
+        this.reviewUsername = reviewUsername;
+        this.songId = songId;
+        this.isUpvoted = isUpvoted;
     }
 
-    public User getUser() {
-        return user;
-    }
-    public Review getReview() {
-        return review;
-    }
+    public String getUsername() {return username;}
+    public String getReviewUsername() {return reviewUsername;}
+    public int getSongId() {return songId;}
+    public boolean isUpvoted() {return isUpvoted;}
 }

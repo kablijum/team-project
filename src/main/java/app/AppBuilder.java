@@ -1,7 +1,9 @@
 package app;
 
+import data_access.DBSongDataAccessObject;
 import data_access.SongDataAccessObject;
 import data_access.DBUserDataAccessObject;
+import entity.Song;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -17,11 +19,16 @@ import interface_adapter.search.SearchViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.upvote_review.UpvoteController;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import use_case.post_review.PostInputData;
+import use_case.post_review.PostInputDataBoundary;
+import use_case.upvote.UpvoteInputBoundary;
+import use_case.upvote.UpvoteInputData;
 import view.UserProfileView;
 import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
@@ -45,6 +52,7 @@ import view.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppBuilder {
@@ -74,6 +82,8 @@ public class AppBuilder {
     private ProfileReviewsViewModel profileReviewsViewModel;
     private UserProfileView userProfileView;
     private ProfileReviewsController profileReviewsController;
+    private ViewSongController viewSongController;
+    private UpvoteController upvoteController;
 
 
     public AppBuilder() {
@@ -94,6 +104,9 @@ public class AppBuilder {
         if (searchViewModel == null) {
             searchViewModel = new SearchViewModel();
         }
+        if (viewSongController == null || viewSongViewModel == null) {
+            addViewSongProfile();
+        }
         if (searchController == null) {
             SearchUserDataAccessInterface dataAccess =
                     new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
@@ -106,6 +119,7 @@ public class AppBuilder {
                 loggedInViewModel,
                 searchViewModel,
                 searchController,
+                viewSongController,
                 viewSongViewModel,
                 viewManagerModel
         );
@@ -157,7 +171,47 @@ public class AppBuilder {
     }
 
     public AppBuilder addViewSongProfile() {
-        viewSongViewModel = new ViewSongViewModel();
+
+        if (viewSongViewModel == null) viewSongViewModel = new ViewSongViewModel();
+
+        if (postController == null) {
+            final PostInputDataBoundary postInputDataBoundary = new PostInputDataBoundary() {
+                @Override
+                public void execute(PostInputData postInputData) { }
+            };
+            postController = new PostController(postInputDataBoundary);
+        }
+
+        if (upvoteController == null) {
+            final UpvoteInputBoundary upvoteInputBoundary = new UpvoteInputBoundary() {
+                @Override
+                public void execute(UpvoteInputData upvoteInputData) { }
+            };
+            upvoteController = new UpvoteController(upvoteInputBoundary);
+        }
+
+        ViewSongOutputDataBoundary presenter =
+                new ViewSongPresenter(viewSongViewModel, viewManagerModel);
+
+        ViewSongDataAccessInterface databaseDAO = new DBSongDataAccessObject();
+
+        String token = "JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK";
+        ViewSongNewDataAccessInterface externalAPI = new SongDataAccessObject(token);
+
+        ViewSongInputDataBoundary interactor =
+                new ViewSongInteractor(presenter, databaseDAO, externalAPI);
+
+        viewSongController = new ViewSongController(interactor);
+
+        songProfileView = new SongProfileView(
+                viewSongController,
+                viewSongViewModel,
+                postController,
+                upvoteController,
+                loginViewModel
+        );
+        cardPanel.add(songProfileView, viewSongViewModel.getViewName());
+
         return this;
     }
 
@@ -219,5 +273,4 @@ public class AppBuilder {
 
         return application;
     }
-
 }

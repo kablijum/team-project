@@ -17,20 +17,21 @@ public class UpvoteInteractor implements UpvoteInputBoundary {
     @Override
     public void execute(UpvoteInputData upvoteInputData) {
         // DAOs do not modify the InputData so we need to update it here.
-        songDataAccessObject.upvoteReview(upvoteInputData.getUser(), upvoteInputData.getReview());
-        userDataAccessObject.upvoteReview(upvoteInputData.getUser(), upvoteInputData.getReview());
-        User upvotedUser = upvoteInputData.getUser();
-        Review upvotedReview = upvoteInputData.getReview();
-        if (upvotedUser.hasUpvoted(upvotedReview)) {
-            upvotedUser.removeUpvote(upvotedReview);
-            upvotedReview.removeUpvote();
+        String username = upvoteInputData.getUsername();
+        String reviewUsername = upvoteInputData.getReviewUsername();
+        int songId = upvoteInputData.getSongId();
+
+        boolean isUpvoted = userDataAccessObject.isUpvoted(username, reviewUsername, songId);
+        if (!isUpvoted) {
+            songDataAccessObject.upvoteReview(reviewUsername, songId);
+            userDataAccessObject.upvoteReview(username, reviewUsername, songId);
         }
         else {
-            upvotedUser.upvoteReview(upvotedReview);
-            upvotedReview.addUpvote();
+            songDataAccessObject.downvoteReview(reviewUsername, songId);
+            userDataAccessObject.downvoteReview(username, reviewUsername, songId);
         }
 
-        UpvoteOutputData upvoteOutputData = new UpvoteOutputData(upvotedUser, upvotedReview);
+        UpvoteOutputData upvoteOutputData = new UpvoteOutputData(username, reviewUsername, songId, isUpvoted);
         upvotePresenter.prepareSuccessView(upvoteOutputData);
     }
 }

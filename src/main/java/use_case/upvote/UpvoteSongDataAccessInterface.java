@@ -6,8 +6,9 @@ import entity.User;
 public interface UpvoteSongDataAccessInterface {
     /**
      * Checks if the given username exists.
-     * @param user the username of the user upvoting a review.
-     * @param review the upvoted review
+     * @param reviewUsername the username of the upvoted review.
+     * @param songId the songid where upvoted review is written of.
      */
-    void upvoteReview(User user, Review review);
+    void upvoteReview(String reviewUsername, int songId);
+    void downvoteReview(String reviewUsername, int songId);
 }

@@ -3,6 +3,7 @@ package view;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.search.SearchController;
 import interface_adapter.search.SearchViewModel;
+import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongState;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.ViewManagerModel;
@@ -28,6 +29,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
     private final ViewSongViewModel viewSongViewModel;
     private final ViewManagerModel viewManagerModel;
     private ProfileReviewsController profileController;
+    private ViewSongController viewSongController;
 
     public void setProfileController(ProfileReviewsController profileController) {
         this.profileController = profileController;
@@ -40,6 +42,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
     public HomeView(LoggedInViewModel loggedInViewModel,
                     SearchViewModel searchViewModel,
                     SearchController searchController,
+                    ViewSongController viewSongController,
                     ViewSongViewModel viewSongViewModel,
                     ViewManagerModel viewManagerModel) {
 
@@ -48,6 +51,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
         this.searchController = searchController;
         this.viewSongViewModel = viewSongViewModel;
         this.viewManagerModel = viewManagerModel;
+        this.viewSongController = viewSongController;
         this.loggedInViewModel.addPropertyChangeListener(this);
         this.searchViewModel.addPropertyChangeListener(this);
 
@@ -101,42 +105,12 @@ public class HomeView extends JPanel implements PropertyChangeListener {
 
         add(center, BorderLayout.CENTER);
 
-        // ==== Listeners ====
-
         // Search button click
         searchButton.addActionListener(e ->
                 searchController.executeSearch(searchField.getText())
         );
-
-        // Live search
-        searchField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                triggerLiveSearch();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                triggerLiveSearch();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                triggerLiveSearch();
-            }
-        });
     }
-
-    // ========== Search helpers ==========
-    private void triggerLiveSearch() {
-        String query = searchField.getText().trim();
-        if (!query.isEmpty()) {
-            searchController.executeSearch(query);
-        } else {
-            dropdownMenu.setVisible(false);
-        }
-    }
-
+    // ================= Dropdown helper =================
     private void showDropdown(java.util.List<SearchOutputData.SongResult> results) {
         dropdownMenu.removeAll();
 
@@ -145,19 +119,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
 
             item.addActionListener(e -> {
                 dropdownMenu.setVisible(false);
-
-                // Prepare view song state
-                ViewSongState newState = new ViewSongState();
-                newState.setSongId(r.getId());
-                newState.setSongName(r.getName());
-                newState.setArtist(r.getArtist());
-
-                viewSongViewModel.setState(newState);
-                viewSongViewModel.firePropertyChange();
-
-                // Navigate to SongProfileView
-                viewManagerModel.setState("song profile");
-                viewManagerModel.firePropertyChange();
+                viewSongController.execute(r.getId());
             });
 
             dropdownMenu.add(item);
@@ -179,7 +141,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
             }
 
             if (results.isEmpty()) {
-              dropdownMenu.setVisible(false);
+                dropdownMenu.setVisible(false);
                 JOptionPane.showMessageDialog(this, "No results found.");
                 return;
             }

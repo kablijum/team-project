@@ -2,6 +2,7 @@ package use_case.view_song;
 
 import interface_adapter.view_song.ViewSongViewModel;
 
+import java.util.List;
 import java.util.Map;
 
 public class ViewSongOutputData {
@@ -12,7 +13,7 @@ public class ViewSongOutputData {
     private String artist;
     private double averageRating;
     private int songId;
-    private Map<String, Object> reviews;
+    private Map<String, List<Object>> reviews;
 
     ViewSongOutputData(String songName, String artist, int songid) {
         this.songId = songid;
@@ -36,10 +37,10 @@ public class ViewSongOutputData {
     public void setAverageRating(double averageRating){
         this.averageRating = averageRating;
     }
-    public void setReviews(Map<String, Object> reviews) {
+    public void setReviews(Map<String, List<Object>> reviews) {
         this.reviews = reviews;
     }
-    public Map<String, Object> getReviews() {
+    public Map<String, List<Object>> getReviews() {
         return reviews;
     }
     public void setMessage(String message) {
