@@ -10,4 +10,5 @@ public interface UpvoteSongDataAccessInterface {
      * @param songId the songid where upvoted review is written of.
      */
     void upvoteReview(String reviewUsername, int songId);
+    void downvoteReview(String reviewUsername, int songId);
 }

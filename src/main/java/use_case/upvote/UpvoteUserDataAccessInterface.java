@@ -1,8 +1,5 @@
 package use_case.upvote;
 
-import entity.Review;
-import entity.User;
-
 public interface UpvoteUserDataAccessInterface {
     /**
      * Checks if the given username exists.
@@ -11,4 +8,6 @@ public interface UpvoteUserDataAccessInterface {
      * @param songId the songid where upvoted review is written of.
      */
     void upvoteReview(String username, String reviewUsername, int songId);
+    void downvoteReview(String username, String reviewUsername, int songId);
+    boolean isUpvoted(String username, String reviewUsername, int songId);
 }

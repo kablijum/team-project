@@ -1,7 +1,5 @@
 package use_case.upvote;
 
-import entity.Review;
-import entity.User;
 
 public class UpvoteInputData {
     final String username;

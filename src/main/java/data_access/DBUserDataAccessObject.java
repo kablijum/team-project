@@ -157,53 +157,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void save(User user) {
         saveUser(user);
-        final OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
-        final JSONObject requestBody = new JSONObject();
-        requestBody.put(USERNAME, user.getUsername());
-        requestBody.put(PASSWORD, user.getPassword());
-        requestBody.put(INFO, new JSONObject());
-
-        // Make writtenReviews and upvotedReviews a JSONArray and put it in requestBody
-        List<Review> writtenReviews = user.getWrittenReviews();
-        JSONArray writtenReviewsJSONArray = new JSONArray();
-        for (Review review : writtenReviews) {
-            ReviewMapper reviewMapper = new ReviewMapper(review);
-            JSONObject writtenReviewJSONObject = reviewMapper.mapJReviewtoJSON();
-            writtenReviewsJSONArray.put(writtenReviewJSONObject);
-        }
-        requestBody.getJSONObject(INFO).put(WRITTENREVIEWS, new JSONArray(writtenReviewsJSONArray));
-
-        Set<Review> upvotedReviews = user.getUpvotedReviews();
-        JSONArray upvotedReviewsJSONArray = new JSONArray();
-        for (Review review : upvotedReviews) {
-            ReviewMapper reviewMapper = new ReviewMapper(review);
-            JSONObject upvotedReviewJSONObject = reviewMapper.mapJReviewtoJSON();
-            upvotedReviewsJSONArray.put(upvotedReviewJSONObject);
-        }
-        requestBody.getJSONObject(INFO).put(UPVOTEDREVIEWS, new JSONArray(upvotedReviewsJSONArray));
-
-
-        final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
-        final Request request = new Request.Builder()
-                .url("http://vm003.teach.cs.toronto.edu:20112/modifyUserInfo")
-                .method("PUT", body)
-                .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
-                .build();
-        try {
-            final Response response = client.newCall(request).execute();
-
-            final JSONObject responseBody = new JSONObject(response.body().string());
-
-            if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
-                // success!
-            } else {
-                throw new RuntimeException(responseBody.getString(MESSAGE));
-            }
-        } catch (IOException | JSONException ex) {
-            throw new RuntimeException(ex);
-        }
+        updateInfoOfUser(user);
     }
 
     @Override
@@ -240,19 +194,27 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void upvoteReview(String username, String reviewUsername, int songid) {
         User upvotedUser = this.get(username);
+        upvotedUser.upvoteReview(this.getReview(reviewUsername, songid));
 
-        HashMap<String, Review> upvotedUsernames = new HashMap();
-        for (Review upvotedReview : upvotedUser.getUpvotedReviews()) {
-            upvotedUsernames.put(upvotedReview.getUsername(), upvotedReview);
-        }
-        // Check if upvotedUser has previously upvoted this review under the song.
-        if (upvotedUsernames.containsKey(reviewUsername)) {
-            upvotedUser.removeUpvote(upvotedUsernames.get(reviewUsername));
-        }
-        else {
-            upvotedUser.upvoteReview(this.getReview(reviewUsername, songid));
-        }
+        updateInfoOfUser(upvotedUser);
+    }
 
+    @Override
+    public void downvoteReview(String username, String reviewUsername, int songid) {
+        User upvotedUser = this.get(username);
+        upvotedUser.removeUpvote(this.getReview(reviewUsername, songid));
+
+        updateInfoOfUser(upvotedUser);
+    }
+
+    @Override
+    public boolean isUpvoted(String username, String reviewUsername, int songid) {
+        User upvotedUser = this.get(username);
+        Review review = this.getReview(reviewUsername, songid);
+        return upvotedUser.hasUpvoted(review);
+    }
+
+    private static void updateInfoOfUser(User upvotedUser) {
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
 
