@@ -25,6 +25,10 @@ import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import use_case.post_review.PostInputData;
+import use_case.post_review.PostInputDataBoundary;
+import use_case.upvote.UpvoteInputBoundary;
+import use_case.upvote.UpvoteInputData;
 import view.UserProfileView;
 import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
@@ -48,6 +52,7 @@ import view.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppBuilder {
@@ -98,6 +103,9 @@ public class AppBuilder {
 
         if (searchViewModel == null) {
             searchViewModel = new SearchViewModel();
+        }
+        if (viewSongController == null || viewSongViewModel == null) {
+            addViewSongProfile();
         }
         if (searchController == null) {
             SearchUserDataAccessInterface dataAccess =
@@ -163,17 +171,32 @@ public class AppBuilder {
     }
 
     public AppBuilder addViewSongProfile() {
-        viewSongViewModel = new ViewSongViewModel();
+
+        if (viewSongViewModel == null) viewSongViewModel = new ViewSongViewModel();
+
+        if (postController == null) {
+            final PostInputDataBoundary postInputDataBoundary = new PostInputDataBoundary() {
+                @Override
+                public void execute(PostInputData postInputData) { }
+            };
+            postController = new PostController(postInputDataBoundary);
+        }
+
+        if (upvoteController == null) {
+            final UpvoteInputBoundary upvoteInputBoundary = new UpvoteInputBoundary() {
+                @Override
+                public void execute(UpvoteInputData upvoteInputData) { }
+            };
+            upvoteController = new UpvoteController(upvoteInputBoundary);
+        }
+
         ViewSongOutputDataBoundary presenter =
                 new ViewSongPresenter(viewSongViewModel, viewManagerModel);
 
-        Song dummy = new Song(0, "dummy", "dummy");
-        ViewSongDataAccessInterface databaseDAO =
-                new DBSongDataAccessObject(dummy);
+        ViewSongDataAccessInterface databaseDAO = new DBSongDataAccessObject();
 
         String token = "JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK";
-        ViewSongNewDataAccessInterface externalAPI =
-                new SongDataAccessObject(token);
+        ViewSongNewDataAccessInterface externalAPI = new SongDataAccessObject(token);
 
         ViewSongInputDataBoundary interactor =
                 new ViewSongInteractor(presenter, databaseDAO, externalAPI);
@@ -250,5 +273,4 @@ public class AppBuilder {
 
         return application;
     }
-
 }

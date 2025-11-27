@@ -36,10 +36,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     private static final String ADMIN_PASSWORD = "1234";
     private static final String INFO = "info";
 
-    private final Song song;
 
-    public DBSongDataAccessObject(Song song) {
-        this.song = song;
+    public DBSongDataAccessObject() {
     }
 
     @Override
