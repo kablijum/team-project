@@ -18,13 +18,8 @@ public class ProfileReviewsController {
     }
 
     public void goBackToHome() {
-        // TODO: implement navigation to home view
         viewManagerModel.setState(HomeView.VIEW_NAME);
         viewManagerModel.firePropertyChange();
-    }
-
-    public void logout() {
-        // TODO: implement logout use case
     }
 
     public void editReviewAt(int index) {
