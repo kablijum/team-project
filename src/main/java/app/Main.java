@@ -13,8 +13,8 @@ public class Main {
                 .addLoginUseCase()
                 .addSearchUseCase()
                 .addLogoutUseCase()
+                .addChangePasswordUseCase()
                 .addUserProfileView()
-                //.addChangePasswordUseCase()
                 .build();
 
         application.pack();
