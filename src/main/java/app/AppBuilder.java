@@ -15,6 +15,8 @@ import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
 import interface_adapter.post_review.PostController;
+import interface_adapter.post_review.PostPresenter;
+import interface_adapter.post_review.PostViewModel;
 import interface_adapter.search.SearchController;
 import interface_adapter.search.SearchPresenter;
 import interface_adapter.search.SearchViewModel;
@@ -30,6 +32,7 @@ import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.post_review.PostInputData;
 import use_case.post_review.PostInputDataBoundary;
+import use_case.post_review.*;
 import use_case.upvote.UpvoteInputBoundary;
 import use_case.upvote.UpvoteInputData;
 import view.UserProfileView;
@@ -70,6 +73,7 @@ public class AppBuilder {
 
     // DAO version using a shared external database
     final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
+    final DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -81,6 +85,7 @@ public class AppBuilder {
     private SearchController searchController;
     private ViewSongViewModel viewSongViewModel;
     private PostController postController;
+    private PostViewModel postViewModel;
     private SongProfileView songProfileView;
     private ProfileReviewsViewModel profileReviewsViewModel;
     private UserProfileView userProfileView;
@@ -135,7 +140,7 @@ public class AppBuilder {
 
     public AppBuilder addLoginView() {
         loginViewModel = new LoginViewModel();
-        loginView = new LoginView(loginViewModel);
+        loginView = new LoginView(loginViewModel, viewManagerModel);
         cardPanel.add(loginView, loginView.getViewName());
         return this;
     }
@@ -180,11 +185,16 @@ public class AppBuilder {
         if (viewSongViewModel == null) viewSongViewModel = new ViewSongViewModel();
 
         if (postController == null) {
-            final PostInputDataBoundary postInputDataBoundary = new PostInputDataBoundary() {
-                @Override
-                public void execute(PostInputData postInputData) { }
-            };
-            postController = new PostController(postInputDataBoundary);
+            if (postViewModel == null){
+                postViewModel = new PostViewModel();
+            }
+            PostOutputDataBoundary postPresenter = new PostPresenter(postViewModel);
+            PostInputDataBoundary postInteractor = new PostInteractor(
+                    userDataAccessObject,
+                    songDataAccessObject,
+                    postPresenter);
+             postController = new PostController(postInteractor);
+
         }
 
         if (upvoteController == null) {
@@ -213,7 +223,8 @@ public class AppBuilder {
                 viewSongViewModel,
                 postController,
                 upvoteController,
-                loginViewModel
+                loggedInViewModel,
+                postViewModel
         );
         cardPanel.add(songProfileView, viewSongViewModel.getViewName());
 

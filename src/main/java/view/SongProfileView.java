@@ -1,17 +1,18 @@
 package view;
 
-import interface_adapter.login.LoginViewModel;
+import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.post_review.PostController;
+import interface_adapter.post_review.PostState;
+import interface_adapter.post_review.PostViewModel;
 import interface_adapter.upvote_review.UpvoteController;
 import interface_adapter.view_song.ReviewViewModelItem;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongViewModel;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
-import java.util.Map;
 import java.util.List;
 
 
@@ -20,7 +21,8 @@ public class SongProfileView extends JPanel {
     private final PostController postController;
     private final UpvoteController upvoteController;
     private final ViewSongViewModel viewModel;
-    private final LoginViewModel loginViewModel;
+    private final LoggedInViewModel loggedInViewModel;
+    private final PostViewModel postViewModel;
 
     private final JLabel songNameLabel = new JLabel();
     private final JLabel artistLabel = new JLabel();
@@ -32,34 +34,89 @@ public class SongProfileView extends JPanel {
 
     private JList<ReviewViewModelItem> reviewList;
 
-    public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel, PostController postController, UpvoteController upvoteController, LoginViewModel loginViewModel) {
+    public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel, PostController postController, UpvoteController upvoteController, LoggedInViewModel loggedInViewModel, PostViewModel postViewModel) {
         this.viewSongController = viewSongController;
         this.viewModel = viewModel;
         this.postController = postController;
         this.upvoteController = upvoteController;
-        this.loginViewModel = loginViewModel;
+        this.loggedInViewModel = loggedInViewModel;
+        this.postViewModel = postViewModel;
 
 
         setLayout(new BorderLayout());
 
+        JPanel headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
 
-        //  Song Information  //
-        JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new BorderLayout());
-        songNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        songNameLabel.setText(viewModel.getState().getSongName());
-        labelPanel.add(songNameLabel, BorderLayout.WEST);
-
-        artistLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        artistLabel.setText(viewModel.getState().getArtist());
-        labelPanel.add(artistLabel, BorderLayout.CENTER);
-
-        labelPanel.add(backButton, BorderLayout.EAST);
-
-        add(labelPanel, BorderLayout.NORTH);
 
         // Reviews, Average Rating and Add Review //
-        JPanel reviewsPanel = new JPanel();
+        JPanel reviewsPanel = getReviewsPanel();
+
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+
+        if (viewModel.getState().getAverageRating() != 0) {
+            averageRatingLabel.setText("Average Rating:" + "\n" + viewModel.getState().getAverageRating());
+            averageRatingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            averageRatingLabel.setFont(new Font("Serif", Font.BOLD, 12));
+        } else {
+            averageRatingLabel.setText(viewModel.getState().getMessage());
+        }
+
+        rightPanel.add(averageRatingLabel);
+        rightPanel.add(addReview);
+        reviewsPanel.add(rightPanel, BorderLayout.EAST);
+
+        add(reviewsPanel, BorderLayout.CENTER);
+
+        //LISTENERS//
+        addReview.addActionListener(e -> {
+            openWriteReviewDialog();
+        });
+
+        // TODO: add action listener for "back button"
+
+
+        viewModel.addPropertyChangeListener(evt -> {
+
+            // If change, update label
+            songNameLabel.setText(viewModel.getState().getSongName());
+            artistLabel.setText(viewModel.getState().getArtist());
+            if (viewModel.getState().getAverageRating() != 0) {
+                averageRatingLabel.setText("Average Rating:" + "\n" + viewModel.getState().getAverageRating());
+            } else {
+                averageRatingLabel.setText(viewModel.getState().getMessage());
+            }
+
+            // Update review list
+            DefaultListModel<ReviewViewModelItem> listModel = new DefaultListModel<>();
+            System.out.println("Refreshing review list...");
+            List<ReviewViewModelItem> reviews = viewModel.getState().getReviews();
+            System.out.println("Number of reviews: " + (reviews != null ? reviews.size() : "null"));
+            if (reviews != null) {
+                for (ReviewViewModelItem item : reviews) {
+                    listModel.addElement(item);
+                }
+            }
+            reviewList.setModel(listModel);
+
+            revalidate();
+            repaint();
+        });
+    }
+
+
+    private JPanel getReviewsPanel() {
+        JPanel reviewsPanel = new JPanel(new BorderLayout());
+        reviewsPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(60, 60, 60), 1),
+                new EmptyBorder(15, 15, 15, 15)));
+
+        JLabel reviewsTitle = new JLabel("Reviews");
+        reviewsTitle.setFont(new Font("Serif", Font.BOLD, 20));
+        reviewsTitle.setBorder(new EmptyBorder(0, 0, 10, 0));
+
+
         DefaultListModel<ReviewViewModelItem> listModel = new DefaultListModel<>();
         List<ReviewViewModelItem> reviews = viewModel.getState().getReviews();
         if (reviews == null) {
@@ -71,81 +128,129 @@ public class SongProfileView extends JPanel {
 
         this.reviewList = new JList<>(listModel);
         reviewList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        reviewList.setFont(new Font("Serif", Font.PLAIN, 14));
+        reviewList.setBorder(new EmptyBorder(5, 5, 5, 5));
+        reviewList.addListSelectionListener( e -> {
+                    ReviewViewModelItem item = reviewList.getSelectedValue();
+                    if (item != null) {
+                        this.showReviewPopup(item);
+                    }
+                });
+        reviewList.setCellRenderer(new DefaultListCellRenderer() {
+                                       @Override
+                                       public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                                                     int index, boolean isSelected, boolean cellHasFocus) {
+                                           JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
+                                                   index, isSelected, cellHasFocus);
+                                           label.setBorder(new EmptyBorder(10, 10, 10, 10));
+                                           return label;
+                                       }
+                                   });
+
         reviewList.addListSelectionListener( e -> {
             ReviewViewModelItem item = reviewList.getSelectedValue();
             if (item != null) {
                 this.showReviewPopup(item);
             }
         });
+        JScrollPane scrollPane = new JScrollPane(reviewList);
+        scrollPane.setBorder(null);
 
+
+
+        reviewsPanel.add(reviewsTitle,BorderLayout.NORTH);
         reviewsPanel.add(reviewList, BorderLayout.CENTER);
-
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-
-        if(viewModel.getState().getAverageRating() != 0){
-            averageRatingLabel.setText("Average Rating:" + viewModel.getState().getAverageRating());
-        }
-        else{
-            averageRatingLabel.setText(viewModel.getState().getMessage());
-        }
-
-        rightPanel.add(averageRatingLabel);
-        rightPanel.add(addReview);
-        reviewsPanel.add(rightPanel, BorderLayout.EAST);
-
-        add(reviewsPanel, BorderLayout.CENTER);
-
-        //LISTENERS//
-        addReview.addActionListener(e -> openWriteReviewDialog());
-        // TODO: add action listener for "back button"
+        return reviewsPanel;
     }
 
+    public JPanel createHeaderPanel(){
+        JPanel headerPanel = new JPanel(new BorderLayout(10,10));
+        headerPanel.setBorder (new EmptyBorder(20,20,20,20));
+
+        songNameLabel.setText("'" + viewModel.getState().getSongName() + "'");
+        songNameLabel.setFont(new Font("Serif",Font.BOLD,20));
+
+        artistLabel.setText("By:" + viewModel.getState().getArtist());
+        artistLabel.setFont(new Font("Serif",Font.BOLD,15));
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.add(songNameLabel);
+        infoPanel.add(Box.createVerticalStrut(5));
+        infoPanel.add(artistLabel);
+
+        headerPanel.add(infoPanel, BorderLayout.CENTER);
+        headerPanel.add(backButton, BorderLayout.EAST);
+
+        return headerPanel;
+
+    }
 
     private void openWriteReviewDialog() {
         JDialog postReviewDialog = new JDialog((Frame) null, "Write a Review", true);
         postReviewDialog.setLocationRelativeTo(this);
-        postReviewDialog.setSize(300, 250);
+        postReviewDialog.setSize(400, 300);
         postReviewDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
 
         // Comment area as scrollpane //
         JTextArea comment = new JTextArea();
+        comment.setLineWrap(true);
+        comment.setWrapStyleWord(true);
         JScrollPane commentScrollPane = new JScrollPane(comment);
-        postReviewDialog.add(commentScrollPane, BorderLayout.CENTER);
+
 
         //Rating Dropdown menu//
+        JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ratingPanel.add(new JLabel("Rating:"));
         String[] ratings = {"1", "2", "3", "4", "5"};
-        JComboBox<String> selected_ratings = new JComboBox<>(ratings);
+        JComboBox<String> selectedRatings = new JComboBox<>(ratings);
+        ratingPanel.add(selectedRatings);
 
         // Post Button //
         JButton postButton = new JButton("Post Review");
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(postButton);
 
-        postReviewDialog.setLayout(new BoxLayout(postReviewDialog, BoxLayout.Y_AXIS));
-        postReviewDialog.add(commentScrollPane, BorderLayout.CENTER);
-        postReviewDialog.add(selected_ratings, BorderLayout.SOUTH);
+        contentPanel.add(new JLabel("Write your review:"));
+        contentPanel.add(Box.createVerticalStrut(5));
+        contentPanel.add(commentScrollPane);
+        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(ratingPanel);
+        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(buttonPanel);
 
-        postReviewDialog.add(buttonPanel);
+        postReviewDialog.add(contentPanel);
 
-        postReviewDialog.setVisible(true);
 
         postButton.addActionListener(e -> {
             String content = comment.getText();
-            Object selected = selected_ratings.getSelectedItem();
+            Object selected = selectedRatings.getSelectedItem();
+
             if (selected == null) {
                 JOptionPane.showMessageDialog(postReviewDialog, "Please select a rating");
             }
             else {
                 int rating = Integer.parseInt((String) selected);
                 int songID = viewModel.getState().getSongId();
-                String username = loginViewModel.getState().getUsername();
+                String username = loggedInViewModel.getState().getUsername();
                 postController.execute(content, rating, username, songID);
-                postReviewDialog.dispose();
 
-                refresh();
+                if (postViewModel != null && postViewModel.getState().getErrorMessage() != null){
+                    JOptionPane.showMessageDialog(postReviewDialog, postViewModel.getState().getErrorMessage());
+                }
+
+                postViewModel.getState().setErrorMessage(null);
             }
+            postReviewDialog.dispose();
+            refresh();
+
         });
+        postReviewDialog.setVisible(true);
 
     }
     public void showReviewPopup(ReviewViewModelItem review){
@@ -163,7 +268,7 @@ public class SongProfileView extends JPanel {
         dialog.setVisible(true);
 
         upvoteButton.addActionListener(e -> {
-            upvoteController.execute(loginViewModel.getState().getUsername(), review.getUsername(), viewModel.getState().getSongId());
+            upvoteController.execute(loggedInViewModel.getState().getUsername(), review.getUsername(), viewModel.getState().getSongId());
             dialog.dispose();
 
             refresh();
@@ -171,21 +276,9 @@ public class SongProfileView extends JPanel {
     }
 
     public void refresh(){
-        songNameLabel.setText(viewModel.getState().getSongName());
-        artistLabel.setText(viewModel.getState().getArtist());
+        int songid = viewModel.getState().getSongId();
+        viewSongController.execute(songid);
 
-        if (viewModel.getState().getAverageRating() != 0){
-            averageRatingLabel.setText("Average Rating:" + viewModel.getState().getAverageRating());
-        }
-        else{
-            averageRatingLabel.setText(viewModel.getState().getMessage());
-        }
-
-        DefaultListModel<ReviewViewModelItem> listModel = new DefaultListModel<>();
-        for (ReviewViewModelItem item : viewModel.getState().getReviews()) {
-            listModel.addElement(item);
-        }
-        this.reviewList.setModel(listModel);
 
     }
 

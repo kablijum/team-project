@@ -297,6 +297,13 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     public void addReview(Review review, String username) {
         User user = this.get(username);
         user.addWrittenReview(review);
-        this.save(user);
+        if(existsByName(username)){
+            this.updateInfoOfUser(user);
+        }
+        else{
+            this.save(user);
+        }
+
+
     }
 }
