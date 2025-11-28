@@ -10,9 +10,10 @@ public class PostController {
     public PostController(PostInputDataBoundary interactor) {
         this.interactor = interactor;
     }
+
     public void execute(String comment, int rating, String user, int songid) {
-        PostInputData postInputData = new PostInputData(comment, rating, user, songid);
-        interactor.execute(postInputData);
+        PostInputData inputData = new PostInputData(comment, rating, user, songid);
+        interactor.execute(inputData);
 
     }
 
