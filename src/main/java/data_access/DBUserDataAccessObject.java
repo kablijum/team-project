@@ -65,10 +65,26 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                 final JSONObject userJSONObject = responseBody.getJSONObject("user");
                 final String name = userJSONObject.getString(USERNAME);
                 final String password = userJSONObject.getString(PASSWORD);
-                // Get 'info' to retrieve written reviews and upvoted reviews
-                final JSONArray writtenReviewsJSONArray = userJSONObject.getJSONObject(INFO).getJSONArray("writtenReviews");
-                final JSONArray upvotedReviewsJSONArray = userJSONObject.getJSONObject(INFO).getJSONArray("upvotedReviews");
+
+                JSONObject infoObject = userJSONObject.optJSONObject(INFO);
+
+                JSONArray writtenReviewsJSONArray = new JSONArray();
+                JSONArray upvotedReviewsJSONArray = new JSONArray();
+
+                if (infoObject != null) {
+                    JSONArray wr = infoObject.optJSONArray(WRITTENREVIEWS);
+                    if (wr != null) {
+                        writtenReviewsJSONArray = wr;
+                    }
+
+                    JSONArray ur = infoObject.optJSONArray(UPVOTEDREVIEWS);
+                    if (ur != null) {
+                        upvotedReviewsJSONArray = ur;
+                    }
+                }
+
                 User user = userFactory.create(name, password);
+
                 for (int i = 0; i < writtenReviewsJSONArray.length(); i++) {
                     JSONObject writtenReviewJSONObject = writtenReviewsJSONArray.getJSONObject(i);
                     ReviewMapper reviewMapper = new ReviewMapper(writtenReviewJSONObject);
@@ -91,6 +107,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
             throw new RuntimeException(ex);
         }
     }
+
 
     @Override
     public void setCurrentUsername(String name) {
