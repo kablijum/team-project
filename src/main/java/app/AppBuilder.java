@@ -216,7 +216,7 @@ public class AppBuilder {
         ViewSongInputDataBoundary interactor =
                 new ViewSongInteractor(presenter, databaseDAO, externalAPI);
 
-        viewSongController = new ViewSongController(interactor);
+        viewSongController = new ViewSongController(interactor, viewManagerModel);
 
         songProfileView = new SongProfileView(
                 viewSongController,
