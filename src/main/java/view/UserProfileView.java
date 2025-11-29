@@ -1,18 +1,22 @@
 package view;
 
-import interface_adapter.logout.LogoutController;
+import interface_adapter.edit_review.EditReviewController;
+import interface_adapter.edit_review.EditReviewViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
-import interface_adapter.ViewManagerModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class UserProfileView extends JPanel {
+public class UserProfileView extends JPanel implements PropertyChangeListener {
 
     private final ProfileReviewsViewModel viewModel;
     private final ProfileReviewsController controller;
+    private final EditReviewController editController;
+    private final EditReviewViewModel editViewModel;
 
     private final JButton backButton = new JButton("Back to Home");
     private final JButton logoutButton = new JButton("Logout");
@@ -28,9 +32,16 @@ public class UserProfileView extends JPanel {
     public static final String VIEW_NAME = "profile";
 
     public UserProfileView(ProfileReviewsViewModel viewModel,
-                           ProfileReviewsController controller) {
+                           ProfileReviewsController controller,
+                           EditReviewController editController,
+                           EditReviewViewModel editViewModel) {
         this.viewModel = viewModel;
         this.controller = controller;
+        this.editController = editController;
+        this.editViewModel = editViewModel;
+
+        //Edit Listener
+        this.editViewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout());
 
@@ -51,10 +62,13 @@ public class UserProfileView extends JPanel {
         topBar.add(rightButtons, BorderLayout.EAST);
         add(topBar, BorderLayout.NORTH);
 
-        // Middle：My Reviews:      [Edit]
+        // Middle：My Reviews:      [Edit] [Delete]
         JPanel middleBar = new JPanel(new BorderLayout());
         middleBar.add(myReviewsLabel, BorderLayout.WEST);
-        middleBar.add(editButton, BorderLayout.EAST);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(editButton);
+        middleBar.add(buttonPanel, BorderLayout.EAST);
 
         // Reviews List
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -73,7 +87,7 @@ public class UserProfileView extends JPanel {
         editButton.addActionListener(e -> {
             int index = reviewList.getSelectedIndex();
             if (index >= 0) {
-                controller.editReviewAt(index);
+                editReviewAt(index);
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Please select a review to edit.",
@@ -83,6 +97,110 @@ public class UserProfileView extends JPanel {
         });
 
         refresh();
+    }
+
+    public void editReviewAt(int index) {
+        List<ProfileReviewsViewModel.ReviewRow> reviewRows = viewModel.getReviews();
+        if (index < 0 || index >= reviewRows.size()) {
+            return;
+        }
+
+        ProfileReviewsViewModel.ReviewRow reviewRow = reviewRows.get(index);
+
+        JDialog editDialog = new JDialog((Frame) null, "Edit Review", true);
+        editDialog.setLocationRelativeTo(this);
+        editDialog.setSize(400, 300);
+        editDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        editDialog.setLayout(new BorderLayout(10, 10));
+
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel songInfoLabel = new JLabel("Editing review for song ID: " + reviewRow.getSongTitle());
+        songInfoLabel.setFont(new Font("Arial",  Font.BOLD, 12));
+        mainPanel.add(songInfoLabel, BorderLayout.NORTH);
+
+        JPanel centerPanel = new JPanel(new BorderLayout(5, 5));
+
+        JLabel commentLabel = new JLabel("Comment:");
+        JTextArea commentArea = new JTextArea(reviewRow.getComment());
+        commentArea.setLineWrap(true);
+        commentArea.setWrapStyleWord(true);
+        JScrollPane commentScrollPane = new JScrollPane(commentArea);
+        commentScrollPane.setPreferredSize(new Dimension(350, 150));
+
+        JPanel commentPanel = new JPanel(new BorderLayout(5, 5));
+        commentPanel.add(commentLabel, BorderLayout.NORTH);
+        commentPanel.add(commentScrollPane, BorderLayout.CENTER);
+        centerPanel.add(commentPanel, BorderLayout.CENTER);
+
+        JPanel ratingPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel ratingLabel = new JLabel("Rating:");
+        String[] ratings = {"1", "2", "3", "4", "5"};
+        JComboBox<String> ratingComboBox = new JComboBox<>(ratings);
+        ratingComboBox.setSelectedItem(String.valueOf(reviewRow.getRating()));
+        ratingPanel.add(ratingLabel);
+        ratingPanel.add(ratingComboBox);
+        centerPanel.add(ratingPanel, BorderLayout.SOUTH);
+
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton saveButton = new JButton("Save");
+        JButton cancelButton = new JButton("Cancel");
+
+        saveButton.addActionListener(e -> {
+            String newComment = commentArea.getText().trim();
+            String selectedRating = (String) ratingComboBox.getSelectedItem();
+
+            if (newComment.isEmpty()) {
+                JOptionPane.showMessageDialog(editDialog,
+                        "Comment cannot be empty",
+                        "Invalid Input",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (selectedRating == null) {
+                JOptionPane.showMessageDialog(editDialog,
+                        "Please select a rating",
+                        "Invalid Input",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int newRating = Integer.parseInt(selectedRating);
+            String username = viewModel.getUsername();
+            int songId = reviewRow.getSongId();
+
+            editController.execute(username, songId, newComment,newRating, index);
+            editDialog.dispose();
+        });
+
+        cancelButton.addActionListener(e -> editDialog.dispose());
+
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        editDialog.add(mainPanel);
+        editDialog.setVisible(true);
+
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("editSuccess".equals(evt.getPropertyName())) {
+            JOptionPane.showMessageDialog(this,
+                    editViewModel.getSuccessMessage(),
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            refresh(); // Refresh the view to show updated review
+        } else if ("editFail".equals(evt.getPropertyName())) {
+            JOptionPane.showMessageDialog(this,
+                    editViewModel.getErrorMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     //call from viewModel
