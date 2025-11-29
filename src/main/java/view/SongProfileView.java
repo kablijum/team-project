@@ -137,15 +137,15 @@ public class SongProfileView extends JPanel {
                     }
                 });
         reviewList.setCellRenderer(new DefaultListCellRenderer() {
-                                       @Override
-                                       public Component getListCellRendererComponent(JList<?> list, Object value,
-                                                                                     int index, boolean isSelected, boolean cellHasFocus) {
-                                           JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
-                                                   index, isSelected, cellHasFocus);
-                                           label.setBorder(new EmptyBorder(10, 10, 10, 10));
-                                           return label;
-                                       }
-                                   });
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
+                        index, isSelected, cellHasFocus);
+                label.setBorder(new EmptyBorder(10, 10, 10, 10));
+                return label;
+            }
+        });
 
         reviewList.addListSelectionListener( e -> {
             ReviewViewModelItem item = reviewList.getSelectedValue();

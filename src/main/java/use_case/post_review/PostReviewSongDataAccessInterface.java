@@ -10,4 +10,6 @@ public interface PostReviewSongDataAccessInterface {
     void addReview(Review review, int songid);
 
     Song getSongById(int songid);
+
+    void saveSong(Song song);
 }
