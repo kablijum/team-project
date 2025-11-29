@@ -20,7 +20,7 @@ public class EditOutputData {
         return comment;
     }
 
-    public double getRating() {
+    public double getAverageRating() {
         return rating;
     }
 
