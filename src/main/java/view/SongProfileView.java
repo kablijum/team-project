@@ -137,15 +137,15 @@ public class SongProfileView extends JPanel {
                     }
                 });
         reviewList.setCellRenderer(new DefaultListCellRenderer() {
-                                       @Override
-                                       public Component getListCellRendererComponent(JList<?> list, Object value,
-                                                                                     int index, boolean isSelected, boolean cellHasFocus) {
-                                           JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
-                                                   index, isSelected, cellHasFocus);
-                                           label.setBorder(new EmptyBorder(10, 10, 10, 10));
-                                           return label;
-                                       }
-                                   });
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
+                        index, isSelected, cellHasFocus);
+                label.setBorder(new EmptyBorder(10, 10, 10, 10));
+                return label;
+            }
+        });
 
         reviewList.addListSelectionListener( e -> {
             ReviewViewModelItem item = reviewList.getSelectedValue();
@@ -263,7 +263,7 @@ public class SongProfileView extends JPanel {
                 + "\n" +  "Rating:" + review.getRating());
         JScrollPane reviewScrollPane = new JScrollPane(info);
         dialog.add(reviewScrollPane, BorderLayout.CENTER);
-        dialog.add(upvoteButton, BorderLayout.EAST);
+        dialog.add(upvoteButton, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
 
