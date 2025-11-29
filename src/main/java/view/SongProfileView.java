@@ -29,7 +29,7 @@ public class SongProfileView extends JPanel {
     private final JLabel averageRatingLabel = new JLabel();
 
     private final JButton addReview = new JButton("Write a Review");
-    private final JButton backButton = new JButton("Back");
+    private final JButton backButton = new JButton("Back to Home");
     private final JButton upvoteButton = new JButton("Upvote this review");
 
     private JList<ReviewViewModelItem> reviewList;
@@ -74,7 +74,7 @@ public class SongProfileView extends JPanel {
             openWriteReviewDialog();
         });
 
-        // TODO: add action listener for "back button"
+        backButton.addActionListener(e -> viewSongController.goBackToHome());
 
 
         viewModel.addPropertyChangeListener(evt -> {
