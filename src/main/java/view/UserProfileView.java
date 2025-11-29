@@ -4,6 +4,9 @@ import interface_adapter.edit_review.EditReviewController;
 import interface_adapter.edit_review.EditReviewViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
+import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.LoggedInViewModel;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +20,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     private final ProfileReviewsController controller;
     private final EditReviewController editController;
     private final EditReviewViewModel editViewModel;
+    private final LoggedInViewModel loggedInViewModel;
 
     private final JButton backButton = new JButton("Back to Home");
     private final JButton logoutButton = new JButton("Logout");
@@ -42,6 +46,10 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 
         //Edit Listener
         this.editViewModel.addPropertyChangeListener(this);
+                           LoggedInViewModel loggedInViewModel) {
+        this.viewModel = viewModel;
+        this.controller = controller;
+        this.loggedInViewModel = loggedInViewModel;
 
         setLayout(new BorderLayout());
 
@@ -82,7 +90,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 
         // call controller
         backButton.addActionListener(e -> controller.goBackToHome());
-        changePasswordButton.addActionListener(e -> controller.changePassword());
+        changePasswordButton.addActionListener(e -> showChangePasswordDialog());
         logoutButton.addActionListener(e -> controller.logout());
         editButton.addActionListener(e -> {
             int index = reviewList.getSelectedIndex();
@@ -164,6 +172,37 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                 JOptionPane.showMessageDialog(editDialog,
                         "Please select a rating",
                         "Invalid Input",
+    private void showChangePasswordDialog() {
+        JFrame owner = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        JDialog dialog = new JDialog(owner, "Change your password", true);
+
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel label = new JLabel("New password: ");
+        JPasswordField newPasswordField = new JPasswordField(15);
+        inputPanel.add(label);
+        inputPanel.add(newPasswordField);
+        panel.add(inputPanel, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton updateButton = new JButton("Update password");
+        JButton doneButton = new JButton("return");
+        buttonsPanel.add(updateButton);
+        buttonsPanel.add(doneButton);
+        panel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+
+        updateButton.addActionListener(ev -> {
+            String newPassword = new String(newPasswordField.getPassword()).trim();
+            if (newPassword.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog,
+                        "Password cannot be empty.",
+                        "Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -202,6 +241,23 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+            String username = loggedInViewModel.getState().getUsername();
+
+            controller.changePassword(newPassword, username);
+
+            JOptionPane.showMessageDialog(dialog,
+                    "Password updated.",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            newPasswordField.setText("");
+        });
+
+        doneButton.addActionListener(ev -> dialog.dispose());
+
+        dialog.setVisible(true);
+    }
+
 
     //call from viewModel
     public void refresh() {
