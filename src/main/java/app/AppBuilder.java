@@ -6,6 +6,8 @@ import data_access.DBUserDataAccessObject;
 import entity.Song;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.ChangePasswordController;
+import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -27,13 +29,16 @@ import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import use_case.change_password.ChangePasswordInteractor;
+import use_case.post_review.PostInputData;
+import use_case.post_review.PostInputDataBoundary;
 import use_case.post_review.*;
 import use_case.upvote.UpvoteInputBoundary;
 import use_case.upvote.UpvoteInputData;
 import view.UserProfileView;
 import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
-import use_case.change_password.ChangePasswordInteractor;
+import interface_adapter.logged_in.ChangePasswordController;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
@@ -88,6 +93,7 @@ public class AppBuilder {
     private ViewSongController viewSongController;
     private UpvoteController upvoteController;
     private LogoutController logoutController;
+    private ChangePasswordController changePasswordController;
 
 
     public AppBuilder() {
@@ -228,18 +234,25 @@ public class AppBuilder {
     public AppBuilder addUserProfileView() {
         profileReviewsViewModel = new ProfileReviewsViewModel();
 
+        // build logout stack for profile
         LogoutOutputBoundary logoutOutputBoundary =
                 new LogoutPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
-
         LogoutInputBoundary logoutInteractor =
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
-
         LogoutController logoutController =
                 new LogoutController(logoutInteractor);
 
-        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController);
+        // use BOTH logout + changePassword controllers
+        profileReviewsController =
+                new ProfileReviewsController(
+                        viewManagerModel,
+                        logoutController,
+                        changePasswordController   // 👈 uses the FIELD you set earlier
+                );
 
-        userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController);
+        userProfileView = new UserProfileView(profileReviewsViewModel,
+                                            profileReviewsController,
+                                            loggedInViewModel);
         cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
 
         if (homeView != null) {
@@ -249,17 +262,22 @@ public class AppBuilder {
         return this;
     }
 
-    // public AppBuilder addChangePasswordUseCase() {
-    //    final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
-    //            loggedInViewModel);
-    //
-    //    final ChangePasswordInputBoundary changePasswordInteractor =
-    //           new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
 
-    //    ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
-    //    homeView.setChangePasswordController(changePasswordController);
-    //    return this;
-    //}
+
+    public AppBuilder addChangePasswordUseCase() {
+        ChangePasswordOutputBoundary changePasswordOutputBoundary =
+                new ChangePasswordPresenter(viewManagerModel, loggedInViewModel);
+
+        ChangePasswordInputBoundary changePasswordInteractor =
+                new ChangePasswordInteractor(userDataAccessObject,
+                        changePasswordOutputBoundary,
+                        userFactory);
+
+        changePasswordController = new ChangePasswordController(changePasswordInteractor);
+
+        return this;
+    }
+
 
     /**
      * Adds the Logout Use Case to the application.
