@@ -1,19 +1,19 @@
 package interface_adapter.edit_review;
 
 import use_case.edit_review.EditInputData;
-import use_case.edit_review.EditInputDataBoundary;
+import use_case.edit_review.EditInputDataBoundry;
 
 public class EditReviewController {
 
-    private final EditInputDataBoundary interactor;
+    private final EditInputDataBoundry interactor;
 
-    public EditReviewController(EditInputDataBoundary interactor) {
+    public EditReviewController(EditInputDataBoundry interactor) {
         this.interactor = interactor;
     }
 
-    public void execute(String comment, int rating, String user, int songId,  int reviewIndex) {
+    public void execute(String comment, int rating, String user, int songId) {
 
-        EditInputData inputData = new EditInputData(comment, rating, user, songId,  reviewIndex);
+        EditInputData inputData = new EditInputData(comment, rating, user, songId);
         interactor.execute(inputData);
 
     }
