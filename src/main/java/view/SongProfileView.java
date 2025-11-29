@@ -258,12 +258,12 @@ public class SongProfileView extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setSize(300, 250);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        JTextArea info = new JTextArea( "Review by" + review.getUsername()
+        JTextArea info = new JTextArea( "Review by: " + review.getUsername()
                 + "\n" + review.getComment()
                 + "\n" +  "Rating:" + review.getRating());
         JScrollPane reviewScrollPane = new JScrollPane(info);
         dialog.add(reviewScrollPane, BorderLayout.CENTER);
-        dialog.add(upvoteButton, BorderLayout.EAST);
+        dialog.add(upvoteButton, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
 
