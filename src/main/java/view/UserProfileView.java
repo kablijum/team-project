@@ -174,6 +174,25 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                 return;
             }
 
+            int newRating = Integer.parseInt(selectedRating);
+            String username = viewModel.getUsername();
+            int songId = reviewRow.getSongId();
+
+            editController.execute(username, songId, newComment,newRating, index);
+            editDialog.dispose();
+        });
+
+        cancelButton.addActionListener(e -> editDialog.dispose());
+
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        editDialog.add(mainPanel);
+        editDialog.setVisible(true);
+
+    }
+
     private void showChangePasswordDialog() {
                 JFrame owner = (JFrame) SwingUtilities.getWindowAncestor(this);
 
@@ -226,25 +245,6 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                 dialog.setVisible(true);
             }
 
-
-            int newRating = Integer.parseInt(selectedRating);
-            String username = viewModel.getUsername();
-            int songId = reviewRow.getSongId();
-
-            editController.execute(username, songId, newComment,newRating, index);
-            editDialog.dispose();
-        });
-
-        cancelButton.addActionListener(e -> editDialog.dispose());
-
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        editDialog.add(mainPanel);
-        editDialog.setVisible(true);
-
-    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
