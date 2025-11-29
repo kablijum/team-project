@@ -96,10 +96,10 @@ public class AppBuilder {
     private ProfileReviewsController profileReviewsController;
     private ViewSongController viewSongController;
     private UpvoteController upvoteController;
-    private LogoutController logoutController;
     private EditReviewViewModel editReviewViewModel;
     private EditReviewController editReviewController;
     private ChangePasswordController changePasswordController;
+    private LogoutController logoutController;
 
 
     public AppBuilder() {
@@ -254,13 +254,11 @@ public class AppBuilder {
                 new LogoutPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
         LogoutInputBoundary logoutInteractor =
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
-        LogoutController logoutController =
-                new LogoutController(logoutInteractor);
+        logoutController = new LogoutController(logoutInteractor);
 
-        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController);
+        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
+                changePasswordController);
 
-        userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
-                editReviewViewModel);
         // use BOTH logout + changePassword controllers
         profileReviewsController =
                 new ProfileReviewsController(
@@ -269,9 +267,9 @@ public class AppBuilder {
                         changePasswordController   // 👈 uses the FIELD you set earlier
                 );
 
-        userProfileView = new UserProfileView(profileReviewsViewModel,
-                                            profileReviewsController,
-                                            loggedInViewModel);
+        userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
+                editReviewViewModel, loggedInViewModel);
+
         cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
 
         if (homeView != null) {
