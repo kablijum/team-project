@@ -1,44 +1,73 @@
 package use_case.edit_review;
 
 import entity.Review;
+import entity.User;
 
-public class EditInteractor implements EditInputDataBoundry{
+import java.util.List;
 
-    private final EditReviewUserDataAccesssInterface userData;
+public class EditInteractor implements EditInputDataBoundary {
+
+    private final EditUserDataAccessInterface userData;
     private final EditReviewSongDataAccessInterface songData;
-    private final EditOutputDataBoundry editPresenter;
+    private final EditOutputDataBoundary presenter;
 
-    public EditInteractor(EditReviewUserDataAccesssInterface userData, EditReviewSongDataAccessInterface songData,
-                          EditOutputDataBoundry editPresenter){
+    public EditInteractor(EditUserDataAccessInterface userData, EditReviewSongDataAccessInterface songData,
+                          EditOutputDataBoundary presenter){
         this.userData = userData;
         this.songData = songData;
-        this.editPresenter = editPresenter;
+        this.presenter = presenter;
     }
 
     @Override
     public void execute(EditInputData inputData) {
         final String username = inputData.getUsername();
-        final int songId = inputData.getSongid();
+        final int songId = inputData.getSongId();
         final String comment = inputData.getComment();
         final int rating = inputData.getRating();
+        final int reviewIndex = inputData.getReviewIndex();
 
         if(!songData.existsByUsername(username, songId)){
-            editPresenter.prepareFailView("You have not left a review to edit.");
+            presenter.prepareFailView("You have not left a review to edit.");
         }
-        else{
-            Review existingReview = songData.getReview(username, songId);
-            int upvotes = existingReview.getUpvotes();
+        if (comment == null || comment.trim().isEmpty()) {
+            presenter.prepareFailView("Comment cannot be empty");
+            return;
+        }
+        try {
+            User user = userData.get(username);
+            List<Review> writtenReviews = user.getWrittenReviews();
 
-            Review updatedReview = new Review(username, comment, songId, rating, upvotes);
+            if (reviewIndex < 0 || reviewIndex >= writtenReviews.size()) {
+                presenter.prepareFailView("Invalid review index");
+                return;
+            }
 
-            userData.updateReview(updatedReview, username);
-            songData.updateReview(updatedReview, songId);
+            Review oldReview = writtenReviews.get(reviewIndex);
 
-            double newAverage = songData.getAverageRating(songId);
-            String songName = songData.getSongName(songId);
+            Review updatedReview = new Review(
+                    username,
+                    comment,
+                    oldReview.getSongID(),
+                    rating,
+                    oldReview.getUpvotes()
+            );
 
-            EditOutputData data = new EditOutputData(comment, newAverage, username, songId, songName);
-            editPresenter.prepareSuccessView(data);
+            writtenReviews.remove(reviewIndex);
+            writtenReviews.add(reviewIndex, updatedReview);
+
+            userData.save(user);
+
+            EditOutputData outputData = new EditOutputData(
+                    username,
+                    oldReview.getSongID(),
+                    comment,
+                    rating,
+                    "Review updated successfully"
+            );
+            presenter.prepareSuccessView(outputData);
+
+        } catch (Exception e) {
+            presenter.prepareFailView("Failed to update review: " + e.getMessage());
         }
     }
 
