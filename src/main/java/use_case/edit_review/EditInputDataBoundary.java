@@ -1,6 +1,6 @@
 package use_case.edit_review;
 
-public interface EditInputDataBoundry {
+public interface EditInputDataBoundary {
 
     void execute(EditInputData inputData);
 

@@ -6,6 +6,9 @@ import data_access.DBUserDataAccessObject;
 import entity.Song;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.edit_review.EditReviewController;
+import interface_adapter.edit_review.EditReviewPresenter;
+import interface_adapter.edit_review.EditReviewViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -29,6 +32,7 @@ import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import use_case.edit_review.EditInteractor;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.post_review.PostInputData;
 import use_case.post_review.PostInputDataBoundary;
@@ -93,6 +97,8 @@ public class AppBuilder {
     private ViewSongController viewSongController;
     private UpvoteController upvoteController;
     private LogoutController logoutController;
+    private EditReviewViewModel editReviewViewModel;
+    private EditReviewController editReviewController;
     private ChangePasswordController changePasswordController;
 
 
@@ -180,6 +186,15 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addEditReviewUseCase() {
+        editReviewViewModel = new EditReviewViewModel();
+        final EditReviewPresenter presenter = new EditReviewPresenter(editReviewViewModel);
+        final EditInteractor editInteractor = new EditInteractor(userDataAccessObject, songDataAccessObject, presenter);
+        editReviewController = new EditReviewController(editInteractor);
+
+        return this;
+    }
+
     public AppBuilder addViewSongProfile() {
 
         if (viewSongViewModel == null) viewSongViewModel = new ViewSongViewModel();
@@ -242,6 +257,10 @@ public class AppBuilder {
         LogoutController logoutController =
                 new LogoutController(logoutInteractor);
 
+        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController);
+
+        userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
+                editReviewViewModel);
         // use BOTH logout + changePassword controllers
         profileReviewsController =
                 new ProfileReviewsController(

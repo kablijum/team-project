@@ -13,6 +13,7 @@ public class Main {
                 .addLoginUseCase()
                 .addSearchUseCase()
                 .addLogoutUseCase()
+                .addEditReviewUseCase()
                 .addChangePasswordUseCase()
                 .addUserProfileView()
                 .build();
