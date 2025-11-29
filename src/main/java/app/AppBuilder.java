@@ -6,6 +6,9 @@ import data_access.DBUserDataAccessObject;
 import entity.Song;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.edit_review.EditReviewController;
+import interface_adapter.edit_review.EditReviewPresenter;
+import interface_adapter.edit_review.EditReviewViewModel;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -27,6 +30,7 @@ import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import use_case.edit_review.EditInteractor;
 import use_case.post_review.*;
 import use_case.upvote.UpvoteInputBoundary;
 import use_case.upvote.UpvoteInputData;
@@ -88,6 +92,8 @@ public class AppBuilder {
     private ViewSongController viewSongController;
     private UpvoteController upvoteController;
     private LogoutController logoutController;
+    private EditReviewViewModel editReviewViewModel;
+    private EditReviewController editReviewController;
 
 
     public AppBuilder() {
@@ -174,6 +180,15 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addEditReviewUseCase() {
+        editReviewViewModel = new EditReviewViewModel();
+        final EditReviewPresenter presenter = new EditReviewPresenter(editReviewViewModel);
+        final EditInteractor editInteractor = new EditInteractor(userDataAccessObject, songDataAccessObject, presenter);
+        editReviewController = new EditReviewController(editInteractor);
+
+        return this;
+    }
+
     public AppBuilder addViewSongProfile() {
 
         if (viewSongViewModel == null) viewSongViewModel = new ViewSongViewModel();
@@ -239,7 +254,8 @@ public class AppBuilder {
 
         profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController);
 
-        userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController);
+        userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
+                editReviewViewModel);
         cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
 
         if (homeView != null) {
