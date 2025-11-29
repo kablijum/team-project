@@ -13,10 +13,9 @@ import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.post_review.PostReviewUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.upvote.UpvoteUserDataAccessInterface;
+import use_case.edit_review.EditUserDataAccessInterface;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +28,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                                                ChangePasswordUserDataAccessInterface,
                                                LogoutUserDataAccessInterface,
                                                 UpvoteUserDataAccessInterface,
-                                               PostReviewUserDataAccessInterface {
+                                               PostReviewUserDataAccessInterface,
+                                                EditUserDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
