@@ -1,6 +1,8 @@
 package use_case.edit_review;
 
-public interface EditOutputDataBoundry {
+import use_case.post_review.PostOutputData;
+
+public interface EditOutputDataBoundary {
 
     void prepareSuccessView(EditOutputData outputData);
 
