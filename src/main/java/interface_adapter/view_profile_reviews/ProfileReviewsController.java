@@ -16,22 +16,21 @@ public class ProfileReviewsController {
     private final LogoutController logoutController;
     private final ChangePasswordController changePasswordController;
     private final ViewProfileInputBoundary viewProfileInteractor;
-    private final LoggedInViewModel loggedInViewModel;
+//    private final LoggedInViewModel loggedInViewModel;
 
     public ProfileReviewsController(ViewManagerModel viewManagerModel,
                                     LogoutController logoutController,
                                     ChangePasswordController changePasswordController,
-                                    ViewProfileInputBoundary viewProfileInteractor,
-                                    LoggedInViewModel loggedInViewModel) {
+                                    ViewProfileInputBoundary viewProfileInteractor) {
         this.viewManagerModel = viewManagerModel;
         this.logoutController = logoutController;
         this.changePasswordController = changePasswordController;
         this.viewProfileInteractor = viewProfileInteractor;
-        this.loggedInViewModel = loggedInViewModel;
+//        this.loggedInViewModel = loggedInViewModel;
     }
 
-    public void openProfile() {
-        String username = loggedInViewModel.getState().getUsername();
+    public void openProfile(String username) {
+//        String username = loggedInViewModel.getState().getUsername();
 
         ViewProfileInputData input = new ViewProfileInputData(username);
         viewProfileInteractor.execute(input);

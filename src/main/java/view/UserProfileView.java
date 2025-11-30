@@ -122,7 +122,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel songInfoLabel = new JLabel("Editing review for song ID: " + reviewRow.getSongTitle());
+        JLabel songInfoLabel = new JLabel("Editing review for song ID: " + reviewRow.getSongID());
         songInfoLabel.setFont(new Font("Arial",  Font.BOLD, 12));
         mainPanel.add(songInfoLabel, BorderLayout.NORTH);
 
