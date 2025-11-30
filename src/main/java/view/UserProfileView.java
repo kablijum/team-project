@@ -46,6 +46,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         this.editViewModel = editViewModel;
         this.loggedInViewModel = loggedInViewModel;
 
+        this.viewModel.addPropertyChangeListener(this);
+
         //Edit Listener
         this.editViewModel.addPropertyChangeListener(this);
 
@@ -101,7 +103,6 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                         JOptionPane.WARNING_MESSAGE);
             }
         });
-
         refresh();
     }
 
@@ -122,7 +123,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel songInfoLabel = new JLabel("Editing review for song ID: " + reviewRow.getSongTitle());
+        JLabel songInfoLabel = new JLabel("Editing review for song ID: " + reviewRow.getSongID());
         songInfoLabel.setFont(new Font("Arial",  Font.BOLD, 12));
         mainPanel.add(songInfoLabel, BorderLayout.NORTH);
 
@@ -176,7 +177,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 
             int newRating = Integer.parseInt(selectedRating);
             String username = viewModel.getUsername();
-            int songId = reviewRow.getSongId();
+            int songId = reviewRow.getSongID();
 
             editController.execute(username, songId, newComment,newRating, index);
             editDialog.dispose();
@@ -248,7 +249,10 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("editSuccess".equals(evt.getPropertyName())) {
+        if (evt.getSource() == this.viewModel) {
+            refresh();
+        }
+        else if ("editSuccess".equals(evt.getPropertyName())) {
             JOptionPane.showMessageDialog(this,
                     editViewModel.getSuccessMessage(),
                     "Success",
@@ -271,7 +275,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 //        List<ProfileReviewsViewModel.ReviewRow> reviews = viewModel.getReviews();
         for (ProfileReviewsViewModel.ReviewRow r : viewModel.getReviews()) {
             String line = String.format(
-                    "%s  |  Your rating: %d  |  %s",
+                    "Song: %s  |  Your rating: %d  |  Comment: %s",
                     r.getSongTitle(),
                     r.getRating(),
                     r.getComment()

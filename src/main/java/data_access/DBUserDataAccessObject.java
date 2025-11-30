@@ -14,6 +14,7 @@ import use_case.post_review.PostReviewUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.upvote.UpvoteUserDataAccessInterface;
 import use_case.edit_review.EditUserDataAccessInterface;
+import use_case.view_profile.ViewProfileUserDataAccessInterface;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,7 +30,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                                                LogoutUserDataAccessInterface,
                                                 UpvoteUserDataAccessInterface,
                                                PostReviewUserDataAccessInterface,
-                                                EditUserDataAccessInterface {
+                                                EditUserDataAccessInterface,
+                                                ViewProfileUserDataAccessInterface
+                                                {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -302,4 +305,11 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
 
     }
+
+    @Override
+    public List<Review> getUserReviews(String username) {
+        User user = this.get(username);
+        return user.getWrittenReviews();
+    }
+
 }

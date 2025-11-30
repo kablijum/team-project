@@ -12,6 +12,7 @@ import use_case.edit_review.EditReviewSongDataAccessInterface;
 import use_case.upvote.UpvoteSongDataAccessInterface;
 import use_case.post_review.PostReviewSongDataAccessInterface;
 import use_case.view_song.ViewSongDataAccessInterface;
+import use_case.view_profile.ViewProfileSongDataAccessInterface;
 import use_case.edit_review.EditReviewSongDataAccessInterface;
 
 import java.io.IOException;
@@ -27,7 +28,9 @@ import java.util.List;
 public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface, 
                                                PostReviewSongDataAccessInterface, 
                                                ViewSongDataAccessInterface,
-                                                EditReviewSongDataAccessInterface {
+                                                EditReviewSongDataAccessInterface,
+                                                ViewProfileSongDataAccessInterface
+{
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
