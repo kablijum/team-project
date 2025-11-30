@@ -4,6 +4,7 @@ public class ReviewViewModelItem {
     private String username;
     private String comment;
     private String songID;
+    private int upvotes;
     private int rating;
 
     public String getUsername() {
@@ -18,6 +19,9 @@ public class ReviewViewModelItem {
     public int getRating() {
         return rating;
     }
+    public int getUpvotes() {
+        return upvotes;
+    }
     public void setUsername(String username) {
         this.username = username;
     }
@@ -29,6 +33,9 @@ public class ReviewViewModelItem {
     }
     public void setRating(int rating) {
         this.rating = rating;
+    }
+    public void setUpvotes(int upvotes) {
+        this.upvotes = upvotes;
     }
     public String toString() {
         return username + ": " + comment + " (" + rating + ")";
