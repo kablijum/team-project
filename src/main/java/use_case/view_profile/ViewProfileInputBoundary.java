@@ -1,5 +1,5 @@
 package use_case.view_profile;
 
 public interface ViewProfileInputBoundary {
-    void execute(ViewProfileInputData input);
+    void execute(ViewProfileInputData inputData);
 }

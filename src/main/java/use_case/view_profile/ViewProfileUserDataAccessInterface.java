@@ -4,6 +4,5 @@ import entity.Review;
 import java.util.List;
 
 public interface ViewProfileUserDataAccessInterface {
-    String getCurrentUsername();
     List<Review> getUserReviews(String username);
 }

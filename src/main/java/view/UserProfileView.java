@@ -176,7 +176,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 
             int newRating = Integer.parseInt(selectedRating);
             String username = viewModel.getUsername();
-            int songId = reviewRow.getSongId();
+            int songId = reviewRow.getSongID();
 
             editController.execute(username, songId, newComment,newRating, index);
             editDialog.dispose();
@@ -272,7 +272,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         for (ProfileReviewsViewModel.ReviewRow r : viewModel.getReviews()) {
             String line = String.format(
                     "%s  |  Your rating: %d  |  %s",
-                    r.getSongTitle(),
+                    r.getSongID(),
                     r.getRating(),
                     r.getComment()
             );

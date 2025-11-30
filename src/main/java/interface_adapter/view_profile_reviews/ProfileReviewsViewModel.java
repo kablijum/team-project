@@ -6,33 +6,19 @@ import java.util.List;
 public class ProfileReviewsViewModel {
 
     public static class ReviewRow {
-        private final String songTitle;
+        private final int songID;
         private final int rating;
         private final String comment;
-        private final int songId;
 
-        public ReviewRow(String songTitle, int rating, String comment, int songId) {
-            this.songTitle = songTitle;
+        public ReviewRow(int songID, int rating, String comment) {
+            this.songID = songID;
             this.rating = rating;
             this.comment = comment;
-            this.songId = songId;
         }
 
-        public String getSongTitle() {
-            return songTitle;
-        }
-
-        public int getRating() {
-            return rating;
-        }
-
-        public String getComment() {
-            return comment;
-        }
-
-        public int getSongId() {
-            return songId;
-        }
+        public int getSongID() { return songID; }
+        public int getRating() { return rating; }
+        public String getComment() { return comment; }
     }
 
     private String username;
