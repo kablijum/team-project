@@ -273,8 +273,13 @@ public class AppBuilder {
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
         logoutController = new LogoutController(logoutInteractor);
 
-        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
-                changePasswordController, viewProfileInteractor);
+        ProfileReviewsPresenter profileReviewsPresenter =
+                new ProfileReviewsPresenter(profileReviewsViewModel, viewManagerModel);
+
+        viewProfileInteractor = new ViewProfileInteractor(userDataAccessObject, songDataAccessObject, profileReviewsPresenter);
+
+//        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
+//                changePasswordController, viewProfileInteractor);
 
         // use BOTH logout + changePassword controllers
         profileReviewsController =

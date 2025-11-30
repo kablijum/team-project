@@ -5,6 +5,7 @@ import interface_adapter.ViewManagerModel;
 import use_case.view_profile.ViewProfileOutputBoundary;
 import use_case.view_profile.ViewProfileOutputData;
 
+
 public class ProfileReviewsPresenter implements ViewProfileOutputBoundary {
     private final ProfileReviewsViewModel viewModel;
     private final ViewManagerModel viewManagerModel;

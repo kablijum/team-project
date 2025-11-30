@@ -16,9 +16,17 @@ public class ProfileReviewsViewModel {
             this.comment = comment;
         }
 
-        public int getSongID() { return songID; }
-        public int getRating() { return rating; }
-        public String getComment() { return comment; }
+        public int getRating() {
+            return rating;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+
+        public int getSongID() {
+            return songID;
+        }
     }
 
     private String username;
