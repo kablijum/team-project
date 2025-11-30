@@ -11,11 +11,13 @@ public class ProfileReviewsViewModel {
 
     public static class ReviewRow {
         private final int songID;
+        private final String songTitle;
         private final int rating;
         private final String comment;
 
-        public ReviewRow(int songID, int rating, String comment) {
+        public ReviewRow(int songID, String songTitle, int rating, String comment) {
             this.songID = songID;
+            this.songTitle = songTitle;
             this.rating = rating;
             this.comment = comment;
         }
@@ -30,6 +32,10 @@ public class ProfileReviewsViewModel {
 
         public int getSongID() {
             return songID;
+        }
+
+        public String getSongTitle() {
+            return songTitle;
         }
     }
 

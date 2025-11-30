@@ -22,6 +22,7 @@ public class ProfileReviewsPresenter implements ViewProfileOutputBoundary {
         var rows = data.getReviews().stream()
                 .map(r -> new ProfileReviewsViewModel.ReviewRow(
                         r.getSongID(),
+                        r.getSongTitle(),
                         r.getRating(),
                         r.getComment()
                 ))

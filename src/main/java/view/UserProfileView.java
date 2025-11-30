@@ -275,8 +275,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 //        List<ProfileReviewsViewModel.ReviewRow> reviews = viewModel.getReviews();
         for (ProfileReviewsViewModel.ReviewRow r : viewModel.getReviews()) {
             String line = String.format(
-                    "%s  |  Your rating: %d  |  %s",
-                    r.getSongID(),
+                    "Song: %s  |  Your rating: %d  |  Comment: %s",
+                    r.getSongTitle(),
                     r.getRating(),
                     r.getComment()
             );
