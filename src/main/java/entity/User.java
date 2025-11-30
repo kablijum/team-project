@@ -65,7 +65,7 @@ public class User {
     public boolean hasUpvoted(Review review) {
         String reviewUsername = review.getUsername();
         for (Review upvotedReview : upvotedReviews) {
-            if (upvotedReview.getUsername().equals(reviewUsername)) {
+            if (upvotedReview.getUsername().equals(reviewUsername) && upvotedReview.getSongID() == review.getSongID()) {
                 return true;
             }
         }
