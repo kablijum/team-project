@@ -68,7 +68,8 @@ public class HomeView extends JPanel implements PropertyChangeListener {
 
         profileButton.addActionListener(e -> {
             if (profileController != null) {
-                profileController.openProfile();
+                String username = loggedInViewModel.getState().getUsername();
+                profileController.openProfile(username);
             }
         });
 

@@ -34,6 +34,7 @@ import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import interface_adapter.view_profile_reviews.ProfileReviewsPresenter;
 import use_case.edit_review.EditInteractor;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.post_review.PostInputData;
@@ -62,6 +63,8 @@ import use_case.view_song.*;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.view_profile.ViewProfileInteractor;
+import use_case.view_profile.ViewProfileInputBoundary;
 import view.*;
 
 import javax.swing.*;
@@ -105,6 +108,10 @@ public class AppBuilder {
     private EditReviewController editReviewController;
     private ChangePasswordController changePasswordController;
     private LogoutController logoutController;
+    private ViewProfileInputBoundary viewProfileInteractor;
+    private ProfileReviewsPresenter profileReviewsPresenter;
+    private ViewSongPresenter viewSongPresenter;
+
 
 
 
@@ -266,15 +273,21 @@ public class AppBuilder {
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
         logoutController = new LogoutController(logoutInteractor);
 
-        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
-                changePasswordController);
+        ProfileReviewsPresenter profileReviewsPresenter =
+                new ProfileReviewsPresenter(profileReviewsViewModel, viewManagerModel);
+
+        viewProfileInteractor = new ViewProfileInteractor(userDataAccessObject, songDataAccessObject, profileReviewsPresenter);
+
+//        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
+//                changePasswordController, viewProfileInteractor);
 
         // use BOTH logout + changePassword controllers
         profileReviewsController =
                 new ProfileReviewsController(
                         viewManagerModel,
                         logoutController,
-                        changePasswordController
+                        changePasswordController,
+                        viewProfileInteractor
                 );
 
         userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
