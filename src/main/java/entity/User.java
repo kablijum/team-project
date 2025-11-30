@@ -63,6 +63,12 @@ public class User {
     }
 
     public boolean hasUpvoted(Review review) {
-        return upvotedReviews.contains(review);
+        String reviewUsername = review.getUsername();
+        for (Review upvotedReview : upvotedReviews) {
+            if (upvotedReview.getUsername().equals(reviewUsername)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
