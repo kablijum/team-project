@@ -11,6 +11,7 @@ import interface_adapter.view_song.ViewSongViewModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 import java.awt.*;
 import java.util.List;
@@ -140,19 +141,24 @@ public class SongProfileView extends JPanel {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value,
                                                           int index, boolean isSelected, boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
-                        index, isSelected, cellHasFocus);
-                label.setBorder(new EmptyBorder(10, 10, 10, 10));
-                return label;
+                JPanel panel = new JPanel(new BorderLayout(10,0));
+                panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+
+                ReviewViewModelItem item = (ReviewViewModelItem) value;
+                JLabel reviewLabel = new JLabel(item.toString());
+                reviewLabel.setFont(new Font("Serif", Font.BOLD, 14));
+
+                JLabel upvoteLabel = new JLabel("Upvotes: " + item.getUpvotes());
+                upvoteLabel.setFont(new Font("Serif", Font.BOLD, 14));
+                upvoteLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+                panel.add(reviewLabel, BorderLayout.WEST);
+                panel.add(upvoteLabel, BorderLayout.EAST);
+
+                return panel;
             }
         });
 
-        reviewList.addListSelectionListener( e -> {
-            ReviewViewModelItem item = reviewList.getSelectedValue();
-            if (item != null) {
-                this.showReviewPopup(item);
-            }
-        });
         JScrollPane scrollPane = new JScrollPane(reviewList);
         scrollPane.setBorder(null);
 
@@ -258,21 +264,20 @@ public class SongProfileView extends JPanel {
         dialog.setLocationRelativeTo(this);
         dialog.setSize(300, 250);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        JTextArea info = new JTextArea( "Review by" + review.getUsername()
+        JTextArea info = new JTextArea( "Review by: " + review.getUsername()
                 + "\n" + review.getComment()
                 + "\n" +  "Rating:" + review.getRating());
         JScrollPane reviewScrollPane = new JScrollPane(info);
         dialog.add(reviewScrollPane, BorderLayout.CENTER);
         dialog.add(upvoteButton, BorderLayout.SOUTH);
 
-        dialog.setVisible(true);
 
         upvoteButton.addActionListener(e -> {
             upvoteController.execute(loggedInViewModel.getState().getUsername(), review.getUsername(), viewModel.getState().getSongId());
-            dialog.dispose();
-
             refresh();
+            dialog.dispose();
         });
+        dialog.setVisible(true);
     }
 
     public void refresh(){
