@@ -35,9 +35,10 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
             Map<String, List<Object>> reviews = new HashMap<>();
 
             for (Review review : review_list) {
-                List<Object> info = new ArrayList<>(2);
+                List<Object> info = new ArrayList<>(3);
                 info.add(review.getComment());
                 info.add(review.getRating());
+                info.add(review.getUpvotes());
                 reviews.put(review.getUsername(), info);
             }
             // Reviews = {"username": [comment, rating] }

@@ -1,9 +1,11 @@
 package data_access;
 
+import entity.Review;
 import entity.User;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
+import use_case.post_review.PostReviewUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
 import java.util.HashMap;
@@ -16,7 +18,7 @@ import java.util.Map;
 public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterface,
                                                      LoginUserDataAccessInterface,
                                                      ChangePasswordUserDataAccessInterface,
-                                                     LogoutUserDataAccessInterface {
+                                                     LogoutUserDataAccessInterface, PostReviewUserDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();
 
@@ -53,4 +55,11 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
         users.put(user.getUsername(), user);
     }
 
+    @Override
+    public void addReview(Review review, String username) {
+        User user = users.get(username);
+        user.addWrittenReview(review);
+
+
+    }
 }

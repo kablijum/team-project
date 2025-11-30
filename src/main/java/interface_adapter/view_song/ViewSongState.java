@@ -23,6 +23,7 @@ public class ViewSongState {
             List<Object> review = entry.getValue();
             newReview.setComment(review.get(0).toString());
             newReview.setRating(Integer.parseInt(review.get(1).toString()));
+            newReview.setUpvotes(Integer.parseInt(review.get(2).toString()));
 
             items.add(newReview);
         }

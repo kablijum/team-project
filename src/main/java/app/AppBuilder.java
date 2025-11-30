@@ -27,6 +27,8 @@ import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
 import interface_adapter.upvote_review.UpvoteController;
+import interface_adapter.upvote_review.UpvotePresenter;
+import interface_adapter.upvote_review.UpvoteViewModel;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
@@ -39,6 +41,8 @@ import use_case.post_review.PostInputDataBoundary;
 import use_case.post_review.*;
 import use_case.upvote.UpvoteInputBoundary;
 import use_case.upvote.UpvoteInputData;
+import use_case.upvote.UpvoteInteractor;
+import use_case.upvote.UpvoteOutputDataBoundary;
 import view.UserProfileView;
 import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
@@ -96,10 +100,12 @@ public class AppBuilder {
     private ProfileReviewsController profileReviewsController;
     private ViewSongController viewSongController;
     private UpvoteController upvoteController;
+    private UpvoteViewModel upvoteViewModel;
     private EditReviewViewModel editReviewViewModel;
     private EditReviewController editReviewController;
     private ChangePasswordController changePasswordController;
     private LogoutController logoutController;
+
 
 
     public AppBuilder() {
@@ -211,13 +217,17 @@ public class AppBuilder {
              postController = new PostController(postInteractor);
 
         }
-
         if (upvoteController == null) {
-            final UpvoteInputBoundary upvoteInputBoundary = new UpvoteInputBoundary() {
-                @Override
-                public void execute(UpvoteInputData upvoteInputData) { }
-            };
-            upvoteController = new UpvoteController(upvoteInputBoundary);
+            if  (upvoteViewModel == null){
+                upvoteViewModel = new UpvoteViewModel();
+            }
+            UpvoteOutputDataBoundary upvotePresenter = new UpvotePresenter(upvoteViewModel);
+            UpvoteInputBoundary upvoteInteractor = new UpvoteInteractor(
+                    songDataAccessObject,
+                    userDataAccessObject,
+                    upvotePresenter);
+            upvoteController = new UpvoteController(upvoteInteractor);
+
         }
 
         ViewSongOutputDataBoundary presenter =
@@ -231,7 +241,7 @@ public class AppBuilder {
         ViewSongInputDataBoundary interactor =
                 new ViewSongInteractor(presenter, databaseDAO, externalAPI);
 
-        viewSongController = new ViewSongController(interactor);
+        viewSongController = new ViewSongController(interactor, viewManagerModel);
 
         songProfileView = new SongProfileView(
                 viewSongController,
@@ -264,7 +274,7 @@ public class AppBuilder {
                 new ProfileReviewsController(
                         viewManagerModel,
                         logoutController,
-                        changePasswordController   // 👈 uses the FIELD you set earlier
+                        changePasswordController
                 );
 
         userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
