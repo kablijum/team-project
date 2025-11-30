@@ -211,7 +211,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void upvoteReview(String username, String reviewUsername, int songid) {
         User upvotedUser = this.get(username);
-        upvotedUser.upvoteReview(this.getReview(reviewUsername, songid));
+        DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
+        Review review = songDataAccessObject.getReview(reviewUsername, songid);
+        upvotedUser.upvoteReview(review);
 
         updateInfoOfUser(upvotedUser);
     }
@@ -219,7 +221,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void downvoteReview(String username, String reviewUsername, int songid) {
         User upvotedUser = this.get(username);
-        upvotedUser.removeUpvote(this.getReview(reviewUsername, songid));
+        DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
+        Review review = songDataAccessObject.getReview(reviewUsername, songid);
+        upvotedUser.removeUpvote(review);
 
         updateInfoOfUser(upvotedUser);
     }
@@ -227,7 +231,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public boolean isUpvoted(String username, String reviewUsername, int songid) {
         User upvotedUser = this.get(username);
-        Review review = this.getReview(reviewUsername, songid);
+        DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
+        Review review = songDataAccessObject.getReview(reviewUsername, songid);
+        assert review != null;
         return upvotedUser.hasUpvoted(review);
     }
 
@@ -281,16 +287,6 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    public Review getReview(String reviewUsername, int songid) {
-        User reviewUser = this.get(reviewUsername);
-        for (Review writtenReview : reviewUser.getWrittenReviews()) {
-            if (songid == writtenReview.getSongID()) {
-                return writtenReview;
-            }
-        }
-        throw new RuntimeException("No review found for song id " + songid);
     }
 
     @Override
