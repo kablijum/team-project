@@ -35,8 +35,8 @@ public class ProfileReviewsController {
         ViewProfileInputData input = new ViewProfileInputData(username);
         viewProfileInteractor.execute(input);
 
-        viewManagerModel.setState(UserProfileView.VIEW_NAME);
-        viewManagerModel.firePropertyChange();
+//        viewManagerModel.setState(UserProfileView.VIEW_NAME);
+//        viewManagerModel.firePropertyChange();
     }
 
     public void goBackToHome() {

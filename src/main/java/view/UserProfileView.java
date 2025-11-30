@@ -46,6 +46,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         this.editViewModel = editViewModel;
         this.loggedInViewModel = loggedInViewModel;
 
+        this.viewModel.addPropertyChangeListener(this);
+
         //Edit Listener
         this.editViewModel.addPropertyChangeListener(this);
 
@@ -101,7 +103,6 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                         JOptionPane.WARNING_MESSAGE);
             }
         });
-
         refresh();
     }
 
@@ -248,7 +249,10 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("editSuccess".equals(evt.getPropertyName())) {
+        if (evt.getSource() == this.viewModel) {
+            refresh();
+        }
+        else if ("editSuccess".equals(evt.getPropertyName())) {
             JOptionPane.showMessageDialog(this,
                     editViewModel.getSuccessMessage(),
                     "Success",

@@ -4,6 +4,7 @@ import interface_adapter.ViewManagerModel;
 
 import use_case.view_profile.ViewProfileOutputBoundary;
 import use_case.view_profile.ViewProfileOutputData;
+import view.UserProfileView;
 
 
 public class ProfileReviewsPresenter implements ViewProfileOutputBoundary {
@@ -27,7 +28,9 @@ public class ProfileReviewsPresenter implements ViewProfileOutputBoundary {
                 .collect(java.util.stream.Collectors.toList());
         viewModel.setReviews(rows);
 
-        viewManagerModel.setState(ProfileReviewsViewModel.class.getSimpleName());
+        viewModel.firePropertyChange("state");
+
+        viewManagerModel.setState(UserProfileView.VIEW_NAME);
         viewManagerModel.firePropertyChange();
         }
 }

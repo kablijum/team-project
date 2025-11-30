@@ -1,9 +1,13 @@
 package interface_adapter.view_profile_reviews;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileReviewsViewModel {
+
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     public static class ReviewRow {
         private final int songID;
@@ -49,5 +53,13 @@ public class ProfileReviewsViewModel {
         if (reviews != null) {
             this.reviews.addAll(reviews);
         }
+    }
+
+    public void firePropertyChange(String propertyName) {
+        support.firePropertyChange(propertyName, null, this);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
     }
 }
