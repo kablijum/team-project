@@ -259,6 +259,16 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         return false;
     }
 
+    public Review getReview(String username, int songid) {
+        Song song = this.getSongById(songid);
+        for (Review review : song.getReviews()) {
+            if (review.getUsername().equals(username)) {
+                return review;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void addReview(Review review, int songid) {
         Song s = this.getSongById(songid);
