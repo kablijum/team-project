@@ -4,7 +4,6 @@ import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.search.SearchController;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.view_song.ViewSongController;
-import interface_adapter.view_song.ViewSongState;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
@@ -12,7 +11,6 @@ import use_case.search.SearchOutputData;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

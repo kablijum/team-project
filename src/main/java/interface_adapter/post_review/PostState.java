@@ -3,7 +3,6 @@ package interface_adapter.post_review;
 public class PostState {
     private String comment = "";
     private String username = "";
-    private String songname = "";
     private double rating;
     private String errorMessage;
 

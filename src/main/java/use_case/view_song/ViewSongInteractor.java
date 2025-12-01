@@ -16,16 +16,16 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
     private final ViewSongNewDataAccessInterface newSongDataAccess;
     private static final int INFO_VARIABLES = 3;
 
-    public ViewSongInteractor(ViewSongOutputDataBoundary presenter,
-                              ViewSongDataAccessInterface dataAccess,
-                              ViewSongNewDataAccessInterface newSongDataAccess) {
+    public ViewSongInteractor(final ViewSongOutputDataBoundary presenter,
+                              final ViewSongDataAccessInterface dataAccess,
+                              final ViewSongNewDataAccessInterface newSongDataAccess) {
         this.presenter = presenter;
         this.dataAccess = dataAccess;
         this.newSongDataAccess = newSongDataAccess;
     }
 
     @Override
-    public void execute(ViewSongInputData inputData){
+    public void execute(final ViewSongInputData inputData) {
         int songID = inputData.getSongid();
 
         if (dataAccess.songExists(songID)) {
@@ -35,9 +35,8 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
             ViewSongOutputData outputData = getViewSongOutputData(song, songID);
 
             presenter.prepareSuccessView(outputData);
-        }
-        else {
-            List<String> songInfo = null;
+        } else {
+            List<String> songInfo;
             try {
                 songInfo = newSongDataAccess.getInfo(songID);
             } catch (Exception e) {
@@ -50,7 +49,8 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
             dataAccess.saveSong(newSong);
 
             ViewSongOutputData outputData = new ViewSongOutputData(title, artist, songID);
-            outputData.setMessage("Be the first to leave a review!");
+            outputData.setMessage(
+                    "Be the first to leave a review!");
 
             presenter.prepareNewSongView(outputData);
 
@@ -58,7 +58,8 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
     }
 
     @NotNull
-    private static ViewSongOutputData getViewSongOutputData(Song song, int songID) {
+    private static ViewSongOutputData getViewSongOutputData(
+            final Song song, final int songID) {
         double rating = song.getAverageRating();
         String name = song.getName();
         String artist = song.getArtist();
@@ -72,8 +73,8 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
             info.add(review.getUpvotes());
             reviews.put(review.getUsername(), info);
         }
-
-        ViewSongOutputData outputData = new ViewSongOutputData(name, artist, songID);
+        ViewSongOutputData outputData = new
+                ViewSongOutputData(name, artist, songID);
         outputData.setReviews(reviews);
         outputData.setAverageRating(rating);
         return outputData;
