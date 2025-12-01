@@ -1,6 +1,8 @@
 package entity;
 
 
+import java.util.Objects;
+
 public class Review {
 
     private final String username;
@@ -47,5 +49,17 @@ public class Review {
     }
     public void removeUpvote() {
         this.upvotes--;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Review review = (Review) o;
+        return Objects.equals(username, review.username) && Objects.equals(comment, review.comment) && songid == review.songid;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, comment, songid);
     }
 }

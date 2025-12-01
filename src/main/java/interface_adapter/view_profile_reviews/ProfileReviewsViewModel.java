@@ -1,25 +1,27 @@
 package interface_adapter.view_profile_reviews;
 
+import entity.Review;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileReviewsViewModel {
 
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+
     public static class ReviewRow {
+        private final int songID;
         private final String songTitle;
         private final int rating;
         private final String comment;
-        private final int songId;
 
-        public ReviewRow(String songTitle, int rating, String comment, int songId) {
+        public ReviewRow(int songID, String songTitle, int rating, String comment) {
+            this.songID = songID;
             this.songTitle = songTitle;
             this.rating = rating;
             this.comment = comment;
-            this.songId = songId;
-        }
-
-        public String getSongTitle() {
-            return songTitle;
         }
 
         public int getRating() {
@@ -30,8 +32,12 @@ public class ProfileReviewsViewModel {
             return comment;
         }
 
-        public int getSongId() {
-            return songId;
+        public int getSongID() {
+            return songID;
+        }
+
+        public String getSongTitle() {
+            return songTitle;
         }
     }
 
@@ -55,5 +61,13 @@ public class ProfileReviewsViewModel {
         if (reviews != null) {
             this.reviews.addAll(reviews);
         }
+    }
+
+    public void firePropertyChange(String propertyName) {
+        support.firePropertyChange(propertyName, null, this);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
     }
 }

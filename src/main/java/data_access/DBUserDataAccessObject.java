@@ -14,6 +14,7 @@ import use_case.post_review.PostReviewUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.upvote.UpvoteUserDataAccessInterface;
 import use_case.edit_review.EditUserDataAccessInterface;
+import use_case.view_profile.ViewProfileUserDataAccessInterface;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,7 +30,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                                                LogoutUserDataAccessInterface,
                                                 UpvoteUserDataAccessInterface,
                                                PostReviewUserDataAccessInterface,
-                                                EditUserDataAccessInterface {
+                                                EditUserDataAccessInterface,
+                                                ViewProfileUserDataAccessInterface
+                                                {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -65,10 +68,26 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                 final JSONObject userJSONObject = responseBody.getJSONObject("user");
                 final String name = userJSONObject.getString(USERNAME);
                 final String password = userJSONObject.getString(PASSWORD);
-                // Get 'info' to retrieve written reviews and upvoted reviews
-                final JSONArray writtenReviewsJSONArray = userJSONObject.getJSONObject(INFO).getJSONArray("writtenReviews");
-                final JSONArray upvotedReviewsJSONArray = userJSONObject.getJSONObject(INFO).getJSONArray("upvotedReviews");
+
+                JSONObject infoObject = userJSONObject.optJSONObject(INFO);
+
+                JSONArray writtenReviewsJSONArray = new JSONArray();
+                JSONArray upvotedReviewsJSONArray = new JSONArray();
+
+                if (infoObject != null) {
+                    JSONArray wr = infoObject.optJSONArray(WRITTENREVIEWS);
+                    if (wr != null) {
+                        writtenReviewsJSONArray = wr;
+                    }
+
+                    JSONArray ur = infoObject.optJSONArray(UPVOTEDREVIEWS);
+                    if (ur != null) {
+                        upvotedReviewsJSONArray = ur;
+                    }
+                }
+
                 User user = userFactory.create(name, password);
+
                 for (int i = 0; i < writtenReviewsJSONArray.length(); i++) {
                     JSONObject writtenReviewJSONObject = writtenReviewsJSONArray.getJSONObject(i);
                     ReviewMapper reviewMapper = new ReviewMapper(writtenReviewJSONObject);
@@ -91,6 +110,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
             throw new RuntimeException(ex);
         }
     }
+
 
     @Override
     public void setCurrentUsername(String name) {
@@ -194,7 +214,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void upvoteReview(String username, String reviewUsername, int songid) {
         User upvotedUser = this.get(username);
-        upvotedUser.upvoteReview(this.getReview(reviewUsername, songid));
+        DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
+        Review review = songDataAccessObject.getReview(reviewUsername, songid);
+        upvotedUser.upvoteReview(review);
 
         updateInfoOfUser(upvotedUser);
     }
@@ -202,7 +224,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public void downvoteReview(String username, String reviewUsername, int songid) {
         User upvotedUser = this.get(username);
-        upvotedUser.removeUpvote(this.getReview(reviewUsername, songid));
+        DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
+        Review review = songDataAccessObject.getReview(reviewUsername, songid);
+        upvotedUser.removeUpvote(review);
 
         updateInfoOfUser(upvotedUser);
     }
@@ -210,7 +234,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     @Override
     public boolean isUpvoted(String username, String reviewUsername, int songid) {
         User upvotedUser = this.get(username);
-        Review review = this.getReview(reviewUsername, songid);
+        DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
+        Review review = songDataAccessObject.getReview(reviewUsername, songid);
+        assert review != null;
         return upvotedUser.hasUpvoted(review);
     }
 
@@ -266,16 +292,6 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         }
     }
 
-    public Review getReview(String reviewUsername, int songid) {
-        User reviewUser = this.get(reviewUsername);
-        for (Review writtenReview : reviewUser.getWrittenReviews()) {
-            if (songid == writtenReview.getSongID()) {
-                return writtenReview;
-            }
-        }
-        throw new RuntimeException("No review found for song id " + songid);
-    }
-
     @Override
     public void addReview(Review review, String username) {
         User user = this.get(username);
@@ -288,5 +304,61 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         }
 
 
+    }
+
+    @Override
+    public List<Review> getUserReviews(String username) {
+        User user = this.get(username);
+        return user.getWrittenReviews();
+    }
+
+    @Override
+    public void updateUser(User user) {
+        // Use the same logic as changePassword but with full user data
+        final OkHttpClient client = new OkHttpClient().newBuilder().build();
+
+        final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
+        final JSONObject requestBody = new JSONObject();
+        requestBody.put(USERNAME, user.getUsername());
+        requestBody.put(PASSWORD, user.getPassword());
+        requestBody.put(INFO, new JSONObject());
+
+        // Add written reviews
+        List<Review> writtenReviews = user.getWrittenReviews();
+        JSONArray writtenReviewsJSONArray = new JSONArray();
+        for (Review review : writtenReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject writtenReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            writtenReviewsJSONArray.put(writtenReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(WRITTENREVIEWS, writtenReviewsJSONArray);
+
+        // Add upvoted reviews
+        Set<Review> upvotedReviews = user.getUpvotedReviews();
+        JSONArray upvotedReviewsJSONArray = new JSONArray();
+        for (Review review : upvotedReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject upvotedReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            upvotedReviewsJSONArray.put(upvotedReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(UPVOTEDREVIEWS, upvotedReviewsJSONArray);
+
+        final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
+        final Request request = new Request.Builder()
+                .url("http://vm003.teach.cs.toronto.edu:20112/user")
+                .method("PUT", body)  // PUT for update
+                .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
+                .build();
+        try {
+            final Response response = client.newCall(request).execute();
+            final JSONObject responseBody = new JSONObject(response.body().string());
+
+            if (responseBody.getInt(STATUS_CODE_LABEL) != SUCCESS_CODE) {
+                throw new RuntimeException(responseBody.getString(MESSAGE));
+            }
+        }
+        catch (IOException | JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

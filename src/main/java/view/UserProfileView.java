@@ -4,6 +4,11 @@ import interface_adapter.edit_review.EditReviewController;
 import interface_adapter.edit_review.EditReviewViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
+import interface_adapter.ViewManagerModel;
+import interface_adapter.logged_in.LoggedInViewModel;
+import use_case.edit_review.EditReviewSongDataAccessInterface;
+import use_case.edit_review.EditUserDataAccessInterface;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +22,9 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     private final ProfileReviewsController controller;
     private final EditReviewController editController;
     private final EditReviewViewModel editViewModel;
+    private final EditUserDataAccessInterface userData;
+    EditReviewSongDataAccessInterface songData;
+    private final LoggedInViewModel loggedInViewModel;
 
     private final JButton backButton = new JButton("Back to Home");
     private final JButton logoutButton = new JButton("Logout");
@@ -34,11 +42,19 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     public UserProfileView(ProfileReviewsViewModel viewModel,
                            ProfileReviewsController controller,
                            EditReviewController editController,
-                           EditReviewViewModel editViewModel) {
+                           EditReviewViewModel editViewModel,
+                           EditUserDataAccessInterface userData,
+                           EditReviewSongDataAccessInterface songData,
+                           LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
         this.controller = controller;
         this.editController = editController;
         this.editViewModel = editViewModel;
+        this.userData = userData;
+        this.songData = songData;
+        this.loggedInViewModel = loggedInViewModel;
+
+        this.viewModel.addPropertyChangeListener(this);
 
         //Edit Listener
         this.editViewModel.addPropertyChangeListener(this);
@@ -82,7 +98,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
 
         // call controller
         backButton.addActionListener(e -> controller.goBackToHome());
-        changePasswordButton.addActionListener(e -> controller.changePassword());
+        changePasswordButton.addActionListener(e -> showChangePasswordDialog());
         logoutButton.addActionListener(e -> controller.logout());
         editButton.addActionListener(e -> {
             int index = reviewList.getSelectedIndex();
@@ -95,7 +111,6 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                         JOptionPane.WARNING_MESSAGE);
             }
         });
-
         refresh();
     }
 
@@ -116,7 +131,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel songInfoLabel = new JLabel("Editing review for song ID: " + reviewRow.getSongTitle());
+        JLabel songInfoLabel = new JLabel("Editing review for: " + reviewRow.getSongTitle());
         songInfoLabel.setFont(new Font("Arial",  Font.BOLD, 12));
         mainPanel.add(songInfoLabel, BorderLayout.NORTH);
 
@@ -149,9 +164,18 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
 
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        editDialog.add(mainPanel);
+
         saveButton.addActionListener(e -> {
-            String newComment = commentArea.getText().trim();
+            String newComment = commentArea.getText();
             String selectedRating = (String) ratingComboBox.getSelectedItem();
+            int newRating = Integer.parseInt(selectedRating);
+            String username = viewModel.getUsername();
+            int songId = reviewRow.getSongID();
 
             if (newComment.isEmpty()) {
                 JOptionPane.showMessageDialog(editDialog,
@@ -160,36 +184,76 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (selectedRating == null) {
-                JOptionPane.showMessageDialog(editDialog,
-                        "Please select a rating",
-                        "Invalid Input",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
 
-            int newRating = Integer.parseInt(selectedRating);
-            String username = viewModel.getUsername();
-            int songId = reviewRow.getSongId();
-
-            editController.execute(username, songId, newComment,newRating, index);
+            editController.execute(newComment, newRating, username, songId, index);
             editDialog.dispose();
+            refresh();
         });
 
         cancelButton.addActionListener(e -> editDialog.dispose());
 
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        editDialog.add(mainPanel);
         editDialog.setVisible(true);
-
     }
+
+    private void showChangePasswordDialog() {
+                JFrame owner = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+                JDialog dialog = new JDialog(owner, "Change your password", true);
+
+                JPanel panel = new JPanel(new BorderLayout());
+
+                JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                JLabel label = new JLabel("New password: ");
+                JPasswordField newPasswordField = new JPasswordField(15);
+                inputPanel.add(label);
+                inputPanel.add(newPasswordField);
+                panel.add(inputPanel, BorderLayout.CENTER);
+
+                JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                JButton updateButton = new JButton("Update password");
+                JButton doneButton = new JButton("return");
+                buttonsPanel.add(updateButton);
+                buttonsPanel.add(doneButton);
+                panel.add(buttonsPanel, BorderLayout.SOUTH);
+
+                dialog.setContentPane(panel);
+                dialog.pack();
+                dialog.setLocationRelativeTo(this);
+
+                updateButton.addActionListener(ev -> {
+                    String newPassword = new String(newPasswordField.getPassword()).trim();
+                    if (newPassword.isEmpty()) {
+                        JOptionPane.showMessageDialog(dialog,
+                                "Password cannot be empty.",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String username = loggedInViewModel.getState().getUsername();
+
+                    controller.changePassword(newPassword, username);
+
+                    JOptionPane.showMessageDialog(dialog,
+                            "Password updated.",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    newPasswordField.setText("");
+                });
+
+                doneButton.addActionListener(ev -> dialog.dispose());
+
+                dialog.setVisible(true);
+            }
+
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if ("editSuccess".equals(evt.getPropertyName())) {
+        if (evt.getSource() == this.viewModel) {
+            refresh();
+        }
+        else if ("editSuccess".equals(evt.getPropertyName())) {
             JOptionPane.showMessageDialog(this,
                     editViewModel.getSuccessMessage(),
                     "Success",
@@ -203,15 +267,16 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         }
     }
 
+
     //call from viewModel
     public void refresh() {
         usernameLabel.setText(viewModel.getUsername());
 
         reviewListModel.clear();
-        List<ProfileReviewsViewModel.ReviewRow> reviews = viewModel.getReviews();
-        for (ProfileReviewsViewModel.ReviewRow r : reviews) {
+//        List<ProfileReviewsViewModel.ReviewRow> reviews = viewModel.getReviews();
+        for (ProfileReviewsViewModel.ReviewRow r : viewModel.getReviews()) {
             String line = String.format(
-                    "%s  |  Your rating: %d  |  %s",
+                    "Song: %s  |  Your rating: %d  |  Comment: %s",
                     r.getSongTitle(),
                     r.getRating(),
                     r.getComment()

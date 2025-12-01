@@ -14,8 +14,8 @@ public class Main {
                 .addSearchUseCase()
                 .addLogoutUseCase()
                 .addEditReviewUseCase()
+                .addChangePasswordUseCase()
                 .addUserProfileView()
-                //.addChangePasswordUseCase()
                 .build();
 
         application.pack();

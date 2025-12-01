@@ -9,6 +9,8 @@ import interface_adapter.ViewManagerModel;
 import interface_adapter.edit_review.EditReviewController;
 import interface_adapter.edit_review.EditReviewPresenter;
 import interface_adapter.edit_review.EditReviewViewModel;
+import interface_adapter.logged_in.ChangePasswordController;
+import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -25,19 +27,27 @@ import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
 import interface_adapter.upvote_review.UpvoteController;
+import interface_adapter.upvote_review.UpvotePresenter;
+import interface_adapter.upvote_review.UpvoteViewModel;
 import interface_adapter.view_song.ViewSongController;
 import interface_adapter.view_song.ViewSongPresenter;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
+import interface_adapter.view_profile_reviews.ProfileReviewsPresenter;
 import use_case.edit_review.EditInteractor;
+import use_case.change_password.ChangePasswordInteractor;
+import use_case.post_review.PostInputData;
+import use_case.post_review.PostInputDataBoundary;
 import use_case.post_review.*;
 import use_case.upvote.UpvoteInputBoundary;
 import use_case.upvote.UpvoteInputData;
+import use_case.upvote.UpvoteInteractor;
+import use_case.upvote.UpvoteOutputDataBoundary;
 import view.UserProfileView;
 import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
-import use_case.change_password.ChangePasswordInteractor;
+import interface_adapter.logged_in.ChangePasswordController;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
@@ -53,6 +63,8 @@ import use_case.view_song.*;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.view_profile.ViewProfileInteractor;
+import use_case.view_profile.ViewProfileInputBoundary;
 import view.*;
 
 import javax.swing.*;
@@ -91,9 +103,16 @@ public class AppBuilder {
     private ProfileReviewsController profileReviewsController;
     private ViewSongController viewSongController;
     private UpvoteController upvoteController;
-    private LogoutController logoutController;
+    private UpvoteViewModel upvoteViewModel;
     private EditReviewViewModel editReviewViewModel;
     private EditReviewController editReviewController;
+    private ChangePasswordController changePasswordController;
+    private LogoutController logoutController;
+    private ViewProfileInputBoundary viewProfileInteractor;
+    private ProfileReviewsPresenter profileReviewsPresenter;
+    private ViewSongPresenter viewSongPresenter;
+
+
 
 
     public AppBuilder() {
@@ -182,7 +201,7 @@ public class AppBuilder {
 
     public AppBuilder addEditReviewUseCase() {
         editReviewViewModel = new EditReviewViewModel();
-        final EditReviewPresenter presenter = new EditReviewPresenter(editReviewViewModel);
+        final EditReviewPresenter presenter = new EditReviewPresenter(viewManagerModel);
         final EditInteractor editInteractor = new EditInteractor(userDataAccessObject, songDataAccessObject, presenter);
         editReviewController = new EditReviewController(editInteractor);
 
@@ -205,13 +224,17 @@ public class AppBuilder {
              postController = new PostController(postInteractor);
 
         }
-
         if (upvoteController == null) {
-            final UpvoteInputBoundary upvoteInputBoundary = new UpvoteInputBoundary() {
-                @Override
-                public void execute(UpvoteInputData upvoteInputData) { }
-            };
-            upvoteController = new UpvoteController(upvoteInputBoundary);
+            if  (upvoteViewModel == null){
+                upvoteViewModel = new UpvoteViewModel();
+            }
+            UpvoteOutputDataBoundary upvotePresenter = new UpvotePresenter(upvoteViewModel);
+            UpvoteInputBoundary upvoteInteractor = new UpvoteInteractor(
+                    songDataAccessObject,
+                    userDataAccessObject,
+                    upvotePresenter);
+            upvoteController = new UpvoteController(upvoteInteractor);
+
         }
 
         ViewSongOutputDataBoundary presenter =
@@ -225,7 +248,7 @@ public class AppBuilder {
         ViewSongInputDataBoundary interactor =
                 new ViewSongInteractor(presenter, databaseDAO, externalAPI);
 
-        viewSongController = new ViewSongController(interactor);
+        viewSongController = new ViewSongController(interactor, viewManagerModel);
 
         songProfileView = new SongProfileView(
                 viewSongController,
@@ -243,19 +266,33 @@ public class AppBuilder {
     public AppBuilder addUserProfileView() {
         profileReviewsViewModel = new ProfileReviewsViewModel();
 
+        // build logout stack for profile
         LogoutOutputBoundary logoutOutputBoundary =
                 new LogoutPresenter(viewManagerModel, loggedInViewModel, loginViewModel);
-
         LogoutInputBoundary logoutInteractor =
                 new LogoutInteractor(userDataAccessObject, logoutOutputBoundary);
+        logoutController = new LogoutController(logoutInteractor);
 
-        LogoutController logoutController =
-                new LogoutController(logoutInteractor);
+        ProfileReviewsPresenter profileReviewsPresenter =
+                new ProfileReviewsPresenter(profileReviewsViewModel, viewManagerModel);
 
-        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController);
+        viewProfileInteractor = new ViewProfileInteractor(userDataAccessObject, songDataAccessObject, profileReviewsPresenter);
+
+//        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
+//                changePasswordController, viewProfileInteractor);
+
+        // use BOTH logout + changePassword controllers
+        profileReviewsController =
+                new ProfileReviewsController(
+                        viewManagerModel,
+                        logoutController,
+                        changePasswordController,
+                        viewProfileInteractor
+                );
 
         userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
-                editReviewViewModel);
+                editReviewViewModel, userDataAccessObject, songDataAccessObject, loggedInViewModel);
+
         cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
 
         if (homeView != null) {
@@ -265,17 +302,22 @@ public class AppBuilder {
         return this;
     }
 
-    // public AppBuilder addChangePasswordUseCase() {
-    //    final ChangePasswordOutputBoundary changePasswordOutputBoundary = new ChangePasswordPresenter(viewManagerModel,
-    //            loggedInViewModel);
-    //
-    //    final ChangePasswordInputBoundary changePasswordInteractor =
-    //           new ChangePasswordInteractor(userDataAccessObject, changePasswordOutputBoundary, userFactory);
 
-    //    ChangePasswordController changePasswordController = new ChangePasswordController(changePasswordInteractor);
-    //    homeView.setChangePasswordController(changePasswordController);
-    //    return this;
-    //}
+
+    public AppBuilder addChangePasswordUseCase() {
+        ChangePasswordOutputBoundary changePasswordOutputBoundary =
+                new ChangePasswordPresenter(viewManagerModel, loggedInViewModel);
+
+        ChangePasswordInputBoundary changePasswordInteractor =
+                new ChangePasswordInteractor(userDataAccessObject,
+                        changePasswordOutputBoundary,
+                        userFactory);
+
+        changePasswordController = new ChangePasswordController(changePasswordInteractor);
+
+        return this;
+    }
+
 
     /**
      * Adds the Logout Use Case to the application.
@@ -294,7 +336,7 @@ public class AppBuilder {
     }
 
     public JFrame build() {
-        final JFrame application = new JFrame("User Login Example");
+        final JFrame application = new JFrame("RateMyMusic");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         application.add(cardPanel);
