@@ -4,12 +4,14 @@ import entity.Review;
 import entity.Song;
 import use_case.post_review.PostReviewSongDataAccessInterface;
 import use_case.upvote.UpvoteSongDataAccessInterface;
+import use_case.view_profile.ViewProfileSongDataAccessInterface;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InMemorySongDataAccessObject implements PostReviewSongDataAccessInterface, UpvoteSongDataAccessInterface {
+public class InMemorySongDataAccessObject implements PostReviewSongDataAccessInterface, UpvoteSongDataAccessInterface,
+        ViewProfileSongDataAccessInterface{
     private final Map<String, Song> songs = new HashMap<>();
 
     @Override

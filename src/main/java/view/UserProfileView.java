@@ -258,7 +258,12 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                     editViewModel.getSuccessMessage(),
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
-            refresh(); // Refresh the view to show updated review
+
+            String currentUsername = viewModel.getUsername();
+            if (currentUsername != null) {
+                controller.openProfile(currentUsername);
+            }
+//            refresh(); // Refresh the view to show updated review
         } else if ("editFail".equals(evt.getPropertyName())) {
             JOptionPane.showMessageDialog(this,
                     editViewModel.getErrorMessage(),
