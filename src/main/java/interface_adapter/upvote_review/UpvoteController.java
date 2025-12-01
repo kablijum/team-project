@@ -1,15 +1,13 @@
 package interface_adapter.upvote_review;
 
-import entity.Review;
-import entity.User;
 import use_case.upvote.UpvoteInputBoundary;
 import use_case.upvote.UpvoteInputData;
 
 public class UpvoteController {
     private final UpvoteInputBoundary upvoteUseCaseInteractor;
 
-    public UpvoteController(UpvoteInputBoundary upvoteUseCaseInteractor) {
-        this.upvoteUseCaseInteractor = upvoteUseCaseInteractor;
+    public UpvoteController(final UpvoteInputBoundary useCaseInteractor) {
+        this.upvoteUseCaseInteractor = useCaseInteractor;
     }
 
     /**
@@ -18,8 +16,10 @@ public class UpvoteController {
      * @param reviewUsername is the user who wrote the review.
      * @param songId is the id of the song which the review is written about.
      */
-    public void execute(String username, String reviewUsername, int songId) {
-        final UpvoteInputData upvoteInputData = new UpvoteInputData(username, reviewUsername, songId);
+    public void execute(final String username, final String reviewUsername,
+                        final int songId) {
+        final UpvoteInputData upvoteInputData = new UpvoteInputData(username,
+                reviewUsername, songId);
 
         upvoteUseCaseInteractor.execute(upvoteInputData);
     }
