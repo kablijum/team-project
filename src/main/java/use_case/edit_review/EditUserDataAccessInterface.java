@@ -7,4 +7,6 @@ public interface EditUserDataAccessInterface {
     User get(String username);
 
     void save(User user);
+
+    void updateUser(User user);
 }

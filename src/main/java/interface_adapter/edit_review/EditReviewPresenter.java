@@ -1,29 +1,33 @@
 package interface_adapter.edit_review;
 
+import interface_adapter.ViewManagerModel;
 import use_case.edit_review.EditOutputData;
 import use_case.edit_review.EditOutputDataBoundary;
+import javax.swing.JOptionPane;
 
 public class EditReviewPresenter implements EditOutputDataBoundary {
 
-    final  EditReviewViewModel editReviewViewModel;
+    private final ViewManagerModel viewManagerModel;
 
-    public EditReviewPresenter(EditReviewViewModel editReviewViewModel) {
-        this.editReviewViewModel = editReviewViewModel;
+    public EditReviewPresenter(ViewManagerModel viewManagerModel) {
+
+        this.viewManagerModel = viewManagerModel;
     }
 
     @Override
     public void prepareSuccessView(EditOutputData outputData) {
-        EditReviewState editState = editReviewViewModel.getState();
-        editState.setComment(outputData.getComment());
-        editState.setRating(outputData.getAverageRating());
-        editState.setUsername(outputData.getUsername());
-        editState.setSongName(outputData.getSongName());
+        JOptionPane.showMessageDialog(null,
+                "Review updated successfully!",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
-    public void prepareFailView(String errorMessage){
-        EditReviewState editState = editReviewViewModel.getState();
-        editState.setErrorMessage(errorMessage);
+    public void prepareFailView(String errorMessage) {
 
+        JOptionPane.showMessageDialog(null,
+                errorMessage,
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
     }
 }

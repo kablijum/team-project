@@ -27,7 +27,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
     private final ViewSongViewModel viewSongViewModel;
     private final ViewManagerModel viewManagerModel;
     private ProfileReviewsController profileController;
-    private ViewSongController viewSongController;
+    private final ViewSongController viewSongController;
 
     public void setProfileController(ProfileReviewsController profileController) {
         this.profileController = profileController;

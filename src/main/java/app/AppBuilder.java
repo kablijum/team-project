@@ -1,8 +1,8 @@
 package app;
 
 import data_access.DBSongDataAccessObject;
-import data_access.SongDataAccessObject;
 import data_access.DBUserDataAccessObject;
+import data_access.SongDataAccessObject;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.edit_review.EditReviewController;
@@ -184,7 +184,8 @@ public class AppBuilder {
         searchViewModel = new SearchViewModel();
 
         SearchUserDataAccessInterface dataAccess =
-                new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
+                new SongDataAccessObject(
+                        "JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
         SearchOutputDataBoundary presenter = new SearchPresenter(searchViewModel);
         SearchInputDataBoundary interactor = new SearchInteractor(dataAccess, presenter);
 
@@ -194,7 +195,7 @@ public class AppBuilder {
 
     public AppBuilder addEditReviewUseCase() {
         editReviewViewModel = new EditReviewViewModel();
-        final EditReviewPresenter presenter = new EditReviewPresenter(editReviewViewModel);
+        final EditReviewPresenter presenter = new EditReviewPresenter(viewManagerModel);
         final EditInteractor editInteractor = new EditInteractor(userDataAccessObject, songDataAccessObject, presenter);
         editReviewController = new EditReviewController(editInteractor);
 
@@ -203,7 +204,9 @@ public class AppBuilder {
 
     public AppBuilder addViewSongProfile() {
 
-        if (viewSongViewModel == null) viewSongViewModel = new ViewSongViewModel();
+        if (viewSongViewModel == null) {
+            viewSongViewModel = new ViewSongViewModel();
+        }
 
         if (postController == null) {
             if (postViewModel == null){
@@ -215,7 +218,6 @@ public class AppBuilder {
                     songDataAccessObject,
                     postPresenter);
              postController = new PostController(postInteractor);
-
         }
         if (upvoteController == null) {
             if  (upvoteViewModel == null){
@@ -269,7 +271,8 @@ public class AppBuilder {
         ProfileReviewsPresenter profileReviewsPresenter =
                 new ProfileReviewsPresenter(profileReviewsViewModel, viewManagerModel);
 
-        viewProfileInteractor = new ViewProfileInteractor(userDataAccessObject, songDataAccessObject, profileReviewsPresenter);
+        viewProfileInteractor =
+                new ViewProfileInteractor(userDataAccessObject, songDataAccessObject, profileReviewsPresenter);
 
 //        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
 //                changePasswordController, viewProfileInteractor);
@@ -284,7 +287,7 @@ public class AppBuilder {
                 );
 
         userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
-                editReviewViewModel, loggedInViewModel);
+                editReviewViewModel, userDataAccessObject, songDataAccessObject, loggedInViewModel);
 
         cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
 
