@@ -302,8 +302,6 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         else{
             this.save(user);
         }
-
-
     }
 
     @Override
