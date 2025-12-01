@@ -28,7 +28,6 @@ public class SearchInteractorTest {
         }
     }
 
-    // ======== Fake Presenter（代替 Mockito）========
     static class FakePresenter implements SearchOutputDataBoundary {
         SearchOutputData successData;
         String failMessage;
