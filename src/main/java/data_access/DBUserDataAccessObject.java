@@ -312,4 +312,53 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         return user.getWrittenReviews();
     }
 
+    @Override
+    public void updateUser(User user) {
+        // Use the same logic as changePassword but with full user data
+        final OkHttpClient client = new OkHttpClient().newBuilder().build();
+
+        final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);
+        final JSONObject requestBody = new JSONObject();
+        requestBody.put(USERNAME, user.getUsername());
+        requestBody.put(PASSWORD, user.getPassword());
+        requestBody.put(INFO, new JSONObject());
+
+        // Add written reviews
+        List<Review> writtenReviews = user.getWrittenReviews();
+        JSONArray writtenReviewsJSONArray = new JSONArray();
+        for (Review review : writtenReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject writtenReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            writtenReviewsJSONArray.put(writtenReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(WRITTENREVIEWS, writtenReviewsJSONArray);
+
+        // Add upvoted reviews
+        Set<Review> upvotedReviews = user.getUpvotedReviews();
+        JSONArray upvotedReviewsJSONArray = new JSONArray();
+        for (Review review : upvotedReviews) {
+            ReviewMapper reviewMapper = new ReviewMapper(review);
+            JSONObject upvotedReviewJSONObject = reviewMapper.mapJReviewtoJSON();
+            upvotedReviewsJSONArray.put(upvotedReviewJSONObject);
+        }
+        requestBody.getJSONObject(INFO).put(UPVOTEDREVIEWS, upvotedReviewsJSONArray);
+
+        final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
+        final Request request = new Request.Builder()
+                .url("http://vm003.teach.cs.toronto.edu:20112/user")
+                .method("PUT", body)  // PUT for update
+                .addHeader(CONTENT_TYPE_LABEL, CONTENT_TYPE_JSON)
+                .build();
+        try {
+            final Response response = client.newCall(request).execute();
+            final JSONObject responseBody = new JSONObject(response.body().string());
+
+            if (responseBody.getInt(STATUS_CODE_LABEL) != SUCCESS_CODE) {
+                throw new RuntimeException(responseBody.getString(MESSAGE));
+            }
+        }
+        catch (IOException | JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }
