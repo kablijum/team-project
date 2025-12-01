@@ -6,6 +6,8 @@ import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInViewModel;
+import use_case.edit_review.EditReviewSongDataAccessInterface;
+import use_case.edit_review.EditUserDataAccessInterface;
 
 
 import javax.swing.*;
@@ -20,6 +22,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     private final ProfileReviewsController controller;
     private final EditReviewController editController;
     private final EditReviewViewModel editViewModel;
+    private final EditUserDataAccessInterface userData;
+    EditReviewSongDataAccessInterface songData;
     private final LoggedInViewModel loggedInViewModel;
 
     private final JButton backButton = new JButton("Back to Home");
@@ -39,11 +43,15 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                            ProfileReviewsController controller,
                            EditReviewController editController,
                            EditReviewViewModel editViewModel,
+                           EditUserDataAccessInterface userData,
+                           EditReviewSongDataAccessInterface songData,
                            LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
         this.controller = controller;
         this.editController = editController;
         this.editViewModel = editViewModel;
+        this.userData = userData;
+        this.songData = songData;
         this.loggedInViewModel = loggedInViewModel;
 
         this.viewModel.addPropertyChangeListener(this);
@@ -123,7 +131,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel songInfoLabel = new JLabel("Editing review for song ID: " + reviewRow.getSongID());
+        JLabel songInfoLabel = new JLabel("Editing review for: " + reviewRow.getSongTitle());
         songInfoLabel.setFont(new Font("Arial",  Font.BOLD, 12));
         mainPanel.add(songInfoLabel, BorderLayout.NORTH);
 
@@ -156,9 +164,18 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         JButton saveButton = new JButton("Save");
         JButton cancelButton = new JButton("Cancel");
 
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        editDialog.add(mainPanel);
+
         saveButton.addActionListener(e -> {
-            String newComment = commentArea.getText().trim();
+            String newComment = commentArea.getText();
             String selectedRating = (String) ratingComboBox.getSelectedItem();
+            int newRating = Integer.parseInt(selectedRating);
+            String username = viewModel.getUsername();
+            int songId = reviewRow.getSongID();
 
             if (newComment.isEmpty()) {
                 JOptionPane.showMessageDialog(editDialog,
@@ -167,31 +184,15 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (selectedRating == null) {
-                JOptionPane.showMessageDialog(editDialog,
-                        "Please select a rating",
-                        "Invalid Input",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
 
-            int newRating = Integer.parseInt(selectedRating);
-            String username = viewModel.getUsername();
-            int songId = reviewRow.getSongID();
-
-            editController.execute(username, songId, newComment,newRating, index);
+            editController.execute(newComment, newRating, username, songId, index);
             editDialog.dispose();
+            refresh();
         });
 
         cancelButton.addActionListener(e -> editDialog.dispose());
 
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        editDialog.add(mainPanel);
         editDialog.setVisible(true);
-
     }
 
     private void showChangePasswordDialog() {

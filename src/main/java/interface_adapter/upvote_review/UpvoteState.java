@@ -6,17 +6,17 @@ public class UpvoteState {
     private String reviewUsername;
     private int songId;
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(final String usernameState) {
+        this.username = usernameState;
     }
-    public void setUserUpvoted(boolean userUpvoted) {
-        this.userUpvoted = userUpvoted;
+    public void setUserUpvoted(final boolean userUpvotedState) {
+        this.userUpvoted = userUpvotedState;
     }
-    public void setReviewUsername(String reviewUsername) {
-        this.reviewUsername = reviewUsername;
+    public void setReviewUsername(final String reviewUsernameState) {
+        this.reviewUsername = reviewUsernameState;
     }
-    public void setSongId(int songId) {
-        this.songId = songId;
+    public void setSongId(final int songIdState) {
+        this.songId = songIdState;
     }
 
     public String getUsername() {
