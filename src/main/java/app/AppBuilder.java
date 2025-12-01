@@ -201,7 +201,7 @@ public class AppBuilder {
 
     public AppBuilder addEditReviewUseCase() {
         editReviewViewModel = new EditReviewViewModel();
-        final EditReviewPresenter presenter = new EditReviewPresenter(editReviewViewModel);
+        final EditReviewPresenter presenter = new EditReviewPresenter(viewManagerModel);
         final EditInteractor editInteractor = new EditInteractor(userDataAccessObject, songDataAccessObject, presenter);
         editReviewController = new EditReviewController(editInteractor);
 
@@ -291,7 +291,7 @@ public class AppBuilder {
                 );
 
         userProfileView = new UserProfileView(profileReviewsViewModel, profileReviewsController, editReviewController,
-                editReviewViewModel, loggedInViewModel);
+                editReviewViewModel, userDataAccessObject, songDataAccessObject, loggedInViewModel);
 
         cardPanel.add(userProfileView, UserProfileView.VIEW_NAME);
 
