@@ -1,9 +1,8 @@
 package app;
 
 import data_access.DBSongDataAccessObject;
-import data_access.SongDataAccessObject;
 import data_access.DBUserDataAccessObject;
-import entity.Song;
+import data_access.SongDataAccessObject;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.edit_review.EditReviewController;
@@ -37,17 +36,13 @@ import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsPresenter;
 import use_case.edit_review.EditInteractor;
 import use_case.change_password.ChangePasswordInteractor;
-import use_case.post_review.PostInputData;
 import use_case.post_review.PostInputDataBoundary;
 import use_case.post_review.*;
 import use_case.upvote.UpvoteInputBoundary;
-import use_case.upvote.UpvoteInputData;
 import use_case.upvote.UpvoteInteractor;
 import use_case.upvote.UpvoteOutputDataBoundary;
 import view.UserProfileView;
-import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
-import interface_adapter.logged_in.ChangePasswordController;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
@@ -69,8 +64,6 @@ import view.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -191,7 +184,8 @@ public class AppBuilder {
         searchViewModel = new SearchViewModel();
 
         SearchUserDataAccessInterface dataAccess =
-                new SongDataAccessObject("JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
+                new SongDataAccessObject(
+                        "JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK");
         SearchOutputDataBoundary presenter = new SearchPresenter(searchViewModel);
         SearchInputDataBoundary interactor = new SearchInteractor(dataAccess, presenter);
 
@@ -210,7 +204,9 @@ public class AppBuilder {
 
     public AppBuilder addViewSongProfile() {
 
-        if (viewSongViewModel == null) viewSongViewModel = new ViewSongViewModel();
+        if (viewSongViewModel == null) {
+            viewSongViewModel = new ViewSongViewModel();
+        }
 
         if (postController == null) {
             if (postViewModel == null){
@@ -222,7 +218,6 @@ public class AppBuilder {
                     songDataAccessObject,
                     postPresenter);
              postController = new PostController(postInteractor);
-
         }
         if (upvoteController == null) {
             if  (upvoteViewModel == null){
@@ -276,7 +271,8 @@ public class AppBuilder {
         ProfileReviewsPresenter profileReviewsPresenter =
                 new ProfileReviewsPresenter(profileReviewsViewModel, viewManagerModel);
 
-        viewProfileInteractor = new ViewProfileInteractor(userDataAccessObject, songDataAccessObject, profileReviewsPresenter);
+        viewProfileInteractor =
+                new ViewProfileInteractor(userDataAccessObject, songDataAccessObject, profileReviewsPresenter);
 
 //        profileReviewsController = new ProfileReviewsController(viewManagerModel, logoutController,
 //                changePasswordController, viewProfileInteractor);
