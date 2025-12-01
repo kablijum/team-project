@@ -251,7 +251,6 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource() == this.viewModel) {
-            // When ProfileReviewsViewModel changes, refresh the UI
             refresh();
         }
         else if ("editSuccess".equals(evt.getPropertyName())) {

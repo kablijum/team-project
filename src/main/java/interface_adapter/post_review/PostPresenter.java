@@ -16,7 +16,6 @@ public class PostPresenter implements PostOutputDataBoundary{
         postState.setComment(outputData.getComment());
         postState.setRating(outputData.getAverageRating());
         postState.setUsername(outputData.getUsername());
-        postState.setSongname(outputData.getSongname());
 
     }
     @Override
