@@ -3,7 +3,6 @@ package app;
 import data_access.DBSongDataAccessObject;
 import data_access.SongDataAccessObject;
 import data_access.DBUserDataAccessObject;
-import entity.Song;
 import entity.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.edit_review.EditReviewController;
@@ -37,17 +36,13 @@ import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsPresenter;
 import use_case.edit_review.EditInteractor;
 import use_case.change_password.ChangePasswordInteractor;
-import use_case.post_review.PostInputData;
 import use_case.post_review.PostInputDataBoundary;
 import use_case.post_review.*;
 import use_case.upvote.UpvoteInputBoundary;
-import use_case.upvote.UpvoteInputData;
 import use_case.upvote.UpvoteInteractor;
 import use_case.upvote.UpvoteOutputDataBoundary;
 import view.UserProfileView;
-import org.jetbrains.annotations.NotNull;
 import use_case.change_password.ChangePasswordInputBoundary;
-import interface_adapter.logged_in.ChangePasswordController;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
@@ -69,8 +64,6 @@ import view.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();

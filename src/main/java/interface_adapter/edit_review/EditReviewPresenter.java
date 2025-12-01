@@ -1,9 +1,7 @@
 package interface_adapter.edit_review;
 
-import interface_adapter.post_review.PostState;
 import use_case.edit_review.EditOutputData;
 import use_case.edit_review.EditOutputDataBoundary;
-import use_case.post_review.PostOutputData;
 
 public class EditReviewPresenter implements EditOutputDataBoundary {
 

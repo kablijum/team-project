@@ -2,6 +2,7 @@ package use_case.view_song;
 
 import entity.Song;
 import entity.Review;
+import org.jetbrains.annotations.NotNull;
 
 
 import java.util.ArrayList;
@@ -10,11 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 public class ViewSongInteractor implements ViewSongInputDataBoundary {
-    private ViewSongOutputDataBoundary presenter;
-    private ViewSongDataAccessInterface dataAccess;
-    private ViewSongNewDataAccessInterface newSongDataAccess;
+    private final ViewSongOutputDataBoundary presenter;
+    private final ViewSongDataAccessInterface dataAccess;
+    private final ViewSongNewDataAccessInterface newSongDataAccess;
+    private static final int INFO_VARIABLES = 3;
 
-    public ViewSongInteractor(ViewSongOutputDataBoundary presenter,  ViewSongDataAccessInterface dataAccess,
+    public ViewSongInteractor(ViewSongOutputDataBoundary presenter,
+                              ViewSongDataAccessInterface dataAccess,
                               ViewSongNewDataAccessInterface newSongDataAccess) {
         this.presenter = presenter;
         this.dataAccess = dataAccess;
@@ -25,27 +28,12 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
     public void execute(ViewSongInputData inputData){
         int songID = inputData.getSongid();
 
-        if(dataAccess.songExists(songID)) {
+        if (dataAccess.songExists(songID)) {
 
             Song song =  dataAccess.getSongById(songID);
-            double rating = song.getAverageRating();
-            String name = song.getName();
-            String artist = song.getArtist();
-            List<Review> review_list = song.getReviews();
-            Map<String, List<Object>> reviews = new HashMap<>();
 
-            for (Review review : review_list) {
-                List<Object> info = new ArrayList<>(3);
-                info.add(review.getComment());
-                info.add(review.getRating());
-                info.add(review.getUpvotes());
-                reviews.put(review.getUsername(), info);
-            }
-            // Reviews = {"username": [comment, rating] }
+            ViewSongOutputData outputData = getViewSongOutputData(song, songID);
 
-            ViewSongOutputData outputData = new ViewSongOutputData(name, artist, songID);
-            outputData.setReviews(reviews);
-            outputData.setAverageRating(rating);
             presenter.prepareSuccessView(outputData);
         }
         else {
@@ -69,6 +57,27 @@ public class ViewSongInteractor implements ViewSongInputDataBoundary {
         }
     }
 
+    @NotNull
+    private static ViewSongOutputData getViewSongOutputData(Song song, int songID) {
+        double rating = song.getAverageRating();
+        String name = song.getName();
+        String artist = song.getArtist();
+        List<Review> reviewList = song.getReviews();
+        Map<String, List<Object>> reviews = new HashMap<>();
 
+        for (Review review : reviewList) {
+            List<Object> info = new ArrayList<>(INFO_VARIABLES);
+            info.add(review.getComment());
+            info.add(review.getRating());
+            info.add(review.getUpvotes());
+            reviews.put(review.getUsername(), info);
+        }
+
+        ViewSongOutputData outputData = new ViewSongOutputData(name, artist, songID);
+        outputData.setReviews(reviews);
+        outputData.setAverageRating(rating);
+        return outputData;
     }
+
+}
 

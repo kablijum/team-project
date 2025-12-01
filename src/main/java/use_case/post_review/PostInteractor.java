@@ -34,9 +34,8 @@ public class PostInteractor implements PostInputDataBoundary{
             Song song = songDataAccess.getSongById(songid);
 
             double newAverage = song.getAverageRating();
-            String songname = song.getName();
 
-            PostOutputData data = new PostOutputData(comment, newAverage, username, songname, songid);
+            PostOutputData data = new PostOutputData(comment, newAverage, username, songid);
             postPresenter.prepareSuccessView(data);
         }
 

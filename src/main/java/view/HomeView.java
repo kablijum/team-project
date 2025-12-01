@@ -59,8 +59,8 @@ public class HomeView extends JPanel implements PropertyChangeListener {
 
         // ===== Header =====
         JPanel header = new JPanel(new BorderLayout());
-        JLabel title = new JLabel("Dashboard");
-        title.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel title = new JLabel("Search for a song");
+        title.setFont(new Font("Serif", Font.BOLD, 18));
         JButton profileButton = new JButton("My Profile");
         header.add(title, BorderLayout.WEST);
         header.add(profileButton, BorderLayout.EAST);

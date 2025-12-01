@@ -1,4 +1,4 @@
-package use_case.post;
+package use_case.post_review;
 
 import data_access.InMemorySongDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
@@ -7,7 +7,6 @@ import entity.SongFactory;
 import entity.User;
 import entity.UserFactory;
 import org.junit.jupiter.api.Test;
-import use_case.post_review.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
