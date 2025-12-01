@@ -49,9 +49,11 @@ public class ViewProfileInteractorTest {
         assertEquals(1, output.getReviews().size());
 
         ViewProfileReviewData reviewData = output.getReviews().get(0);
+
+        assertEquals(101, reviewData.getSongID());
         assertEquals("Viva La Vida", reviewData.getSongTitle());
-        assertEquals("Best song ever", reviewData.getComment());
         assertEquals(5, reviewData.getRating());
+        assertEquals("Best song ever", reviewData.getComment());
     }
 }
 
