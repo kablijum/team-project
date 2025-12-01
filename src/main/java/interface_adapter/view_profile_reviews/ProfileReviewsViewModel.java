@@ -1,5 +1,7 @@
 package interface_adapter.view_profile_reviews;
 
+import entity.Review;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;

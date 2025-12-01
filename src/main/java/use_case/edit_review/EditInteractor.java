@@ -1,9 +1,9 @@
 package use_case.edit_review;
 
 import entity.Review;
+import entity.Song;
 import entity.User;
 
-import java.util.List;
 
 public class EditInteractor implements EditInputDataBoundary {
 
@@ -20,50 +20,52 @@ public class EditInteractor implements EditInputDataBoundary {
 
     @Override
     public void execute(EditInputData inputData) {
-        final String username = inputData.getUsername();
-        final int songId = inputData.getSongId();
-        final String comment = inputData.getComment();
-        final int rating = inputData.getRating();
-        final int reviewIndex = inputData.getReviewIndex();
+        String username = inputData.getUsername();
+        int songId = inputData.getSongId();
+        String newComment = inputData.getComment();
+        int newRating = inputData.getRating();
 
-        if(!songData.existsByUsername(username, songId)){
-            presenter.prepareFailView("You have not left a review to edit.");
-        }
-        if (comment == null || comment.trim().isEmpty()) {
+
+        if (newComment == null || newComment.trim().isEmpty()) {
             presenter.prepareFailView("Comment cannot be empty");
             return;
         }
         try {
             User user = userData.get(username);
-            List<Review> writtenReviews = user.getWrittenReviews();
+            Song song = songData.getSongById(songId);
 
-            if (reviewIndex < 0 || reviewIndex >= writtenReviews.size()) {
-                presenter.prepareFailView("Invalid review index");
-                return;
+            Review oldReviewInSong = null;
+            for (Review review : song.getReviews()) {
+                if (review.getUsername().equals(username)) {
+                    oldReviewInSong = review;
+                    break;
+                }
             }
 
-            Review oldReview = writtenReviews.get(reviewIndex);
+            Review oldReviewInUser = null;
+            for (Review review : user.getWrittenReviews()) {
+                if (review.getSongID() == songId) {
+                    oldReviewInUser = review;
+                    break;
+                }
+            }
 
-            Review updatedReview = new Review(
-                    username,
-                    comment,
-                    oldReview.getSongID(),
-                    rating,
-                    oldReview.getUpvotes()
-            );
+            int oldUpvotes = oldReviewInSong.getUpvotes();
 
-            writtenReviews.remove(reviewIndex);
-            writtenReviews.add(reviewIndex, updatedReview);
+            song.deleteReview(oldReviewInSong);
+            user.getWrittenReviews().remove(oldReviewInUser);
 
-            userData.save(user);
+            Review newReview = new Review(username, newComment, songId, newRating, oldUpvotes);
 
-            EditOutputData outputData = new EditOutputData(
-                    username,
-                    oldReview.getSongID(),
-                    comment,
-                    rating,
-                    "Review updated successfully"
-            );
+            song.addReview(newReview);
+            user.getWrittenReviews().add(newReview);
+
+            song.updateAverageRating();
+
+            userData.updateUser(user);
+            songData.saveSong(song);
+
+            EditOutputData outputData = new EditOutputData(newComment, newRating, username, songId, song.getName());
             presenter.prepareSuccessView(outputData);
 
         } catch (Exception e) {
