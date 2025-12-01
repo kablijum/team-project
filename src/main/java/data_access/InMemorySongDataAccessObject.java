@@ -9,20 +9,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InMemorySongDataAccessObject implements PostReviewSongDataAccessInterface, UpvoteSongDataAccessInterface {
+public class InMemorySongDataAccessObject implements
+                                            PostReviewSongDataAccessInterface,
+                                            UpvoteSongDataAccessInterface {
     private final Map<String, Song> songs = new HashMap<>();
 
     @Override
-    public void saveSong(Song song) {
+    public final void saveSong(final Song song) {
         songs.put(Integer.toString(song.getId()), song);
     }
 
-    public Song get(int songid) {
-        return songs.get(Integer.toString(songid));
+    public final Song get(final int songId) {
+        return songs.get(Integer.toString(songId));
     }
 
     @Override
-    public boolean existsByUsername(String username, int songid) {
+    public final boolean existsByUsername(final String username,
+                                          final int songid) {
         if (songs.containsKey(Integer.toString(songid))) {
             Song song = songs.get(Integer.toString(songid));
             for (Review review : song.getReviews()) {
@@ -35,20 +38,21 @@ public class InMemorySongDataAccessObject implements PostReviewSongDataAccessInt
     }
 
     @Override
-    public void addReview(Review review, int songid) {
-        Song song = this.getSongById(songid);
+    public final void addReview(final Review review, final int songId) {
+        Song song = this.getSongById(songId);
         song.addReview(review);
 
     }
 
     @Override
-    public Song getSongById(int songid) {
-        return songs.get(Integer.toString(songid));
+    public final Song getSongById(final int songId) {
+        return songs.get(Integer.toString(songId));
 
     }
 
     @Override
-    public void upvoteReview(String reviewUsername, int songId) {
+    public final void upvoteReview(final String reviewUsername,
+                                   final int songId) {
         Song reviewedSong = songs.get(Integer.toString(songId));
         List<Review> reviews = reviewedSong.getReviews();
         for (Review review : reviews) {
@@ -59,7 +63,8 @@ public class InMemorySongDataAccessObject implements PostReviewSongDataAccessInt
     }
 
     @Override
-    public void downvoteReview(String reviewUsername, int songId) {
+    public final void downvoteReview(final String reviewUsername,
+                                     final int songId) {
         Song reviewedSong = songs.get(Integer.toString(songId));
         List<Review> reviews = reviewedSong.getReviews();
         for (Review review : reviews) {
@@ -69,8 +74,8 @@ public class InMemorySongDataAccessObject implements PostReviewSongDataAccessInt
         }
     }
 
-    public Review getReview(String username, int songid) {
-        Song song = songs.get(Integer.toString(songid));
+    public Review getReview(final String username, final int songId) {
+        Song song = songs.get(Integer.toString(songId));
         for (Review review : song.getReviews()) {
             if (review.getUsername().equals(username)) {
                 return review;

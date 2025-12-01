@@ -1,3 +1,4 @@
+
 package data_access;
 
 import entity.Review;
@@ -17,55 +18,59 @@ import java.util.Map;
  * In-memory implementation of the DAO for storing user data. This implementation does
  * NOT persist data between runs of the program.
  */
-public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterface,
-                                                     LoginUserDataAccessInterface,
-                                                     ChangePasswordUserDataAccessInterface,
-                                                     LogoutUserDataAccessInterface, PostReviewUserDataAccessInterface,
-                                                     UpvoteUserDataAccessInterface {
+public class InMemoryUserDataAccessObject implements
+        SignupUserDataAccessInterface,
+        LoginUserDataAccessInterface,
+        ChangePasswordUserDataAccessInterface,
+        LogoutUserDataAccessInterface,
+        PostReviewUserDataAccessInterface,
+        UpvoteUserDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();
 
     private String currentUsername;
 
     @Override
-    public boolean existsByName(String identifier) {
+    public final boolean existsByName(final String identifier) {
         return users.containsKey(identifier);
     }
 
     @Override
-    public void save(User user) {
+    public final void save(final User user) {
         users.put(user.getUsername(), user);
     }
 
     @Override
-    public User get(String username) {
+    public final User get(final String username) {
         return users.get(username);
     }
 
     @Override
-    public void setCurrentUsername(String name) {
+    public final void setCurrentUsername(final String name) {
         currentUsername = name;
     }
 
     @Override
-    public String getCurrentUsername() {
+    public final String getCurrentUsername() {
         return currentUsername;
     }
 
     @Override
-    public void changePassword(User user) {
+    public final void changePassword(final User user) {
         // Replace the old entry with the new password
         users.put(user.getUsername(), user);
     }
 
     @Override
-    public void addReview(Review review, String username) {
+    public final void addReview(final Review review, final String username) {
         User user = users.get(username);
         user.addWrittenReview(review);
     }
 
     @Override
-    public void upvoteReview(String username, String reviewUsername, int songId) {
+    public final void upvoteReview(final String username,
+                                   final String reviewUsername,
+                                   final int songId) {
         User upvotedUser = users.get(username);
         User reviewUser = users.get(reviewUsername);
         List<Review> reviews = reviewUser.getWrittenReviews();
@@ -79,7 +84,9 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
     }
 
     @Override
-    public void downvoteReview(String username, String reviewUsername, int songId) {
+    public final void downvoteReview(final String username,
+                                     final String reviewUsername,
+                                     final int songId) {
         User upvotedUser = users.get(username);
         User reviewUser = users.get(reviewUsername);
         List<Review> reviews = reviewUser.getWrittenReviews();
@@ -93,7 +100,9 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
     }
 
     @Override
-    public boolean isUpvoted(String username, String reviewUsername, int songId) {
+    public final boolean isUpvoted(final String username,
+                                   final String reviewUsername,
+                                   final int songId) {
         User upvotedUser = users.get(username);
         User reviewUser = users.get(reviewUsername);
         List<Review> reviews = reviewUser.getWrittenReviews();

@@ -15,14 +15,14 @@ public class ReviewMapper {
     private static final String RATING = "rating";
     private static final String UPVOTES = "upvotes";
 
-    public ReviewMapper(JSONObject reviewJSONObject) {
-        this.reviewJSONObject = reviewJSONObject;
+    public ReviewMapper(final JSONObject rJSONObject) {
+        this.reviewJSONObject = rJSONObject;
         this.review = null;
     }
 
-    public ReviewMapper(Review review) {
+    public ReviewMapper(final Review r) {
         this.reviewJSONObject = null;
-        this.review = review;
+        this.review = r;
     }
 
     public Review mapJSONtoReview() {

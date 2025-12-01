@@ -19,14 +19,14 @@ public class SongMapper {
     private static final String RATING = "rating";
     private static final String REVIEWS = "reviews";
 
-    public SongMapper(JSONObject songJSONObject) {
-        this.songJSONObject = songJSONObject;
+    public SongMapper(final JSONObject sJSONObject) {
+        this.songJSONObject = sJSONObject;
         this.song = null;
     }
 
-    public SongMapper(Song song) {
+    public SongMapper(final Song s) {
         this.songJSONObject = null;
-        this.song = song;
+        this.song = s;
     }
 
     public Song mapJSONtoSong() {
@@ -54,7 +54,8 @@ public class SongMapper {
         mappedJSON.put(REVIEWS, new JSONArray());
 
         for (Review review : song.getReviews()) {
-            JSONObject songReviewJSON = new ReviewMapper(review).mapJReviewtoJSON();
+            JSONObject songReviewJSON = new
+                    ReviewMapper(review).mapJReviewtoJSON();
             mappedJSON.getJSONArray(REVIEWS).put(songReviewJSON);
         }
         return mappedJSON;

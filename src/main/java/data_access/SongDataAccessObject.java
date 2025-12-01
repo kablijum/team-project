@@ -31,12 +31,12 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface, View
 
     private final String token;
 
-    public SongDataAccessObject(String token) {
-        this.token = token;
+    public SongDataAccessObject(final String t) {
+        this.token = t;
     }
 
     @Override
-    public List<Song> search(String query) throws Exception {
+    public final List<Song> search(final String query) throws Exception {
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         String endpoint = "https://api.genius.com/search?q=" + encodedQuery;
 
@@ -69,7 +69,7 @@ public class SongDataAccessObject implements SearchUserDataAccessInterface, View
     }
 
     @Override
-    public List<String> getInfo(int songID) throws Exception {
+    public final List<String> getInfo(final int songID) throws Exception {
         URL url = new URL("https://api.genius.com/songs/" + songID);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");

@@ -1,3 +1,4 @@
+
 package data_access;
 
 import entity.Review;
@@ -47,12 +48,12 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
     private String currentUsername;
 
-    public DBUserDataAccessObject(UserFactory userFactory) {
-        this.userFactory = userFactory;
+    public DBUserDataAccessObject(final UserFactory userFactoryDAO) {
+        this.userFactory = userFactoryDAO;
     }
 
     @Override
-    public User get(String username) {
+    public final User get(final String username) {
         // Make an API call to get the user object.
         final OkHttpClient client = new OkHttpClient().newBuilder().build();
         final Request request = new Request.Builder()
@@ -113,17 +114,17 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
 
     @Override
-    public void setCurrentUsername(String name) {
+    public final void setCurrentUsername(final String name) {
         currentUsername = name;
     }
 
     @Override
-    public String getCurrentUsername() {
+    public final String getCurrentUsername() {
         return currentUsername;
     }
 
     @Override
-    public boolean existsByName(String username) {
+    public final boolean existsByName(final String username) {
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         final Request request = new Request.Builder()
@@ -133,16 +134,17 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         try {
             final Response response = client.newCall(request).execute();
 
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
-            //                throw new RuntimeException(responseBody.getString("message"));
+            //throw new RuntimeException(responseBody.getString("message"));
             return responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE;
         } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public void saveUser(User user) {
+    public void saveUser(final User user) {
         // This method saves the user in the database with the username and password.
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
@@ -162,7 +164,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         try {
             final Response response = client.newCall(request).execute();
 
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
@@ -175,13 +178,13 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     @Override
-    public void save(User user) {
+    public final void save(final User user) {
         saveUser(user);
         updateInfoOfUser(user);
     }
 
     @Override
-    public void changePassword(User user) {
+    public final void changePassword(final User user) {
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
 
@@ -199,7 +202,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         try {
             final Response response = client.newCall(request).execute();
 
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
@@ -212,17 +216,21 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     @Override
-    public void upvoteReview(String username, String reviewUsername, int songid) {
+    public final void upvoteReview(final String username,
+                                   final String reviewUsername,
+                                   final int songId) {
         User upvotedUser = this.get(username);
         DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
-        Review review = songDataAccessObject.getReview(reviewUsername, songid);
+        Review review = songDataAccessObject.getReview(reviewUsername, songId);
         upvotedUser.upvoteReview(review);
 
         updateInfoOfUser(upvotedUser);
     }
 
     @Override
-    public void downvoteReview(String username, String reviewUsername, int songid) {
+    public final void downvoteReview(final String username,
+                                     final String reviewUsername,
+                                     final int songid) {
         User upvotedUser = this.get(username);
         DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
         Review review = songDataAccessObject.getReview(reviewUsername, songid);
@@ -232,7 +240,9 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     @Override
-    public boolean isUpvoted(String username, String reviewUsername, int songid) {
+    public final boolean isUpvoted(final String username,
+                                   final String reviewUsername,
+                                   final int songid) {
         User upvotedUser = this.get(username);
         DBSongDataAccessObject songDataAccessObject = new DBSongDataAccessObject();
         Review review = songDataAccessObject.getReview(reviewUsername, songid);
@@ -240,7 +250,7 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         return upvotedUser.hasUpvoted(review);
     }
 
-    private static void updateInfoOfUser(User upvotedUser) {
+    private static void updateInfoOfUser(final User upvotedUser) {
         final OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
 
@@ -280,7 +290,8 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
         try {
             final Response response = client.newCall(request).execute();
 
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
@@ -293,27 +304,24 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
     }
 
     @Override
-    public void addReview(Review review, String username) {
+    public final void addReview(final Review review, final String username) {
         User user = this.get(username);
         user.addWrittenReview(review);
-        if(existsByName(username)){
+        if (existsByName(username)) {
             this.updateInfoOfUser(user);
-        }
-        else{
+        } else {
             this.save(user);
         }
-
-
     }
 
     @Override
-    public List<Review> getUserReviews(String username) {
+    public final List<Review> getUserReviews(final String username) {
         User user = this.get(username);
         return user.getWrittenReviews();
     }
 
     @Override
-    public void updateUser(User user) {
+    public final void updateUser(final User user) {
         // Use the same logic as changePassword but with full user data
         final OkHttpClient client = new OkHttpClient().newBuilder().build();
 
@@ -351,13 +359,13 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
                 .build();
         try {
             final Response response = client.newCall(request).execute();
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
             if (responseBody.getInt(STATUS_CODE_LABEL) != SUCCESS_CODE) {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
-        }
-        catch (IOException | JSONException ex) {
+        } catch (IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }

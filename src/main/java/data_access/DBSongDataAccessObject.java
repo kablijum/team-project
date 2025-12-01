@@ -1,9 +1,8 @@
+
 package data_access;
 
 import entity.Review;
 import entity.Song;
-import entity.User;
-import entity.UserFactory;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,11 +12,9 @@ import use_case.upvote.UpvoteSongDataAccessInterface;
 import use_case.post_review.PostReviewSongDataAccessInterface;
 import use_case.view_song.ViewSongDataAccessInterface;
 import use_case.view_profile.ViewProfileSongDataAccessInterface;
-import use_case.edit_review.EditReviewSongDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -25,12 +22,12 @@ import java.util.List;
  * The DAO for song data.
  * Song data structure: {"username": "songdata", "password": "1234", "info": [{"id": , "name": "", "artist": "", "rating": , "reviews": []}]}
  */
-public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface, 
-                                               PostReviewSongDataAccessInterface, 
-                                               ViewSongDataAccessInterface,
-                                                EditReviewSongDataAccessInterface,
-                                                ViewProfileSongDataAccessInterface
-{
+public class DBSongDataAccessObject implements
+        UpvoteSongDataAccessInterface,
+        PostReviewSongDataAccessInterface,
+        ViewSongDataAccessInterface,
+        EditReviewSongDataAccessInterface,
+        ViewProfileSongDataAccessInterface {
     private static final int SUCCESS_CODE = 200;
     private static final String CONTENT_TYPE_LABEL = "Content-Type";
     private static final String CONTENT_TYPE_JSON = "application/json";
@@ -47,7 +44,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public boolean songExists(int songId) {
+    public final boolean songExists(final int songId) {
         List<Song> songDB = getSongDatabase();
         for (Song songDBItem : songDB) {
             if (songId == songDBItem.getId()) {
@@ -58,7 +55,7 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public void saveSong(Song song) {
+    public final void saveSong(final Song song) {
         // saves new song data or updates the existing song data
         if (!adminExists()) {
             createAdmin();
@@ -87,7 +84,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         }
         requestBody.put(INFO, songDBJSON);
 
-        final RequestBody body = RequestBody.create(requestBody.toString(), mediaType);
+        final RequestBody body = RequestBody.create(requestBody.toString(),
+                mediaType);
         final Request request = new Request.Builder()
                 .url("http://vm003.teach.cs.toronto.edu:20112/modifyUserInfo")
                 .method("PUT", body)
@@ -96,10 +94,11 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         try {
             final Response response = client.newCall(request).execute();
 
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
-                // success!
+                // success
             } else {
                 throw new RuntimeException(responseBody.getString(MESSAGE));
             }
@@ -156,7 +155,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         try {
             final Response response = client.newCall(request).execute();
 
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
             return responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE;
         } catch (IOException | JSONException ex) {
@@ -214,7 +214,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         try {
             final Response response = client.newCall(request).execute();
 
-            final JSONObject responseBody = new JSONObject(response.body().string());
+            final JSONObject responseBody = new
+                    JSONObject(response.body().string());
 
             if (responseBody.getInt(STATUS_CODE_LABEL) == SUCCESS_CODE) {
                 // success!
@@ -227,7 +228,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public void upvoteReview(String reviewUsername, int songId) {
+    public final void upvoteReview(final String reviewUsername,
+                                   final int songId) {
         // Add 1 upvote of the review written about this song.
         Song reviewedSong = this.getSongById(songId);
         List<Review> songReviews = reviewedSong.getReviews();
@@ -240,7 +242,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public void downvoteReview(String reviewUsername, int songId) {
+    public final void downvoteReview(final String reviewUsername,
+                                     final int songId) {
         // Remove 1 upvote of the review written about this song.
         Song reviewedSong = this.getSongById(songId);
         List<Review> songReviews = reviewedSong.getReviews();
@@ -252,8 +255,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         this.saveSong(reviewedSong);
     }
 
-    public boolean existsByUsername(String username, int songid) {
-        Song song = this.getSongById(songid);
+    public boolean existsByUsername(final String username, final int songId) {
+        Song song = this.getSongById(songId);
         for (Review review : song.getReviews()) {
             if (review.getUsername().equals(username)) {
                 return true;
@@ -262,8 +265,8 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
         return false;
     }
 
-    public Review getReview(String username, int songid) {
-        Song song = this.getSongById(songid);
+    public Review getReview(final String username, final int songId) {
+        Song song = this.getSongById(songId);
         for (Review review : song.getReviews()) {
             if (review.getUsername().equals(username)) {
                 return review;
@@ -273,18 +276,19 @@ public class DBSongDataAccessObject implements UpvoteSongDataAccessInterface,
     }
 
     @Override
-    public void addReview(Review review, int songid) {
+    public final void addReview(final Review review, final int songid) {
         Song s = this.getSongById(songid);
         s.addReview(review);
         saveSong(s);
     }
 
     @Override
-    public Song getSongById(int songID) {
+    public final Song getSongById(final int songID) {
         List<Song> songs = this.getSongDatabase();
         for (Song song : songs) {
-            if (song.getId() == songID)
+            if (song.getId() == songID) {
                 return song;
+                }
         }
         throw new RuntimeException("Song with ID " + songID + " not found.");
     }
