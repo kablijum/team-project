@@ -195,7 +195,7 @@ public class AppBuilder {
 
     public AppBuilder addEditReviewUseCase() {
         editReviewViewModel = new EditReviewViewModel();
-        final EditReviewPresenter presenter = new EditReviewPresenter(viewManagerModel);
+        final EditReviewPresenter presenter = new EditReviewPresenter(editReviewViewModel);
         final EditInteractor editInteractor = new EditInteractor(userDataAccessObject, songDataAccessObject, presenter);
         editReviewController = new EditReviewController(editInteractor);
 
