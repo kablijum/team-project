@@ -43,12 +43,12 @@ Home page(Search):
 Song page:
 <img width="1568" height="1178" alt="Screenshot 2025-12-02 095949" src="https://github.com/user-attachments/assets/c6246e21-25f6-404c-ad0f-5dcc6d7d046f" />
 
-<img width="1562" height="1181" alt="Screenshot 2025-12-02 100245" src="https://github.com/user-attachments/assets/838d1b6f-6e5f-425c-9837-c322e20e82d6" />
-
 <img width="1565" height="1177" alt="Screenshot 2025-12-02 103623" src="https://github.com/user-attachments/assets/283e61a8-a645-44a3-8483-63c783bc180f" />
 
 Post review:
 <img width="1561" height="1174" alt="Screenshot 2025-12-02 100305" src="https://github.com/user-attachments/assets/5e8298ed-98d4-4f98-a487-5f7184680fde" />
+
+<img width="1562" height="1181" alt="Screenshot 2025-12-02 100245" src="https://github.com/user-attachments/assets/838d1b6f-6e5f-425c-9837-c322e20e82d6" />
 
 Upvote:
 <img width="1563" height="1177" alt="Screenshot 2025-12-02 103636" src="https://github.com/user-attachments/assets/d59586b7-47ed-4851-aec1-6ba478183223" />
