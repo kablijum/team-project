@@ -1,9 +1,8 @@
-package use_case.edit;
+package use_case.edit_review;
 
 import data_access.InMemorySongDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entity.*;
-import use_case.edit_review.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

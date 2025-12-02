@@ -1,7 +1,4 @@
-package use_case.edit;
-
-import use_case.edit_review.EditOutputData;
-import use_case.edit_review.EditOutputDataBoundary;
+package use_case.edit_review;
 
 public class EditPresenterTest implements EditOutputDataBoundary {
 
