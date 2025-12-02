@@ -31,3 +31,35 @@ An API containing information about an expansive selection of songs, such as son
 
 Grade API:
 We used it to store the data, and maintain data persistence
+
+SignUp:
+<img width="1571" height="1181" alt="Screenshot 2025-12-02 095700" src="https://github.com/user-attachments/assets/51ee07dc-335c-4aff-982f-66d352dce077" />
+
+Login:
+<img width="1565" height="1173" alt="Screenshot 2025-12-02 095717" src="https://github.com/user-attachments/assets/38286c17-cd96-4d5c-b3f9-45035db57628" />
+
+Home page(Search):
+<img width="1567" height="1170" alt="Screenshot 2025-12-02 095746" src="https://github.com/user-attachments/assets/70f9d579-c6dd-4d0e-ab40-621e85ac67c9" />
+
+<img width="1564" height="1178" alt="Screenshot 2025-12-02 095930" src="https://github.com/user-attachments/assets/75bdbbf2-8f75-4c6a-952d-b46b557d45e6" />
+
+Song page:
+<img width="1568" height="1178" alt="Screenshot 2025-12-02 095949" src="https://github.com/user-attachments/assets/c6246e21-25f6-404c-ad0f-5dcc6d7d046f" />
+
+<img width="1562" height="1181" alt="Screenshot 2025-12-02 100245" src="https://github.com/user-attachments/assets/838d1b6f-6e5f-425c-9837-c322e20e82d6" />
+
+Post review:
+<img width="1561" height="1174" alt="Screenshot 2025-12-02 100305" src="https://github.com/user-attachments/assets/5e8298ed-98d4-4f98-a487-5f7184680fde" />
+
+Upvote:
+
+
+View Profile:
+<img width="1565" height="1179" alt="Screenshot 2025-12-02 102402" src="https://github.com/user-attachments/assets/c11ac96c-e992-4a62-87ac-1e0baf9dadb6" />
+
+Edit:
+<img width="1562" height="1183" alt="Screenshot 2025-12-02 102022" src="https://github.com/user-attachments/assets/cec96858-43d0-4a7f-b208-931543ea6a8c" />
+<img width="1566" height="1176" alt="Screenshot 2025-12-02 102104" src="https://github.com/user-attachments/assets/0b4880b4-dc38-4e1c-b8c8-2070679fc1ef" />
+
+
+
