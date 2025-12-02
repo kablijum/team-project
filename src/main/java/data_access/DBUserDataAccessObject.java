@@ -312,7 +312,6 @@ public class DBUserDataAccessObject implements SignupUserDataAccessInterface,
 
     @Override
     public void updateUser(User user) {
-        // Use the same logic as changePassword but with full user data
         final OkHttpClient client = new OkHttpClient().newBuilder().build();
 
         final MediaType mediaType = MediaType.parse(CONTENT_TYPE_JSON);

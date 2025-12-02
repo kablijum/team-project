@@ -50,6 +50,7 @@ public class EditInteractor implements EditInputDataBoundary {
                 }
             }
 
+            assert oldReviewInSong != null;
             int oldUpvotes = oldReviewInSong.getUpvotes();
 
             song.deleteReview(oldReviewInSong);
