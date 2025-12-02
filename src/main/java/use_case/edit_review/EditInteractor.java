@@ -11,7 +11,8 @@ public class EditInteractor implements EditInputDataBoundary {
     private final EditReviewSongDataAccessInterface songData;
     private final EditOutputDataBoundary presenter;
 
-    public EditInteractor(EditUserDataAccessInterface userData, EditReviewSongDataAccessInterface songData,
+    public EditInteractor(EditUserDataAccessInterface userData,
+                          EditReviewSongDataAccessInterface songData,
                           EditOutputDataBoundary presenter){
         this.userData = userData;
         this.songData = songData;
