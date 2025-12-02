@@ -1,101 +1,153 @@
 package use_case.signup;
 
 import data_access.InMemoryUserDataAccessObject;
-import entity.UserFactory;
 import entity.User;
+import entity.UserFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SignupInteractorTest {
+/**
+ * Tests for the SignupInteractor using SignupPresenterTest
+ * as a fake presenter.
+ */
+public class SignupInteractorTest {
 
     @Test
     void successTest() {
-        SignupInputData inputData = new SignupInputData("Paul", "password", "password");
-        SignupUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        UserFactory userFactory = new UserFactory();
+        SignupPresenterTest presenter = new SignupPresenterTest();
 
-        // This creates a successPresenter that tests whether the test case is as we expect.
-        SignupOutputBoundary successPresenter = new SignupOutputBoundary() {
-            @Override
-            public void prepareSuccessView(SignupOutputData user) {
-                // 2 things to check: the output data is correct, and the user has been created in the DAO.
-                assertEquals("Paul", user.getUsername());
-                assertTrue(userRepository.existsByName("Paul"));
-            }
+        SignupInteractor interactor =
+                new SignupInteractor(userRepository, presenter, userFactory);
 
-            @Override
-            public void prepareFailView(String error) {
-                fail("Use case failure is unexpected.");
-            }
+        SignupInputData inputData =
+                new SignupInputData("Raha", "password123", "password123");
 
-            @Override
-            public void switchToLoginView() {
-                // This is expected
-            }
-        };
-
-        SignupInputBoundary interactor = new SignupInteractor(userRepository, successPresenter, new UserFactory());
+        // Act
         interactor.execute(inputData);
+
+        // Assert
+        assertTrue(presenter.isSuccessViewCalled());
+        assertFalse(presenter.isFailViewCalled());
+
+        SignupOutputData outputData = presenter.getOutputData();
+        assertNotNull(outputData);
+        assertEquals("Raha", outputData.getUsername());
+
+        // The user should actually be saved
+        assertTrue(userRepository.existsByName("Raha"));
+        User saved = userRepository.get("Raha");
+        assertEquals("password123", saved.getPassword());
     }
 
     @Test
-    void failurePasswordMismatchTest() {
-        SignupInputData inputData = new SignupInputData("Paul", "password", "wrong");
-        SignupUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+    void failTestUserAlreadyExists() {
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        UserFactory userFactory = new UserFactory();
+        SignupPresenterTest presenter = new SignupPresenterTest();
 
-        // This creates a presenter that tests whether the test case is as we expect.
-        SignupOutputBoundary failurePresenter = new SignupOutputBoundary() {
-            @Override
-            public void prepareSuccessView(SignupOutputData user) {
-                // this should never be reached since the test case should fail
-                fail("Use case success is unexpected.");
-            }
+        // Pre-save existing user
+        userRepository.save(userFactory.create("Raha", "oldPass"));
 
-            @Override
-            public void prepareFailView(String error) {
-                assertEquals("Passwords don't match.", error);
-            }
+        SignupInteractor interactor =
+                new SignupInteractor(userRepository, presenter, userFactory);
 
-            @Override
-            public void switchToLoginView() {
-                // This is expected
-            }
-        };
+        SignupInputData inputData =
+                new SignupInputData("Raha", "newPass", "newPass");
 
-        SignupInputBoundary interactor = new SignupInteractor(userRepository, failurePresenter, new UserFactory());
+        // Act
         interactor.execute(inputData);
+
+        // Assert
+        assertTrue(presenter.isFailViewCalled());
+        assertFalse(presenter.isSuccessViewCalled());
+        assertEquals("User already exists.", presenter.getErrorMessage());
     }
 
     @Test
-    void failureUserExistsTest() {
-        SignupInputData inputData = new SignupInputData("Paul", "password", "wrong");
-        SignupUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+    void failTestPasswordsDontMatch() {
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        UserFactory userFactory = new UserFactory();
+        SignupPresenterTest presenter = new SignupPresenterTest();
 
-        // Add Paul to the repo so that when we check later they already exist
-        UserFactory factory = new UserFactory();
-        User user = factory.create("Paul", "pwd");
-        userRepository.save(user);
+        SignupInteractor interactor =
+                new SignupInteractor(userRepository, presenter, userFactory);
 
-        // This creates a presenter that tests whether the test case is as we expect.
-        SignupOutputBoundary failurePresenter = new SignupOutputBoundary() {
-            @Override
-            public void prepareSuccessView(SignupOutputData user) {
-                // this should never be reached since the test case should fail
-                fail("Use case success is unexpected.");
-            }
+        SignupInputData inputData =
+                new SignupInputData("Raha", "password123", "different");
 
-            @Override
-            public void prepareFailView(String error) {
-                assertEquals("User already exists.", error);
-            }
-
-            @Override
-            public void switchToLoginView() {
-                // This is expected
-            }
-        };
-
-        SignupInputBoundary interactor = new SignupInteractor(userRepository, failurePresenter, new UserFactory());
+        // Act
         interactor.execute(inputData);
+
+        // Assert
+        assertTrue(presenter.isFailViewCalled());
+        assertFalse(presenter.isSuccessViewCalled());
+        assertEquals("Passwords don't match.", presenter.getErrorMessage());
+    }
+
+    @Test
+    void failTestEmptyPassword() {
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        UserFactory userFactory = new UserFactory();
+        SignupPresenterTest presenter = new SignupPresenterTest();
+
+        SignupInteractor interactor =
+                new SignupInteractor(userRepository, presenter, userFactory);
+
+        SignupInputData inputData =
+                new SignupInputData("Raha", "", "");
+
+        // Act
+        interactor.execute(inputData);
+
+        // Assert
+        assertTrue(presenter.isFailViewCalled());
+        assertFalse(presenter.isSuccessViewCalled());
+        assertEquals("New password cannot be empty", presenter.getErrorMessage());
+    }
+
+    @Test
+    void failTestEmptyUsername() {
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        UserFactory userFactory = new UserFactory();
+        SignupPresenterTest presenter = new SignupPresenterTest();
+
+        SignupInteractor interactor =
+                new SignupInteractor(userRepository, presenter, userFactory);
+
+        SignupInputData inputData =
+                new SignupInputData("", "password123", "password123");
+
+        // Act
+        interactor.execute(inputData);
+
+        // Assert
+        assertTrue(presenter.isFailViewCalled());
+        assertFalse(presenter.isSuccessViewCalled());
+        assertEquals("Username cannot be empty", presenter.getErrorMessage());
+    }
+
+    @Test
+    void testSwitchToLoginViewCallsPresenter() {
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        UserFactory userFactory = new UserFactory();
+        SignupPresenterTest presenter = new SignupPresenterTest();
+
+        SignupInteractor interactor =
+                new SignupInteractor(userRepository, presenter, userFactory);
+
+        // Act
+        interactor.switchToLoginView();
+
+        // Assert
+        assertTrue(presenter.isSwitchToLoginViewCalled());
     }
 }
