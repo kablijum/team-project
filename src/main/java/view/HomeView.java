@@ -4,7 +4,6 @@ import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.search.SearchController;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.view_song.ViewSongController;
-import interface_adapter.view_song.ViewSongState;
 import interface_adapter.view_song.ViewSongViewModel;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
@@ -12,7 +11,6 @@ import use_case.search.SearchOutputData;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -29,7 +27,7 @@ public class HomeView extends JPanel implements PropertyChangeListener {
     private final ViewSongViewModel viewSongViewModel;
     private final ViewManagerModel viewManagerModel;
     private ProfileReviewsController profileController;
-    private ViewSongController viewSongController;
+    private final ViewSongController viewSongController;
 
     public void setProfileController(ProfileReviewsController profileController) {
         this.profileController = profileController;
@@ -59,8 +57,8 @@ public class HomeView extends JPanel implements PropertyChangeListener {
 
         // ===== Header =====
         JPanel header = new JPanel(new BorderLayout());
-        JLabel title = new JLabel("Dashboard");
-        title.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel title = new JLabel("Search for a song");
+        title.setFont(new Font("Serif", Font.BOLD, 18));
         JButton profileButton = new JButton("My Profile");
         header.add(title, BorderLayout.WEST);
         header.add(profileButton, BorderLayout.EAST);

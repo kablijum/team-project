@@ -2,7 +2,6 @@ package view;
 
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.post_review.PostController;
-import interface_adapter.post_review.PostState;
 import interface_adapter.post_review.PostViewModel;
 import interface_adapter.upvote_review.UpvoteController;
 import interface_adapter.view_song.ReviewViewModelItem;
@@ -35,7 +34,12 @@ public class SongProfileView extends JPanel {
 
     private JList<ReviewViewModelItem> reviewList;
 
-    public SongProfileView(ViewSongController viewSongController, ViewSongViewModel viewModel, PostController postController, UpvoteController upvoteController, LoggedInViewModel loggedInViewModel, PostViewModel postViewModel) {
+    public SongProfileView(final ViewSongController viewSongController,
+                           final ViewSongViewModel viewModel,
+                           final PostController postController,
+                           final UpvoteController upvoteController,
+                           final LoggedInViewModel loggedInViewModel,
+                           final PostViewModel postViewModel) {
         this.viewSongController = viewSongController;
         this.viewModel = viewModel;
         this.postController = postController;
@@ -80,7 +84,7 @@ public class SongProfileView extends JPanel {
 
         viewModel.addPropertyChangeListener(evt -> {
 
-            // If change, update label
+            // update label
             songNameLabel.setText(viewModel.getState().getSongName());
             artistLabel.setText(viewModel.getState().getArtist());
             if (viewModel.getState().getAverageRating() != 0) {
@@ -238,16 +242,19 @@ public class SongProfileView extends JPanel {
             Object selected = selectedRatings.getSelectedItem();
 
             if (selected == null) {
-                JOptionPane.showMessageDialog(postReviewDialog, "Please select a rating");
-            }
-            else {
+                JOptionPane.showMessageDialog(postReviewDialog,
+                        "Please select a rating");
+            } else {
                 int rating = Integer.parseInt((String) selected);
                 int songID = viewModel.getState().getSongId();
                 String username = loggedInViewModel.getState().getUsername();
                 postController.execute(content, rating, username, songID);
 
-                if (postViewModel != null && postViewModel.getState().getErrorMessage() != null){
-                    JOptionPane.showMessageDialog(postReviewDialog, postViewModel.getState().getErrorMessage());
+                if (postViewModel != null &&
+                        postViewModel.getState().getErrorMessage() != null) {
+                    JOptionPane.showMessageDialog(
+                            postReviewDialog,
+                            postViewModel.getState().getErrorMessage());
                 }
 
                 postViewModel.getState().setErrorMessage(null);
@@ -259,7 +266,7 @@ public class SongProfileView extends JPanel {
         postReviewDialog.setVisible(true);
 
     }
-    public void showReviewPopup(ReviewViewModelItem review){
+    public void showReviewPopup(ReviewViewModelItem review) {
         JDialog dialog = new JDialog((Frame) null, "Review", true);
         dialog.setLocationRelativeTo(this);
         dialog.setSize(300, 250);
@@ -273,14 +280,16 @@ public class SongProfileView extends JPanel {
 
 
         upvoteButton.addActionListener(e -> {
-            upvoteController.execute(loggedInViewModel.getState().getUsername(), review.getUsername(), viewModel.getState().getSongId());
+            upvoteController.execute(
+                    loggedInViewModel.getState().getUsername(),
+                    review.getUsername(), viewModel.getState().getSongId());
             refresh();
             dialog.dispose();
         });
         dialog.setVisible(true);
     }
 
-    public void refresh(){
+    public void refresh() {
         int songid = viewModel.getState().getSongId();
         viewSongController.execute(songid);
 

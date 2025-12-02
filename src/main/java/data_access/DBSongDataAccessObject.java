@@ -2,8 +2,6 @@ package data_access;
 
 import entity.Review;
 import entity.Song;
-import entity.User;
-import entity.UserFactory;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,11 +11,9 @@ import use_case.upvote.UpvoteSongDataAccessInterface;
 import use_case.post_review.PostReviewSongDataAccessInterface;
 import use_case.view_song.ViewSongDataAccessInterface;
 import use_case.view_profile.ViewProfileSongDataAccessInterface;
-import use_case.edit_review.EditReviewSongDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
