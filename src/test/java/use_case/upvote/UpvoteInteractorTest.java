@@ -51,7 +51,7 @@ class UpvoteInteractorTest {
         assertEquals("UpvoteTestUser", data.getUsername());
         assertEquals("aaron", data.getReviewUsername());
         assertEquals(12345, data.getSongId());
-        assertFalse(data.isUpvoted());
+        assertTrue(data.isUpvoted());
 
         // Test to see if upvote count increments
         assertEquals(1, review.getUpvotes());
@@ -97,7 +97,7 @@ class UpvoteInteractorTest {
         assertEquals("UpvoteTestUser", data.getUsername());
         assertEquals("aaron", data.getReviewUsername());
         assertEquals(12345, data.getSongId());
-        assertTrue(data.isUpvoted());
+        assertFalse(data.isUpvoted());
 
         // Test to see if upvote count increments
         assertEquals(0, review.getUpvotes());
