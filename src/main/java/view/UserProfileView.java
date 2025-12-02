@@ -4,9 +4,8 @@ import interface_adapter.edit_review.EditReviewController;
 import interface_adapter.edit_review.EditReviewViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
-import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInViewModel;
-import use_case.edit_review.EditReviewSongDataAccessInterface;
+import use_case.edit_review.EditSongDataAccessInterface;
 import use_case.edit_review.EditUserDataAccessInterface;
 
 
@@ -23,7 +22,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     private final EditReviewController editController;
     private final EditReviewViewModel editViewModel;
     private final EditUserDataAccessInterface userData;
-    EditReviewSongDataAccessInterface songData;
+    EditSongDataAccessInterface songData;
     private final LoggedInViewModel loggedInViewModel;
 
     private final JButton backButton = new JButton("Back to Home");
@@ -44,7 +43,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                            EditReviewController editController,
                            EditReviewViewModel editViewModel,
                            EditUserDataAccessInterface userData,
-                           EditReviewSongDataAccessInterface songData,
+                           EditSongDataAccessInterface songData,
                            LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
         this.controller = controller;

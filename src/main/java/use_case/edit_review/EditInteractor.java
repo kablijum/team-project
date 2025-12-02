@@ -8,11 +8,11 @@ import entity.User;
 public class EditInteractor implements EditInputDataBoundary {
 
     private final EditUserDataAccessInterface userData;
-    private final EditReviewSongDataAccessInterface songData;
+    private final EditSongDataAccessInterface songData;
     private final EditOutputDataBoundary presenter;
 
     public EditInteractor(EditUserDataAccessInterface userData,
-                          EditReviewSongDataAccessInterface songData,
+                          EditSongDataAccessInterface songData,
                           EditOutputDataBoundary presenter){
         this.userData = userData;
         this.songData = songData;

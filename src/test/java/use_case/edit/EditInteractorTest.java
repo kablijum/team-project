@@ -29,7 +29,7 @@ public class EditInteractorTest {
         EditUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
         userRepository.save(user);
 
-        EditReviewSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
+        EditSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
         songRepository.saveSong(song);
 
         EditPresenterTest presenter = new EditPresenterTest();
@@ -63,7 +63,7 @@ public class EditInteractorTest {
         EditUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
         userRepository.save(user);
 
-        EditReviewSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
+        EditSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
         songRepository.saveSong(song);
 
         EditPresenterTest presenter = new EditPresenterTest();
@@ -94,7 +94,7 @@ public class EditInteractorTest {
         EditUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
         userRepository.save(user);
 
-        EditReviewSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
+        EditSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
         songRepository.saveSong(song);
 
         EditPresenterTest presenter = new EditPresenterTest();
@@ -122,7 +122,7 @@ public class EditInteractorTest {
         EditUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
         userRepository.save(user);
 
-        EditReviewSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
+        EditSongDataAccessInterface songRepository = new InMemorySongDataAccessObject();
         songRepository.saveSong(song);
 
         EditPresenterTest presenter = new EditPresenterTest();
