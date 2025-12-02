@@ -55,7 +55,7 @@ Upvote:
 
 
 View Profile:
-<img width="1565" height="1179" alt="Screenshot 2025-12-02 102402" src="https://github.com/user-attachments/assets/c11ac96c-e992-4a62-87ac-1e0baf9dadb6" />
+<img width="1569" height="1180" alt="Screenshot 2025-12-02 102929" src="https://github.com/user-attachments/assets/9393145e-2767-49af-8124-d19ce08276cc" />
 
 Edit:
 <img width="1562" height="1183" alt="Screenshot 2025-12-02 102022" src="https://github.com/user-attachments/assets/cec96858-43d0-4a7f-b208-931543ea6a8c" />
