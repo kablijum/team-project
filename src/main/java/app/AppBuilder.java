@@ -38,9 +38,7 @@ import use_case.edit_review.EditInteractor;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.post_review.PostInputDataBoundary;
 import use_case.post_review.*;
-import use_case.upvote.UpvoteInputBoundary;
-import use_case.upvote.UpvoteInteractor;
-import use_case.upvote.UpvoteOutputDataBoundary;
+import use_case.upvote.*;
 import view.UserProfileView;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -195,7 +193,7 @@ public class AppBuilder {
 
     public AppBuilder addEditReviewUseCase() {
         editReviewViewModel = new EditReviewViewModel();
-        final EditReviewPresenter presenter = new EditReviewPresenter(viewManagerModel);
+        final EditReviewPresenter presenter = new EditReviewPresenter(editReviewViewModel);
         final EditInteractor editInteractor = new EditInteractor(userDataAccessObject, songDataAccessObject, presenter);
         editReviewController = new EditReviewController(editInteractor);
 
@@ -223,13 +221,15 @@ public class AppBuilder {
             if  (upvoteViewModel == null){
                 upvoteViewModel = new UpvoteViewModel();
             }
-            UpvoteOutputDataBoundary upvotePresenter = new UpvotePresenter(upvoteViewModel);
+            UpvoteOutputDataBoundary upvotePresenter =
+                    new UpvotePresenter(upvoteViewModel);
+            UpvoteRepository upvoteRepository =
+                    new UpvoteRepositoryFacade(songDataAccessObject,
+                            userDataAccessObject);
             UpvoteInputBoundary upvoteInteractor = new UpvoteInteractor(
-                    songDataAccessObject,
-                    userDataAccessObject,
+                    upvoteRepository,
                     upvotePresenter);
             upvoteController = new UpvoteController(upvoteInteractor);
-
         }
 
         ViewSongOutputDataBoundary presenter =

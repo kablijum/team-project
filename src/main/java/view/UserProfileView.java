@@ -254,12 +254,12 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
             refresh();
         }
         else if ("editSuccess".equals(evt.getPropertyName())) {
-            JOptionPane.showMessageDialog(this,
-                    editViewModel.getSuccessMessage(),
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            refresh(); // Refresh the view to show updated review
-        } else if ("editFail".equals(evt.getPropertyName())) {
+            JOptionPane.showMessageDialog(this, "Review updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            String username = viewModel.getUsername();
+            controller.openProfile(username);
+        }
+        else if ("editFail".equals(evt.getPropertyName())) {
             JOptionPane.showMessageDialog(this,
                     editViewModel.getErrorMessage(),
                     "Error",
@@ -271,9 +271,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     //call from viewModel
     public void refresh() {
         usernameLabel.setText(viewModel.getUsername());
-
         reviewListModel.clear();
-//        List<ProfileReviewsViewModel.ReviewRow> reviews = viewModel.getReviews();
         for (ProfileReviewsViewModel.ReviewRow r : viewModel.getReviews()) {
             String line = String.format(
                     "Song: %s  |  Your rating: %d  |  Comment: %s",
