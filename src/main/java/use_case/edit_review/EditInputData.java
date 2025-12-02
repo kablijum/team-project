@@ -33,8 +33,4 @@ public class EditInputData {
         return songId;
     }
 
-    public int getReviewIndex() {
-        return reviewIndex;
-    }
-
 }
