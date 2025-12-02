@@ -2,6 +2,7 @@ package data_access;
 
 import entity.Review;
 import entity.Song;
+import use_case.edit_review.EditReviewSongDataAccessInterface;
 import use_case.post_review.PostReviewSongDataAccessInterface;
 import use_case.upvote.UpvoteSongDataAccessInterface;
 import use_case.view_profile.ViewProfileSongDataAccessInterface;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemorySongDataAccessObject implements PostReviewSongDataAccessInterface, UpvoteSongDataAccessInterface,
-        ViewProfileSongDataAccessInterface{
+        ViewProfileSongDataAccessInterface, EditReviewSongDataAccessInterface {
     private final Map<String, Song> songs = new HashMap<>();
 
     @Override
