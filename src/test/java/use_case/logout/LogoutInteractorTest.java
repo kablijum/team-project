@@ -1,36 +1,55 @@
 package use_case.logout;
 
 import data_access.InMemoryUserDataAccessObject;
-import entity.UserFactory;
-import entity.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LogoutInteractorTest {
+/**
+ * Tests for the LogoutInteractor using LogoutPresenterTest
+ * as a fake presenter.
+ */
+public class LogoutInteractorTest {
 
     @Test
-    void successTest() {
+    void successTestLogsOutCurrentUser() {
+        // Arrange
         InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        userRepository.setCurrentUsername("raha");
 
-        // For the success test, we need to add Paul to the data access repository before we log in.
-        UserFactory factory = new UserFactory();
-        User user = factory.create("Paul", "password");
-        userRepository.save(user);
-        userRepository.setCurrentUsername("Paul");
+        LogoutPresenterTest presenter = new LogoutPresenterTest();
+        LogoutInteractor interactor = new LogoutInteractor(userRepository, presenter);
 
-        // This creates a successPresenter that tests whether the test case is as we expect.
-        LogoutOutputBoundary successPresenter = new LogoutOutputBoundary() {
-            @Override
-            public void prepareSuccessView(LogoutOutputData user) {
-                assertEquals("Paul", user.getUsername());
-                assertNull(userRepository.getCurrentUsername());
-            }
-};
-
-        LogoutInputBoundary interactor = new LogoutInteractor(userRepository, successPresenter);
+        // Act
         interactor.execute();
+
+        // Assert: presenter called
+        assertTrue(presenter.isSuccessViewCalled());
+
+        LogoutOutputData outputData = presenter.getOutputData();
+        assertNotNull(outputData);
+        assertEquals("raha", outputData.getUsername());
+
+        // DAO should now have no current user
         assertNull(userRepository.getCurrentUsername());
     }
 
+    @Test
+    void successTestWhenNoUserLoggedIn() {
+        // Arrange: no current user set (null)
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        LogoutPresenterTest presenter = new LogoutPresenterTest();
+        LogoutInteractor interactor = new LogoutInteractor(userRepository, presenter);
+
+        // Act
+        interactor.execute();
+
+        // Assert
+        assertTrue(presenter.isSuccessViewCalled());
+
+        LogoutOutputData outputData = presenter.getOutputData();
+        // username will be null in this case
+        assertNull(outputData.getUsername());
+        assertNull(userRepository.getCurrentUsername());
+    }
 }
