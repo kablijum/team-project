@@ -37,6 +37,7 @@ public class ViewSongPresenter implements ViewSongOutputDataBoundary {
         songState.setSongName(viewSongOutputData.getSongName());
         songState.setArtist(viewSongOutputData.getArtist());
         songState.setSongId(viewSongOutputData.getSongId());
+        songState.setReviews(viewSongOutputData.getReviews());
 
         this.viewSongViewModel.firePropertyChange();
 
