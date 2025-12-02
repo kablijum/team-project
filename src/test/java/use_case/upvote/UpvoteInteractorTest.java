@@ -3,6 +3,7 @@ package use_case.upvote;
 import data_access.InMemorySongDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entity.*;
+import interface_adapter.upvote_review.UpvotePresenter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,9 @@ class UpvoteInteractorTest {
 
         TestUpvotePresenter presenter = new TestUpvotePresenter();
 
-        UpvoteInteractor interactor = new UpvoteInteractor(upvoteSongData, upvoteUserData, presenter);
+        UpvoteRepository upvoteRepository =
+                new UpvoteRepositoryFacade(upvoteSongData, upvoteUserData);
+        UpvoteInteractor interactor = new UpvoteInteractor(upvoteRepository, presenter);
         interactor.execute(inputData);
 
         assertTrue(presenter.isSuccessViewCalled());
@@ -45,7 +48,7 @@ class UpvoteInteractorTest {
         assertEquals("UpvoteTestUser", data.getUsername());
         assertEquals("aaron", data.getReviewUsername());
         assertEquals(12345, data.getSongId());
-        assertFalse(data.isUpvoted());
+        assertTrue(data.isUpvoted());
 
         // Test to see if upvote count increments
         assertEquals(1, review.getUpvotes());
@@ -77,7 +80,9 @@ class UpvoteInteractorTest {
 
         TestUpvotePresenter presenter = new TestUpvotePresenter();
 
-        UpvoteInteractor interactor = new UpvoteInteractor(upvoteSongData, upvoteUserData, presenter);
+        UpvoteRepository upvoteRepository =
+                new UpvoteRepositoryFacade(upvoteSongData, upvoteUserData);
+        UpvoteInteractor interactor = new UpvoteInteractor(upvoteRepository, presenter);
         interactor.execute(inputData);
 
         assertTrue(presenter.isSuccessViewCalled());
@@ -86,7 +91,7 @@ class UpvoteInteractorTest {
         assertEquals("UpvoteTestUser", data.getUsername());
         assertEquals("aaron", data.getReviewUsername());
         assertEquals(12345, data.getSongId());
-        assertTrue(data.isUpvoted());
+        assertFalse(data.isUpvoted());
 
         // Test to see if upvote count increments
         assertEquals(0, review.getUpvotes());
