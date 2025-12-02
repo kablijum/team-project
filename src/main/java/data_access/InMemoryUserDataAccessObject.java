@@ -3,6 +3,7 @@ package data_access;
 import entity.Review;
 import entity.User;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
+import use_case.edit_review.EditUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.post_review.PostReviewUserDataAccessInterface;
@@ -22,7 +23,8 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
                                                      LoginUserDataAccessInterface,
                                                      ChangePasswordUserDataAccessInterface,
                                                      LogoutUserDataAccessInterface, PostReviewUserDataAccessInterface,
-                                                     UpvoteUserDataAccessInterface, ViewProfileUserDataAccessInterface{
+                                                     UpvoteUserDataAccessInterface, ViewProfileUserDataAccessInterface,
+                                                     EditUserDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();
 
@@ -114,5 +116,10 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
             return user.getWrittenReviews();
         }
         return new java.util.ArrayList<>();
+    }
+
+    @Override
+    public void updateUser(User user) {  // <-- ADDED THIS METHOD
+        users.put(user.getUsername(), user);
     }
 }

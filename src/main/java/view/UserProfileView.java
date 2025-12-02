@@ -4,9 +4,8 @@ import interface_adapter.edit_review.EditReviewController;
 import interface_adapter.edit_review.EditReviewViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsViewModel;
 import interface_adapter.view_profile_reviews.ProfileReviewsController;
-import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.LoggedInViewModel;
-import use_case.edit_review.EditReviewSongDataAccessInterface;
+import use_case.edit_review.EditSongDataAccessInterface;
 import use_case.edit_review.EditUserDataAccessInterface;
 
 
@@ -30,7 +29,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     /** Data access interface for user data related to editing. */
     private final EditUserDataAccessInterface userData;
     /** Data access interface for song data related to editing. */
-    private final EditReviewSongDataAccessInterface songData;
+    private final EditSongDataAccessInterface songData;
     /** The view model holding logged-in user state. */
     private final LoggedInViewModel loggedInViewModel;
 
@@ -62,7 +61,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                            final EditReviewController editController,
                            final EditReviewViewModel editViewModel,
                            final EditUserDataAccessInterface userData,
-                           final EditReviewSongDataAccessInterface songData,
+                           final EditSongDataAccessInterface songData,
                            final LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
         this.controller = controller;

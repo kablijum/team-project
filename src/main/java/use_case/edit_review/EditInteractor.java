@@ -8,10 +8,11 @@ import entity.User;
 public class EditInteractor implements EditInputDataBoundary {
 
     private final EditUserDataAccessInterface userData;
-    private final EditReviewSongDataAccessInterface songData;
+    private final EditSongDataAccessInterface songData;
     private final EditOutputDataBoundary presenter;
 
-    public EditInteractor(EditUserDataAccessInterface userData, EditReviewSongDataAccessInterface songData,
+    public EditInteractor(EditUserDataAccessInterface userData,
+                          EditSongDataAccessInterface songData,
                           EditOutputDataBoundary presenter){
         this.userData = userData;
         this.songData = songData;
@@ -50,6 +51,7 @@ public class EditInteractor implements EditInputDataBoundary {
                 }
             }
 
+            assert oldReviewInSong != null;
             int oldUpvotes = oldReviewInSong.getUpvotes();
 
             song.deleteReview(oldReviewInSong);
