@@ -1,94 +1,80 @@
 package use_case.login;
 
 import data_access.InMemoryUserDataAccessObject;
-import entity.UserFactory;
 import entity.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LoginInteractorTest {
+/**
+ * Tests for the LoginInteractor using the LoginPresenterTest
+ * as a fake presenter.
+ */
+public class LoginInteractorTest {
 
     @Test
     void successTest() {
-        LoginInputData inputData = new LoginInputData("Paul", "password");
-        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
-
-        // For the success test, we need to add Paul to the data access repository before we log in.
-        UserFactory factory = new UserFactory();
-        User user = factory.create("Paul", "password");
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        User user = new User("Raha", "password123");
         userRepository.save(user);
 
-        // This creates a successPresenter that tests whether the test case is as we expect.
-        LoginOutputBoundary successPresenter = new LoginOutputBoundary() {
-            @Override
-            public void prepareSuccessView(LoginOutputData user) {
-                assertEquals("Paul", user.getUsername());
-                assertEquals("Paul", userRepository.getCurrentUsername());
-            }
+        LoginPresenterTest presenter = new LoginPresenterTest();
+        LoginInteractor interactor = new LoginInteractor(userRepository, presenter);
 
-            @Override
-            public void prepareFailView(String error) {
-                fail("Use case failure is unexpected.");
-            }
-        };
+        LoginInputData inputData = new LoginInputData("Raha", "password123");
 
-        LoginInputBoundary interactor = new LoginInteractor(userRepository, successPresenter);
+        // Act
         interactor.execute(inputData);
-    }
 
+        // Assert
+        assertTrue(presenter.isSuccessViewCalled());
+        assertFalse(presenter.isFailViewCalled());
 
-    @Test
-    void failurePasswordMismatchTest() {
-        LoginInputData inputData = new LoginInputData("Paul", "wrong");
-        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+        LoginOutputData outputData = presenter.getOutputData();
+        assertNotNull(outputData);
+        assertEquals("Raha", outputData.getUsername());
 
-        // For this failure test, we need to add Paul to the data access repository before we log in, and
-        // the passwords should not match.
-        UserFactory factory = new UserFactory();
-        User user = factory.create("Paul", "password");
-        userRepository.save(user);
-
-        // This creates a presenter that tests whether the test case is as we expect.
-        LoginOutputBoundary failurePresenter = new LoginOutputBoundary() {
-            @Override
-            public void prepareSuccessView(LoginOutputData user) {
-                // this should never be reached since the test case should fail
-                fail("Use case success is unexpected.");
-            }
-
-            @Override
-            public void prepareFailView(String error) {
-                assertEquals("Incorrect password for \"Paul\".", error);
-            }
-        };
-
-        LoginInputBoundary interactor = new LoginInteractor(userRepository, failurePresenter);
-        interactor.execute(inputData);
+        // DAO should also track current username
+        assertEquals("Raha", userRepository.getCurrentUsername());
     }
 
     @Test
-    void failureUserDoesNotExistTest() {
-        LoginInputData inputData = new LoginInputData("Paul", "password");
-        LoginUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
+    void failTestUserDoesNotExist() {
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        LoginPresenterTest presenter = new LoginPresenterTest();
+        LoginInteractor interactor = new LoginInteractor(userRepository, presenter);
 
-        // Add Paul to the repo so that when we check later they already exist
+        LoginInputData inputData = new LoginInputData("ghost", "whatever");
 
-        // This creates a presenter that tests whether the test case is as we expect.
-        LoginOutputBoundary failurePresenter = new LoginOutputBoundary() {
-            @Override
-            public void prepareSuccessView(LoginOutputData user) {
-                // this should never be reached since the test case should fail
-                fail("Use case success is unexpected.");
-            }
-
-            @Override
-            public void prepareFailView(String error) {
-                assertEquals("Paul: Account does not exist.", error);
-            }
-        };
-
-        LoginInputBoundary interactor = new LoginInteractor(userRepository, failurePresenter);
+        // Act
         interactor.execute(inputData);
+
+        // Assert
+        assertTrue(presenter.isFailViewCalled());
+        assertFalse(presenter.isSuccessViewCalled());
+        assertEquals("ghost: Account does not exist.", presenter.getErrorMessage());
+    }
+
+    @Test
+    void failTestIncorrectPassword() {
+        // Arrange
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        User user = new User("Raha", "correctPassword");
+        userRepository.save(user);
+
+        LoginPresenterTest presenter = new LoginPresenterTest();
+        LoginInteractor interactor = new LoginInteractor(userRepository, presenter);
+
+        LoginInputData inputData = new LoginInputData("Raha", "wrongPassword");
+
+        // Act
+        interactor.execute(inputData);
+
+        // Assert
+        assertTrue(presenter.isFailViewCalled());
+        assertFalse(presenter.isSuccessViewCalled());
+        assertEquals("Incorrect password for \"Raha\".", presenter.getErrorMessage());
     }
 }
