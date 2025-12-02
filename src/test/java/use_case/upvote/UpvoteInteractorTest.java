@@ -3,6 +3,7 @@ package use_case.upvote;
 import data_access.InMemorySongDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import entity.*;
+import interface_adapter.upvote_review.UpvotePresenter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +37,12 @@ class UpvoteInteractorTest {
 
         TestUpvotePresenter presenter = new TestUpvotePresenter();
 
-        UpvoteInteractor interactor = new UpvoteInteractor(upvoteSongData, upvoteUserData, presenter);
+        UpvoteRepository upvoteRepository =
+                new UpvoteRepositoryFacade(upvoteSongData,
+                        upvoteUserData);
+        UpvoteInputBoundary interactor = new UpvoteInteractor(
+                upvoteRepository,
+                presenter);
         interactor.execute(inputData);
 
         assertTrue(presenter.isSuccessViewCalled());
@@ -77,7 +83,12 @@ class UpvoteInteractorTest {
 
         TestUpvotePresenter presenter = new TestUpvotePresenter();
 
-        UpvoteInteractor interactor = new UpvoteInteractor(upvoteSongData, upvoteUserData, presenter);
+        UpvoteRepository upvoteRepository =
+                new UpvoteRepositoryFacade(upvoteSongData,
+                        upvoteUserData);
+        UpvoteInputBoundary interactor = new UpvoteInteractor(
+                upvoteRepository,
+                presenter);
         interactor.execute(inputData);
 
         assertTrue(presenter.isSuccessViewCalled());
