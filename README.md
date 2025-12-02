@@ -3,7 +3,7 @@
 RateMyMusic:
 An app that allows users to search for songs, to rate and review them, or to view other users' ratings and reviews.
 
-#User stories:
+User stories:
 1. As a new user, I want to create an account by entering a unique username and password. (Raha)
 2. As a user, I want to log into my account using my username and password. (Raha)
 3. As a logged-in user, I want to click a log-out button (displayed on my profile) to exit my account. (Raha)
@@ -23,11 +23,11 @@ An app that allows users to search for songs, to rate and review them, or to vie
 17. As a user, I want to see a back button on any song’s profile page so that I can get back to the main page and search for other songs. (Avery)
 18. As a user, I want to see a back button on the user profile page so that I can get back to the main page and search for other songs. (Connie)
 
-#APIs:
+APIs:
 
-#Genuis API:
+Genuis API:
 An API containing information about an expansive selection of songs, such as song name, artist and song ID. Which was helpful in out music rating app since it already has a wide range of songs ready with IDs to make working with the data easier.
 - API token:  JVa5EiX5BxAKq8MFac6DpgbKFlhMSbskByL1I5KeRE0sU0shOufi5NL3cEtNXMYK
 
-#Grade API:
+Grade API:
 We used it to store the data, and maintain data persistence
