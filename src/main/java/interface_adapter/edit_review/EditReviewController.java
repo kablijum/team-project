@@ -11,9 +11,9 @@ public class EditReviewController {
         this.interactor = interactor;
     }
 
-    public void execute(String comment, int rating, String user, int songId,  int reviewIndex) {
+    public void execute(String comment, int rating, String user, int songId) {
 
-        EditInputData inputData = new EditInputData(comment, rating, user, songId,  reviewIndex);
+        EditInputData inputData = new EditInputData(comment, rating, user, songId);
         interactor.execute(inputData);
 
     }

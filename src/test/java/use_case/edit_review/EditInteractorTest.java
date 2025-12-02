@@ -23,7 +23,7 @@ public class EditInteractorTest {
         song.addReview(originalReview);
         user.addWrittenReview(originalReview);
 
-        EditInputData inputData = new EditInputData("Updated comment", 5, "Juma", 12345, 0);
+        EditInputData inputData = new EditInputData("Updated comment", 5, "Juma", 12345);
 
         EditUserDataAccessInterface userRepository = new InMemoryUserDataAccessObject();
         userRepository.save(user);
@@ -67,7 +67,7 @@ public class EditInteractorTest {
 
         EditPresenterTest presenter = new EditPresenterTest();
 
-        EditInputData inputData = new EditInputData("Updated comment", 4, "Juma", 12345, 0);
+        EditInputData inputData = new EditInputData("Updated comment", 4, "Juma", 12345);
         EditInteractor interactor = new EditInteractor(userRepository, songRepository, presenter);
         interactor.execute(inputData);
 
@@ -98,7 +98,7 @@ public class EditInteractorTest {
 
         EditPresenterTest presenter = new EditPresenterTest();
 
-        EditInputData inputData = new EditInputData("", 5, "Juma", 12345, 0);
+        EditInputData inputData = new EditInputData("", 5, "Juma", 12345);
         EditInteractor interactor = new EditInteractor(userRepository, songRepository, presenter);
         interactor.execute(inputData);
 
@@ -126,7 +126,7 @@ public class EditInteractorTest {
 
         EditPresenterTest presenter = new EditPresenterTest();
 
-        EditInputData inputData = new EditInputData(null, 5, "Juma", 12345, 0);
+        EditInputData inputData = new EditInputData(null, 5, "Juma", 12345);
         EditInteractor interactor = new EditInteractor(userRepository, songRepository, presenter);
         interactor.execute(inputData);
 
