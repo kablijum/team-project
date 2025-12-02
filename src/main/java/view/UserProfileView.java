@@ -18,34 +18,52 @@ import java.util.List;
 
 public class UserProfileView extends JPanel implements PropertyChangeListener {
 
+    /** The view model holding the profile review data. */
     private final ProfileReviewsViewModel viewModel;
+    /** The controller for general profile actions
+     * (back, logout, change password). */
     private final ProfileReviewsController controller;
+    /** The controller for editing reviews. */
     private final EditReviewController editController;
+    /** The view model for handling review editing process. */
     private final EditReviewViewModel editViewModel;
+    /** Data access interface for user data related to editing. */
     private final EditUserDataAccessInterface userData;
-    EditReviewSongDataAccessInterface songData;
+    /** Data access interface for song data related to editing. */
+    private final EditReviewSongDataAccessInterface songData;
+    /** The view model holding logged-in user state. */
     private final LoggedInViewModel loggedInViewModel;
 
+    /** Button to return to the home screen. */
     private final JButton backButton = new JButton("Back to Home");
+    /** Button to initiate logout. */
     private final JButton logoutButton = new JButton("Logout");
+    /** Button to initiate password change dialog. */
     private final JButton changePasswordButton = new JButton("Change Password");
+    /** Label to display the username. */
     private final JLabel usernameLabel = new JLabel();
 
+    /** Label indicating the reviews section. */
     private final JLabel myReviewsLabel = new JLabel("My Reviews:");
+    /** Button to initiate the edit review action. */
     private final JButton editButton = new JButton("Edit");
 
-    private final DefaultListModel<String> reviewListModel = new DefaultListModel<>();
+    /** Model for the JList displaying reviews. */
+    private final DefaultListModel<String> reviewListModel =
+            new DefaultListModel<>();
+    /** The list component displaying reviews. */
     private final JList<String> reviewList = new JList<>(reviewListModel);
 
+    /** The static name identifier for this view. */
     public static final String VIEW_NAME = "profile";
 
-    public UserProfileView(ProfileReviewsViewModel viewModel,
-                           ProfileReviewsController controller,
-                           EditReviewController editController,
-                           EditReviewViewModel editViewModel,
-                           EditUserDataAccessInterface userData,
-                           EditReviewSongDataAccessInterface songData,
-                           LoggedInViewModel loggedInViewModel) {
+    public UserProfileView(final ProfileReviewsViewModel viewModel,
+                           final ProfileReviewsController controller,
+                           final EditReviewController editController,
+                           final EditReviewViewModel editViewModel,
+                           final EditUserDataAccessInterface userData,
+                           final EditReviewSongDataAccessInterface songData,
+                           final LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
         this.controller = controller;
         this.editController = editController;
@@ -113,9 +131,13 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         });
         refresh();
     }
-
-    public void editReviewAt(int index) {
-        List<ProfileReviewsViewModel.ReviewRow> reviewRows = viewModel.getReviews();
+    /**
+     * Opens a dialog to edit the review at the specified index.
+     * @param index the index of the review in the list
+     */
+    public void editReviewAt(final int index) {
+        List<ProfileReviewsViewModel.ReviewRow> reviewRows
+                = viewModel.getReviews();
         if (index < 0 || index >= reviewRows.size()) {
             return;
         }
@@ -131,7 +153,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel songInfoLabel = new JLabel("Editing review for: " + reviewRow.getSongTitle());
+        JLabel songInfoLabel = new JLabel(
+                "Editing review for: " + reviewRow.getSongTitle());
         songInfoLabel.setFont(new Font("Arial",  Font.BOLD, 12));
         mainPanel.add(songInfoLabel, BorderLayout.NORTH);
 
@@ -185,7 +208,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                 return;
             }
 
-            editController.execute(newComment, newRating, username, songId, index);
+            editController.execute(newComment, newRating,
+                    username, songId, index);
             editDialog.dispose();
             refresh();
         });
@@ -198,7 +222,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     private void showChangePasswordDialog() {
                 JFrame owner = (JFrame) SwingUtilities.getWindowAncestor(this);
 
-                JDialog dialog = new JDialog(owner, "Change your password", true);
+                JDialog dialog = new JDialog(owner,
+                        "Change your password", true);
 
                 JPanel panel = new JPanel(new BorderLayout());
 
@@ -209,7 +234,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                 inputPanel.add(newPasswordField);
                 panel.add(inputPanel, BorderLayout.CENTER);
 
-                JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                JPanel buttonsPanel =
+                        new JPanel(new FlowLayout(FlowLayout.RIGHT));
                 JButton updateButton = new JButton("Update password");
                 JButton doneButton = new JButton("return");
                 buttonsPanel.add(updateButton);
@@ -221,7 +247,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                 dialog.setLocationRelativeTo(this);
 
                 updateButton.addActionListener(ev -> {
-                    String newPassword = new String(newPasswordField.getPassword()).trim();
+                    String newPassword =
+                            new String(newPasswordField.getPassword()).trim();
                     if (newPassword.isEmpty()) {
                         JOptionPane.showMessageDialog(dialog,
                                 "Password cannot be empty.",
@@ -230,7 +257,8 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                         return;
                     }
 
-                    String username = loggedInViewModel.getState().getUsername();
+                    String username =
+                            loggedInViewModel.getState().getUsername();
 
                     controller.changePassword(newPassword, username);
 
@@ -247,19 +275,22 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                 dialog.setVisible(true);
             }
 
-
+    /**
+     * Handles property change events from the ViewModels.
+     * @param evt the property change event
+     */
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(final PropertyChangeEvent evt) {
         if (evt.getSource() == this.viewModel) {
             refresh();
-        }
-        else if ("editSuccess".equals(evt.getPropertyName())) {
-            JOptionPane.showMessageDialog(this, "Review updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else if ("editSuccess".equals(evt.getPropertyName())) {
+            JOptionPane.showMessageDialog(this,
+                    "Review updated successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
 
             String username = viewModel.getUsername();
             controller.openProfile(username);
-        }
-        else if ("editFail".equals(evt.getPropertyName())) {
+        } else if ("editFail".equals(evt.getPropertyName())) {
             JOptionPane.showMessageDialog(this,
                     editViewModel.getErrorMessage(),
                     "Error",
@@ -267,8 +298,10 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
         }
     }
 
-
     //call from viewModel
+    /**
+     * Updates the view components with the latest data from the ViewModel.
+     */
     public void refresh() {
         usernameLabel.setText(viewModel.getUsername());
         reviewListModel.clear();
@@ -282,29 +315,4 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
             reviewListModel.addElement(line);
         }
     }
-
-    //test
-    //public static void main(String[] args) {
-        // 1. fake viewModel
-    //    ProfileReviewsViewModel vm = new ProfileReviewsViewModel();
-    //   vm.setUsername("Connie");
-    //
-    //    java.util.List<ProfileReviewsViewModel.ReviewRow> fake = new java.util.ArrayList<>();
-    //    fake.add(new ProfileReviewsViewModel.ReviewRow("Song A", 5, "Loved it!"));
-    //    fake.add(new ProfileReviewsViewModel.ReviewRow("Song B", 4, "Nice rhythm"));
-    //
-    //    vm.setReviews(fake);
-    //
-        // call controller
-    //    ProfileReviewsController controller =
-    //            new ProfileReviewsController(new ViewManagerModel());
-
-        // panel
-    //    JFrame frame = new JFrame("User Profile Test");
-    //  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    //    frame.setContentPane(new UserProfileView(vm, controller));
-    //    frame.setSize(800, 600);
-    //    frame.setLocationRelativeTo(null);
-    //    frame.setVisible(true);
-    //}
 }
