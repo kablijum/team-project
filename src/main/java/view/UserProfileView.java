@@ -29,7 +29,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
     /** Data access interface for user data related to editing. */
     private final EditUserDataAccessInterface userData;
     /** Data access interface for song data related to editing. */
-    private final EditReviewSongDataAccessInterface songData;
+    private final EditSongDataAccessInterface songData;
     /** The view model holding logged-in user state. */
     private final LoggedInViewModel loggedInViewModel;
 
@@ -61,7 +61,7 @@ public class UserProfileView extends JPanel implements PropertyChangeListener {
                            final EditReviewController editController,
                            final EditReviewViewModel editViewModel,
                            final EditUserDataAccessInterface userData,
-                           final EditReviewSongDataAccessInterface songData,
+                           final EditSongDataAccessInterface songData,
                            final LoggedInViewModel loggedInViewModel) {
         this.viewModel = viewModel;
         this.controller = controller;
