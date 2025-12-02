@@ -30,7 +30,6 @@ public class SongProfileView extends JPanel {
 
     private final JButton addReview = new JButton("Write a Review");
     private final JButton backButton = new JButton("Back to Home");
-    private final JButton upvoteButton = new JButton("Upvote this review");
 
     private JList<ReviewViewModelItem> reviewList;
 
@@ -280,6 +279,7 @@ public class SongProfileView extends JPanel {
                 + "\n" +  "Rating:" + review.getRating());
         JScrollPane reviewScrollPane = new JScrollPane(info);
         dialog.add(reviewScrollPane, BorderLayout.CENTER);
+        JButton upvoteButton = new JButton("Upvote this review");
         dialog.add(upvoteButton, BorderLayout.SOUTH);
 
 
