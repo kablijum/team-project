@@ -1,33 +1,35 @@
 package interface_adapter.edit_review;
 
-import interface_adapter.ViewManagerModel;
 import use_case.edit_review.EditOutputData;
 import use_case.edit_review.EditOutputDataBoundary;
-import javax.swing.JOptionPane;
 
 public class EditReviewPresenter implements EditOutputDataBoundary {
 
-    private final ViewManagerModel viewManagerModel;
+    private final EditReviewViewModel editReviewViewModel;
 
-    public EditReviewPresenter(ViewManagerModel viewManagerModel) {
-
-        this.viewManagerModel = viewManagerModel;
+    public EditReviewPresenter(EditReviewViewModel editReviewViewModel) {
+        this.editReviewViewModel = editReviewViewModel;
     }
 
     @Override
     public void prepareSuccessView(EditOutputData outputData) {
-        JOptionPane.showMessageDialog(null,
-                "Review updated successfully!",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
+        EditReviewState state = editReviewViewModel.getState();
+        state.setComment(outputData.getComment());
+        state.setRating(outputData.getAverageRating());
+        state.setUsername(outputData.getUsername());
+        state.setSongName(outputData.getSongName());
+        state.setSuccessMessage("Review updated successfully!");
+
+        editReviewViewModel.setState(state);
+
+        editReviewViewModel.firePropertyChange("editSuccess");
     }
 
     @Override
     public void prepareFailView(String errorMessage) {
-
-        JOptionPane.showMessageDialog(null,
-                errorMessage,
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+        EditReviewState state = editReviewViewModel.getState();
+        state.setErrorMessage(errorMessage);
+        editReviewViewModel.setState(state);
+        editReviewViewModel.firePropertyChange("editFail");
     }
 }

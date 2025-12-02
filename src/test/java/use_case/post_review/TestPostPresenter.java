@@ -1,7 +1,4 @@
-package use_case.post;
-
-import use_case.post_review.PostOutputData;
-import use_case.post_review.PostOutputDataBoundary;
+package use_case.post_review;
 
 public class TestPostPresenter implements PostOutputDataBoundary {
     private boolean successViewCalled = false;

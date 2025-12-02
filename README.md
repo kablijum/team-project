@@ -34,11 +34,10 @@ User stories:
 13. As a user, I want to submit my rating and review for a song, making my review appear in the list of the reviews of that song, as well as my profile review history.  
 14. As a user, I want to get redirected to “my profile” tab by clicking on the “my profile” button displayed on the main page of the app.  
 15. As a user, I want to see a list of only my own reviews on my profile page so that I can manage and track what I’ve written.
-16. As a user, I want to delete one of my own reviews from my profile page so that it is removed from my account and, as a result, removed from the song review list. 
+16. As a user, I want to be able to edit my previous reviews' comments and ratings.
 17. As a user, I want to see a home button on any song’s profile page so that I can get back to the main page and search for other songs. 
 18. As a user, I want to see a home button on the user profile page so that I can get back to the main page and search for other songs. 
 19. As a user, I want to see a “your history” which is a list of all the songs I have previously reviewed to be displayed in the home tab, under the search bar.
-20. As a user, I want to be able to edit my previous reviews' comments and ratings.
 
 Genuis API
 

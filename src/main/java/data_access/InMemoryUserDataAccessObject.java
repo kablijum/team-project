@@ -8,6 +8,7 @@ import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.post_review.PostReviewUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.upvote.UpvoteUserDataAccessInterface;
+import use_case. view_profile.ViewProfileUserDataAccessInterface;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
                                                      LoginUserDataAccessInterface,
                                                      ChangePasswordUserDataAccessInterface,
                                                      LogoutUserDataAccessInterface, PostReviewUserDataAccessInterface,
-                                                     UpvoteUserDataAccessInterface {
+                                                     UpvoteUserDataAccessInterface, ViewProfileUserDataAccessInterface{
 
     private final Map<String, User> users = new HashMap<>();
 
@@ -104,5 +105,14 @@ public class InMemoryUserDataAccessObject implements SignupUserDataAccessInterfa
             }
         }
         return upvotedUser.hasUpvoted(review);
+    }
+
+    @Override
+    public List<Review> getUserReviews(String username) {
+        User user = users.get(username);
+        if (user != null) {
+            return user.getWrittenReviews();
+        }
+        return new java.util.ArrayList<>();
     }
 }
