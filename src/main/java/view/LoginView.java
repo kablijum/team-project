@@ -147,11 +147,31 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
     public void propertyChange(PropertyChangeEvent evt) {
         final LoginState state = (LoginState) evt.getNewValue();
         setFields(state);
-        usernameErrorField.setText(state.getLoginError());
     }
 
     private void setFields(LoginState state) {
-        usernameInputField.setText(state.getUsername());
+        usernameInputField.setText(
+                state.getUsername() == null ? "" : state.getUsername()
+        );
+        passwordInputField.setText(
+                state.getPassword() == null ? "" : state.getPassword()
+        );
+        usernameErrorField.setText(
+                state.getLoginError() == null ? "" : state.getLoginError()
+        );
+    }
+
+    public void clearFields() {
+        usernameInputField.setText("");
+        passwordInputField.setText("");
+        usernameErrorField.setText("");
+        passwordErrorField.setText("");
+
+        LoginState state = loginViewModel.getState();
+        state.setUsername("");
+        state.setPassword("");
+        state.setLoginError(null);
+        loginViewModel.setState(state);
     }
 
     public String getViewName() {
