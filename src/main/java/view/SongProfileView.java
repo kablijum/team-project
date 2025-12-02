@@ -61,7 +61,9 @@ public class SongProfileView extends JPanel {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
         if (viewModel.getState().getAverageRating() != 0) {
-            averageRatingLabel.setText("Average Rating:" + "\n" + viewModel.getState().getAverageRating());
+            averageRatingLabel.setText(
+                    "Average Rating:\n" + String.format("%.2f", viewModel.getState().getAverageRating())
+            );
             averageRatingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             averageRatingLabel.setFont(new Font("Serif", Font.BOLD, 12));
         } else {
@@ -88,7 +90,9 @@ public class SongProfileView extends JPanel {
             songNameLabel.setText(viewModel.getState().getSongName());
             artistLabel.setText(viewModel.getState().getArtist());
             if (viewModel.getState().getAverageRating() != 0) {
-                averageRatingLabel.setText("Average Rating:" + "\n" + viewModel.getState().getAverageRating());
+                averageRatingLabel.setText(
+                        "Average Rating:\n" + String.format("%.2f", viewModel.getState().getAverageRating())
+                );
             } else {
                 averageRatingLabel.setText(viewModel.getState().getMessage());
             }
@@ -135,7 +139,7 @@ public class SongProfileView extends JPanel {
         reviewList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         reviewList.setFont(new Font("Serif", Font.PLAIN, 14));
         reviewList.setBorder(new EmptyBorder(5, 5, 5, 5));
-        reviewList.addListSelectionListener( e -> {
+        reviewList.addListSelectionListener(e -> {
                     ReviewViewModelItem item = reviewList.getSelectedValue();
                     if (item != null) {
                         this.showReviewPopup(item);
@@ -149,7 +153,7 @@ public class SongProfileView extends JPanel {
                 panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 
                 ReviewViewModelItem item = (ReviewViewModelItem) value;
-                JLabel reviewLabel = new JLabel(item.toString());
+                JLabel reviewLabel = new JLabel("<html><div style='width: 300px;'>" + item.toString() + "</div></html>");
                 reviewLabel.setFont(new Font("Serif", Font.BOLD, 14));
 
                 JLabel upvoteLabel = new JLabel("Upvotes: " + item.getUpvotes());
