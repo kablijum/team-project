@@ -1,7 +1,5 @@
 package interface_adapter.edit_review;
 
-import interface_adapter.post_review.PostState;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
